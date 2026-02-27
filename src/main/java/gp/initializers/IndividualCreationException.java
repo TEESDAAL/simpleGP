@@ -1,18 +1,32 @@
 package gp.initializers;
 
 /**
- * An error type which states that the creation of an individual failed for some reason
+ * An error type stating that individual creation failed.
  */
 public class IndividualCreationException extends RuntimeException {
-    public IndividualCreationException(String message) {
+    /**
+     * Creates an exception with a message.
+     * @param message The error message
+     */
+    public IndividualCreationException(final String message) {
         super(message);
     }
 
-    public IndividualCreationException(String message, Throwable cause) {
+    /**
+     * Creates an exception with a message and cause.
+     * @param message The error message
+     * @param cause The underlying cause
+     */
+    public IndividualCreationException(
+            final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public IndividualCreationException(Throwable cause) {
+    /**
+     * Creates an exception with a cause.
+     * @param cause The underlying cause
+     */
+    public IndividualCreationException(final Throwable cause) {
         super(cause);
     }
 }

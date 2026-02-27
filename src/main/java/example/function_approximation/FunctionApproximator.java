@@ -7,36 +7,45 @@ import gp.Population;
 import gp.TerminationCriterion;
 import gp.breeder.Breeder;
 import gp.breeder.Initializer;
+import gp.individual.EvaluatedIndividual;
 import gp.single_tree.SingleObjectiveEvaluator;
 import gp.single_tree.SingleObjectiveFitness;
-import gp.individual.EvaluatedIndividual;
 import gp.single_tree.SingleTreeIndividual;
-import gp.statistics.SideEffect;
 import gp.statistics.Statistic;
 
-import java.lang.reflect.InvocationTargetException;
+/**
+ * An example GP run that aims to learn an approximation.
+ * to a given function
+ * @param initializer The population initializer
+ * @param trainEvaluator The training evaluator
+ * @param breeder The breeder
+ * @param testEvaluator The testing evaluator
+ * @param scoreLogger A score logger
+ */
+public record FunctionApproximator(
+        Initializer<SingleTreeIndividual<Double, Double>> initializer,
+        SingleObjectiveEvaluator<Double> trainEvaluator,
+        Breeder<EvaluatedIndividual<
+                Double, Double,
+                SingleTreeIndividual<Double, Double>, SingleObjectiveFitness>,
+                SingleTreeIndividual<Double, Double>
+                > breeder,
+        SingleObjectiveEvaluator<Double> testEvaluator,
+        Statistic<EvaluatedIndividual<
+                Double, Double,
+                SingleTreeIndividual<Double, Double>,
+                SingleObjectiveFitness
+                >> scoreLogger
+) {
 
-
-
-
-public class FunctionApproximator {
-    final Initializer<SingleTreeIndividual<Double, Double>> initializer;
-    final SingleObjectiveEvaluator<Double> trainEvaluator;
-    final Breeder<
-            EvaluatedIndividual<Double, Double, SingleTreeIndividual<Double, Double>, SingleObjectiveFitness>,
-            SingleTreeIndividual<Double, Double>> breeder;
-    final SingleObjectiveEvaluator<Double> testEvaluator;
-    final Statistic<EvaluatedIndividual<Double, Double, SingleTreeIndividual<Double, Double>, SingleObjectiveFitness>> scoreLogger;
-
-    public FunctionApproximator(Initializer<SingleTreeIndividual<Double, Double>> initializer, SingleObjectiveEvaluator<Double> trainEvaluator, Breeder<EvaluatedIndividual<Double, Double, SingleTreeIndividual<Double, Double>, SingleObjectiveFitness>, SingleTreeIndividual<Double, Double>> breeder, SingleObjectiveEvaluator<Double> testEvaluator, Statistic<EvaluatedIndividual<Double, Double, SingleTreeIndividual<Double, Double>, SingleObjectiveFitness>> scoreLogger) {
-        this.initializer = initializer;
-        this.trainEvaluator = trainEvaluator;
-        this.breeder = breeder;
-        this.testEvaluator = testEvaluator;
-        this.scoreLogger = scoreLogger;
-    }
-
-    public static FunctionApproximator fromParams(FunctionApproximationParams<Double> params) {
+    /**
+     * Load a Function Approximator from a given params object.
+     * @param params The parameters to load from
+     * @return A valid function approximator
+     */
+    public static FunctionApproximator fromParams(
+            final FunctionApproximationParams<Double> params
+    ) {
         return new FunctionApproximator(
                 params.initializer(),
                 params.trainEvaluator(),
@@ -46,25 +55,30 @@ public class FunctionApproximator {
         );
     }
 
-
-    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    /**
+     * Initialize a run.
+     * @param args Run arguments
+     */
+    public static void main(final String[] args) {
         assert args[0].equals("--config");
 
         FunctionApproximator.fromParams(
-               UnaryFunctionApproximator.of(Math::sin, 0)
-        ).train();
+                UnaryFunctionApproximator.of(Math::sin, 0)
+        ).train(50);
     }
 
-    public Population<?> train() {
+    /**
+     * Train a GP population for n generations.
+     * @param numGenerations The number of generations to train for
+     * @return The final Population
+     */
+    public Population<?> train(final int numGenerations) {
         return GPPipeLine
                 .start(initializer::initialize)
-                .then(SideEffect.of(ignored -> System.out.println("Population Initialized")))
-                .repeat(TerminationCriterion.nIters(50),
-                        pop -> pop
-                                .then(SideEffect.of(ignored -> System.out.println("Evaluating population")))
+                .repeat(TerminationCriterion.nIters(numGenerations),
+                        (i, pop) -> pop
                                 .then(trainEvaluator::evaluate)
                                 .then(scoreLogger)
-                                .then(SideEffect.of(ignored -> System.out.println("Breeding population")))
                                 .then(breeder::breed)
                 )
                 .then(testEvaluator::evaluate)

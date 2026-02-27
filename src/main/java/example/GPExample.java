@@ -1,7 +1,6 @@
 package example;
 
 import gp.GPPipeLine;
-import gp.Population;
 import gp.TerminationCriterion;
 import gp.breeder.Breeder;
 import gp.breeder.Initializer;
@@ -15,26 +14,63 @@ import gp.statistics.Statistic;
 import java.lang.reflect.InvocationTargetException;
 
 
-interface DoubleInd extends Individual<Double, Double> {}
-interface DoubleFit extends Fitness<DoubleFit> {}
-public class GPExample {
-    static Initializer<DoubleInd> initializer;
-    static Evaluator<Double, Double, DoubleInd, DoubleFit> trainEvaluator;
-    static Breeder<EvaluatedIndividual<Double, Double, DoubleInd, DoubleFit>, DoubleInd> breeder;
-    static Evaluator<Double, Double, DoubleInd, DoubleFit> testEvaluator;
-    static Statistic<EvaluatedIndividual<Double, Double, DoubleInd, DoubleFit>> scoreLogger;
+interface DoubleInd extends Individual<Double, Double> { }
+interface DoubleFit extends Fitness<DoubleFit> { }
 
-    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+/**
+ * Example GP run showing configuration from interface.
+ */
+public final class GPExample {
+    /** Initializer for population. */
+    private static Initializer<DoubleInd> initializer;
+    /** Training evaluator. */
+    private static Evaluator<Double, Double, DoubleInd, DoubleFit>
+            trainEvaluator;
+    /** Breeder for new generations. */
+    private static Breeder<EvaluatedIndividual<Double,
+            Double, DoubleInd, DoubleFit>, DoubleInd> breeder;
+    /** Testing evaluator. */
+    private static Evaluator<Double, Double, DoubleInd, DoubleFit>
+            testEvaluator;
+    /** Score logger. */
+    private static Statistic<EvaluatedIndividual<Double,
+            Double, DoubleInd, DoubleFit>> scoreLogger;
+
+    private GPExample() {
+        // Utility class
+    }
+
+    /**
+     * Entry point. Expects `--config` and a fully qualified config
+     * class name.
+     * @param args CLI arguments.
+     * @throws ClassNotFoundException When the config class is missing.
+     * @throws InstantiationException When the config class cannot be
+     *     instantiated.
+     * @throws IllegalAccessException When the config constructor is not
+     *     accessible.
+     * @throws NoSuchMethodException When the config no-arg constructor
+     *     is missing.
+     * @throws InvocationTargetException When the config constructor
+     *     throws.
+     */
+    public static void main(final String[] args)
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException,
+            InvocationTargetException {
         assert args[0].equals("--config");
 
         setupFromClassPath(args[1]);
-        final Population<EvaluatedIndividual<Double, Double, DoubleInd, DoubleFit>> finalPopulation = GPPipeLine
+        GPPipeLine
                 .start(initializer::initialize)
                 .repeat(TerminationCriterion.nIters(50),
-                        pop -> pop
+                        (i, pop) -> pop
                                 .then(trainEvaluator::evaluate)
                                 .then(scoreLogger::sideEffect)
-                                .then(SideEffect.of(ignored -> System.out.println("Breeding population")))
+                                .then(SideEffect.of(ignored ->
+                                        System.out.println(
+                                                "Breeding population for gen "
+                                                + i)))
                                 .then(breeder::breed)
                 )
                 .then(testEvaluator::evaluate)
@@ -42,8 +78,28 @@ public class GPExample {
                 .finish();
     }
 
-    private static void setupFromClassPath(String classPath) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        GPExampleConfig config = (GPExampleConfig) Class.forName(classPath).getConstructor().newInstance();
+    /**
+     * Loads the config class and stores its GP components for the
+     * run.
+     * @param classPath Fully qualified class name on the classpath.
+     * @throws ClassNotFoundException When the config class is missing.
+     * @throws InstantiationException When the config class cannot be
+     *     instantiated.
+     * @throws IllegalAccessException When the config constructor is not
+     *     accessible.
+     * @throws NoSuchMethodException When the config no-arg constructor
+     *     is missing.
+     * @throws InvocationTargetException When the config constructor
+     *     throws.
+     */
+    private static void setupFromClassPath(final String classPath)
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException,
+            InvocationTargetException {
+        GPExampleConfig config = (GPExampleConfig) Class.forName(classPath)
+                .getConstructor()
+                .newInstance();
+
         GPExample.initializer = config.initializer();
         GPExample.trainEvaluator = config.trainEvaluator();
         GPExample.breeder = config.breeder();
@@ -52,15 +108,40 @@ public class GPExample {
     }
 }
 
+/**
+ * Config interface for GP examples.
+ */
 interface GPExampleConfig {
 
+    /**
+     * Gets the initializer.
+     * @return The initializer
+     */
     Initializer<DoubleInd> initializer();
 
+    /**
+     * Gets the training evaluator.
+     * @return The training evaluator
+     */
     Evaluator<Double, Double, DoubleInd, DoubleFit> trainEvaluator();
 
-    Breeder<EvaluatedIndividual<Double, Double, DoubleInd, DoubleFit>, DoubleInd> breeder();
+    /**
+     * Gets the breeder.
+     * @return The breeder
+     */
+    Breeder<EvaluatedIndividual<Double, Double, DoubleInd, DoubleFit>,
+            DoubleInd> breeder();
 
+    /**
+     * Gets the testing evaluator.
+     * @return The testing evaluator
+     */
     Evaluator<Double, Double, DoubleInd, DoubleFit> testEvaluator();
 
-    Statistic<EvaluatedIndividual<Double, Double, DoubleInd, DoubleFit>> scoreLogger();
+    /**
+     * Gets the score logger.
+     * @return The score logger
+     */
+    Statistic<EvaluatedIndividual<Double, Double, DoubleInd,
+            DoubleFit>> scoreLogger();
 }

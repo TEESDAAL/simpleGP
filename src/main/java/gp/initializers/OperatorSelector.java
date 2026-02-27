@@ -1,35 +1,45 @@
 package gp.initializers;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class OperatorSelector {
-    // Can't construct
-    private OperatorSelector() {}
-
-    public static <T, R> List<TypedTerminal<T, R>> validTerminals(final List<TypedTerminal<T, ?>> terminals, Class<R> returnType) {
-        List<TypedTerminal<T, R>> validTerminals = new ArrayList<>();
-        for (TypedTerminal<T, ?> terminal : terminals) {
-            if (!returnType.isAssignableFrom(terminal.returnType())) {
-                continue;
-            }
-            //noinspection unchecked
-            validTerminals.add((TypedTerminal<T, R>)  terminal);
-        }
-        return validTerminals;
+/**
+ * Utility class for selecting valid terminals and non-terminals by return type.
+ */
+public final class OperatorSelector {
+    private OperatorSelector() {
+        // Cannot construct
     }
 
-    public static <R> List<TypedNonTerminal<?, R>> validNonTerminals(final List<TypedNonTerminal<?, ?>> nonTerminals, Class<R> returnType) {
-        List<TypedNonTerminal<?, R>> validNonTerminals = new ArrayList<>();
+    /**
+     * Gets valid terminals of the given return type.
+     * @param <T> The terminal input type
+     * @param <R> The return type
+     * @param terminals Map of terminals by return type
+     * @param returnType The desired return type
+     * @return List of terminals with the given return type
+     */
+    public static <T, R> List<TypedTerminal<T, R>> validTerminals(
+            final Map<Class<?>, List<TypedTerminal<T, ?>>> terminals,
+            final Class<R> returnType
+    ) {
+        //noinspection unchecked, rawtypes
+        return (List<TypedTerminal<T, R>>) (List) terminals.get(returnType);
+    }
 
-        for (TypedNonTerminal<?, ?> nonTerminal : nonTerminals) {
-            if (!returnType.isAssignableFrom(nonTerminal.returnType())) {
-                continue;
-            }
-            //noinspection unchecked
-            validNonTerminals.add((TypedNonTerminal<?, R>)  nonTerminal);
-        }
-
-        return validNonTerminals;
+    /**
+     * Gets valid non-terminals of the given return type.
+     * @param <R> The return type
+     * @param nonTerminals Map of non-terminals by return type
+     * @param returnType The desired return type
+     * @return List of non-terminals with the given return type
+     */
+    public static <R> List<TypedNonTerminal<?, R>> validNonTerminals(
+            final Map<Class<?>, List<TypedNonTerminal<?, ?>>> nonTerminals,
+            final Class<R> returnType
+    ) {
+        //noinspection unchecked, rawtypes
+        return (List<TypedNonTerminal<?, R>>) (List)
+                nonTerminals.get(returnType);
     }
 }
