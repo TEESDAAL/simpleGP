@@ -134,6 +134,7 @@ public final class MutableNonTerminal<Terminals, Input, Output>
     /**
      * Sets the children list.
      * @param newChildren The new children list
+     * @return This mutable non-terminal for method chaining
      */
     public MutableNonTerminal<Terminals, Input, Output> setChildren(
             final List<MutableNode<
