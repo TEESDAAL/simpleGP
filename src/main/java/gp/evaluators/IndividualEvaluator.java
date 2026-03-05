@@ -1,7 +1,7 @@
 package gp.evaluators;
 
 import gp.Population;
-import gp.breeder.Parallelizeable;
+import gp.utils.Parallelizeable;
 import gp.fitness.Fitness;
 import gp.individual.EvaluatedIndividual;
 import gp.individual.Individual;

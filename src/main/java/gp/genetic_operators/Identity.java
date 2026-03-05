@@ -1,6 +1,6 @@
 package gp.genetic_operators;
 
-import gp.utils.UnaryOperator;
+import gp.utils.operators.UnaryOperator;
 
 /**
  * Identity operator that returns its input unchanged.

@@ -1,7 +1,7 @@
 package gp.tree;
 
-import gp.utils.Operator;
-import gp.utils.UnaryOperator;
+import gp.utils.operators.Operator;
+import gp.utils.operators.UnaryOperator;
 
 import java.util.List;
 import java.util.stream.Stream;

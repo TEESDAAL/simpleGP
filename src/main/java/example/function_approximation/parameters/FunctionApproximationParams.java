@@ -1,7 +1,7 @@
 package example.function_approximation.parameters;
 
 import gp.breeder.Breeder;
-import gp.breeder.Initializer;
+import gp.initializers.Initializer;
 import gp.individual.EvaluatedIndividual;
 import gp.single_tree.SingleObjectiveEvaluator;
 import gp.single_tree.SingleObjectiveFitness;

@@ -1,4 +1,4 @@
-package gp.breeder;
+package gp.initializers;
 
 import gp.Population;
 

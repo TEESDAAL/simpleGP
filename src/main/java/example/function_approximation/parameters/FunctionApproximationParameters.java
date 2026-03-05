@@ -1,7 +1,7 @@
 package example.function_approximation.parameters;
 
 import gp.breeder.Breeder;
-import gp.breeder.Initializer;
+import gp.initializers.Initializer;
 import gp.breeder.NaiveBreeder;
 import gp.breeder.SelectorBuilder;
 import gp.fitness.Goal;
@@ -18,13 +18,11 @@ import gp.single_tree.SingleObjectiveEvaluator;
 import gp.single_tree.SingleObjectiveFitness;
 import gp.single_tree.SingleTreeIndividual;
 import gp.single_tree.SingleTreeInitializer;
-import gp.utils.Operator;
+import gp.utils.operators.Operator;
 import gp.utils.Pair;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -37,13 +35,13 @@ public interface FunctionApproximationParameters<T>
      * Gets a Stream of typed terminals: T -&gt; U.
      * @return A Stream of typed terminals: T -&gt; U.
      */
-    Stream<TypedTerminal<T, ?>> terminals();
+    List<TypedTerminal<T, ?>> terminals();
 
     /**
      * Gets a stream of typed nonTerminals: list[U] -&gt; V.
      * @return A stream of typed nonTerminals: list[U] -&gt; V.
      */
-    Stream<TypedNonTerminal<?, ?>> nonTerminals();
+    List<TypedNonTerminal<?, ?>> nonTerminals();
 
     /**
      * Gets the training data.
@@ -113,35 +111,14 @@ public interface FunctionApproximationParameters<T>
             initializer() {
         return new SingleTreeInitializer<>(BaseInitializer.grow(
                 this.random(),
-                this.terminalMap(),
-                this.nonTerminalMap(),
+                this.terminals(),
+                this.nonTerminals(),
                 this.populationSize(),
                 this.maxTries(),
                 this.maxDepth(),
                 Double.class
         ));
     }
-
-    /**
-     * Gets the terminal map.
-     * @return The terminal map
-     */
-    default Map<Class<?>, List<TypedTerminal<T, ?>>>
-            terminalMap() {
-        return this.terminals().collect(
-                Collectors.groupingBy(TypedTerminal::returnType));
-    }
-
-    /**
-     * Gets the non-terminal map.
-     * @return The non-terminal map
-     */
-    default Map<Class<?>, List<TypedNonTerminal<?, ?>>>
-            nonTerminalMap() {
-        return this.nonTerminals().collect(
-                Collectors.groupingBy(TypedNonTerminal::returnType));
-    }
-
 
     /**
      * Creates the evaluator for training data.
@@ -184,8 +161,8 @@ public interface FunctionApproximationParameters<T>
                         0.3,
                         SingleTreeIndividual.operator(
                                 new SubtreeMutation<>(
-                                this.random(), this.terminalMap(),
-                                this.nonTerminalMap(),
+                                this.random(), this.terminals(),
+                                this.nonTerminals(),
                                 this.maxDepth(), this.maxTries()
                                 )
                         )),
@@ -221,8 +198,16 @@ public interface FunctionApproximationParameters<T>
         return new NaiveBreeder<>(
                 operatorSelector,
                 this.populationSize(),
-                selectorBuilder
+                selectorBuilder,
+                numElites()
         );
+    }
+
+    /**
+     * @return How many elites to keep each generation.
+     */
+    default int numElites() {
+        return 5;
     }
 
     /**

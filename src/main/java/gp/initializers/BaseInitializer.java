@@ -1,9 +1,10 @@
 package gp.initializers;
 
 import gp.tree.ImmutableNode;
+import gp.utils.Preconditions;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.IntPredicate;
@@ -24,14 +25,33 @@ import java.util.function.IntPredicate;
  */
 public record BaseInitializer<T, R>(
         Random random,
-        Map<Class<?>, List<TypedTerminal<T, ?>>> terminals,
-        Map<Class<?>, List<TypedNonTerminal<?, ?>>> nonTerminals,
+        List<TypedTerminal<T, ?>> terminals,
+        List<TypedNonTerminal<?, ?>> nonTerminals,
         IntPredicate shouldTerminate,
         int populationSize,
         int maxTries,
         int maxDepth,
         Class<R> returnType
 ) implements TreeConstructor<T, R> {
+
+    /**
+     * Creates a BaseInitializer with the given parameters.
+     * @throws IllegalArgumentException if the populationSize, or maxTries
+     * is negative, or if maxDepth is negative, or if any parameter is null
+     */
+    public BaseInitializer {
+        List.of(random, terminals, nonTerminals, shouldTerminate, returnType)
+                .forEach(Objects::requireNonNull);
+        Preconditions.assertTrue(
+                maxDepth >= 0, "Max depth must non-negative"
+        );
+        Preconditions.assertTrue(
+                populationSize >= 0, "Population size non-negative"
+        );
+        Preconditions.assertTrue(
+                maxTries > 0, "Max tries must be positive"
+        );
+    }
 
     /**
      * Creates an initializer with grow method (probabilistic termination).
@@ -48,8 +68,8 @@ public record BaseInitializer<T, R>(
      */
     public static <T, R> BaseInitializer<T, R> grow(
             final Random random,
-            final Map<Class<?>, List<TypedTerminal<T, ?>>> terminals,
-            final Map<Class<?>, List<TypedNonTerminal<?, ?>>> nonTerminals,
+            final List<TypedTerminal<T, ?>> terminals,
+            final List<TypedNonTerminal<?, ?>> nonTerminals,
             final int populationSize,
             final int maxTries,
             final int maxDepth,
@@ -82,8 +102,8 @@ public record BaseInitializer<T, R>(
      */
     public static <T, R> BaseInitializer<T, R> full(
             final Random random,
-            final Map<Class<?>, List<TypedTerminal<T, ?>>> terminals,
-            final Map<Class<?>, List<TypedNonTerminal<?, ?>>> nonTerminals,
+            final List<TypedTerminal<T, ?>> terminals,
+            final List<TypedNonTerminal<?, ?>> nonTerminals,
             final int populationSize,
             final int maxTries,
             final int maxDepth,
@@ -141,6 +161,11 @@ public record BaseInitializer<T, R>(
     @Override
     public boolean shouldParallelize() {
         return true;
+    }
+
+    @Override
+    public int batchSize() {
+        return 5;
     }
 }
 

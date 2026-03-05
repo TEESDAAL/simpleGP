@@ -1,6 +1,6 @@
 package gp.initializers;
 
-import gp.utils.UnaryOperator;
+import gp.utils.operators.UnaryOperator;
 
 
 /**

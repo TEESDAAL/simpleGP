@@ -1,6 +1,6 @@
 package gp.tree;
 
-import gp.utils.Operator;
+import gp.utils.operators.Operator;
 
 import java.util.ArrayList;
 import java.util.List;

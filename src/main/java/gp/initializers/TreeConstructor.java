@@ -3,12 +3,10 @@ package gp.initializers;
 import gp.random.RandomSampler;
 import gp.tree.ImmutableNode;
 import gp.tree.Node;
-import gp.utils.IndividualInitializer;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -29,13 +27,14 @@ public interface TreeConstructor<T, R>
      * Gets the map of terminals by return type.
      * @return Map from return types to terminal lists
      */
-    Map<Class<?>, List<TypedTerminal<T, ?>>> terminals();
+    List<TypedTerminal<T, ?>> terminals();
 
     /**
      * Gets the map of non-terminals by return type.
+     *
      * @return Map from return types to non-terminal lists
      */
-    Map<Class<?>, List<TypedNonTerminal<?, ?>>> nonTerminals();
+    List<TypedNonTerminal<?, ?>> nonTerminals();
 
     /**
      * Checks if tree construction should terminate at this depth.
@@ -53,17 +52,17 @@ public interface TreeConstructor<T, R>
      * @return An optional containing the constructed node if
      *     successful
      */
-    default <I, ReturnType>
-            Optional<ImmutableNode<T, ?, ReturnType, ?, ?>>
-            recursivelyConstructIndividual(
+    default <I, ReturnType> Optional<
+            ImmutableNode<T, ?, ReturnType, ?, ?>
+    > recursivelyConstructIndividual(
             final int currentDepth,
             final Class<ReturnType> returnType
     ) {
         if (shouldTerminate(currentDepth)) {
             return RandomSampler.sample(
                     OperatorSelector.validTerminals(
-                            this.terminals(), returnType),
-                    this.random()
+                            this.terminals(), returnType
+                    ), this.random()
             ).map(term -> Node.term(
                     term.terminal(), term.returnType()));
         }

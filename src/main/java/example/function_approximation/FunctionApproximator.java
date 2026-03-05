@@ -6,11 +6,12 @@ import gp.GPPipeLine;
 import gp.Population;
 import gp.TerminationCriterion;
 import gp.breeder.Breeder;
-import gp.breeder.Initializer;
+import gp.initializers.Initializer;
 import gp.individual.EvaluatedIndividual;
 import gp.single_tree.SingleObjectiveEvaluator;
 import gp.single_tree.SingleObjectiveFitness;
 import gp.single_tree.SingleTreeIndividual;
+import gp.statistics.SideEffect;
 import gp.statistics.Statistic;
 
 /**
@@ -20,7 +21,7 @@ import gp.statistics.Statistic;
  * @param trainEvaluator The training evaluator
  * @param breeder The breeder
  * @param testEvaluator The testing evaluator
- * @param scoreLogger A score logger
+ * @param postEvaluationStatistics A score logger
  */
 public record FunctionApproximator(
         Initializer<SingleTreeIndividual<Double, Double>> initializer,
@@ -29,13 +30,13 @@ public record FunctionApproximator(
                 Double, Double,
                 SingleTreeIndividual<Double, Double>, SingleObjectiveFitness>,
                 SingleTreeIndividual<Double, Double>
-                > breeder,
+        > breeder,
         SingleObjectiveEvaluator<Double> testEvaluator,
         Statistic<EvaluatedIndividual<
                 Double, Double,
                 SingleTreeIndividual<Double, Double>,
                 SingleObjectiveFitness
-                >> scoreLogger
+        >> postEvaluationStatistics
 ) {
 
     /**
@@ -77,12 +78,14 @@ public record FunctionApproximator(
                 .start(initializer::initialize)
                 .repeat(TerminationCriterion.nIters(numGenerations),
                         (i, pop) -> pop
-                                .then(trainEvaluator::evaluate)
-                                .then(scoreLogger)
+                                .then(SideEffect.of((ignored) -> System.out.println(
+                                        "Evaluating population for gen " + i)
+                                )).then(trainEvaluator::evaluate)
+                                .then(postEvaluationStatistics)
                                 .then(breeder::breed)
                 )
                 .then(testEvaluator::evaluate)
-                .then(scoreLogger::sideEffect)
+                .then(postEvaluationStatistics)
                 .finish();
     }
 }

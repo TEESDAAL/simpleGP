@@ -1,6 +1,6 @@
 package gp.initializers;
 
-import gp.utils.Operator;
+import gp.utils.operators.Operator;
 
 /**
  * Record representing a typed non-terminal node with input and return types.

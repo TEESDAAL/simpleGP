@@ -13,11 +13,10 @@ import gp.tree.MutableNonTerminal;
 import gp.tree.Node;
 import gp.tree.NonTerminal;
 import gp.tree.Terminal;
-import gp.utils.UnaryOperator;
+import gp.utils.operators.UnaryOperator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -26,15 +25,15 @@ import java.util.Random;
  * @param <T> The terminal input type
  * @param <Out> The output type
  * @param randomGen The random number generator
- * @param terminalMap Map of terminals by return type
- * @param nonTerminalMap Map of non-terminals by return type
+ * @param terminals Map of terminals by return type
+ * @param nonTerminals Map of non-terminals by return type
  * @param depthLimit Maximum depth for generated subtrees
  * @param attemptLimit Maximum attempts to generate a valid subtree
  */
 public record SubtreeMutation<T, Out>(
         Random randomGen,
-        Map<Class<?>, List<TypedTerminal<T, ?>>> terminalMap,
-        Map<Class<?>, List<TypedNonTerminal<?, ?>>> nonTerminalMap,
+        List<TypedTerminal<T, ?>> terminals,
+        List<TypedNonTerminal<?, ?>> nonTerminals,
         int depthLimit,
         int attemptLimit
 ) implements UnaryOperator<
@@ -55,14 +54,14 @@ public record SubtreeMutation<T, Out>(
      */
     public static <T, Out> SubtreeMutation<T, Out> of(
             final Random random,
-            final Map<Class<?>, List<TypedTerminal<T, ?>>> terminals,
-            final Map<Class<?>, List<TypedNonTerminal<?, ?>>>
-                    nonTerminals,
+            final List<TypedTerminal<T, ?>> terminals,
+            final List<TypedNonTerminal<?, ?>> nonTerminals,
             final int maxDepth,
             final int maxTries
     ) {
         return new SubtreeMutation<>(
-                random, terminals, nonTerminals, maxDepth, maxTries);
+                random, terminals, nonTerminals, maxDepth, maxTries
+        );
     }
 
     /**
@@ -105,8 +104,10 @@ public record SubtreeMutation<T, Out>(
                 RandomSampler.sample(nonTerminals, randomGen)
                 .orElseThrow(() -> new IllegalStateException(
                         "Tree somehow has no nodes?"));
+
         int depthOfMutationPoint = root.depth()
                 - mutationPoint.depth();
+
         MutableNode<T, ?, MutationPointInputType, ?, ?> subTree
                 = this.createSubTree(
                 depthLimit - depthOfMutationPoint,
@@ -129,7 +130,7 @@ public record SubtreeMutation<T, Out>(
                     final Class<OutputType> returnType
             ) {
         return BaseInitializer.grow(
-                randomGen, terminalMap, nonTerminalMap, 1,
+                randomGen, terminals, nonTerminals, 1,
                 attemptLimit, maxDepthParam, returnType
         ).createIndividual().mutableCopy();
     }
@@ -140,7 +141,8 @@ public record SubtreeMutation<T, Out>(
     ) {
         return RandomSampler.sample(
                 OperatorSelector.validTerminals(
-                        this.terminalMap, returnType),
+                        this.terminals, returnType
+                ),
                 this.randomGen
         ).map(term -> Node.term(term.terminal(), term.returnType()))
                 .orElseThrow(() -> new IllegalStateException(

@@ -19,6 +19,7 @@ public interface Statistic<I> extends SideEffect<Population<I>> {
     }
 
 
+
     /**
      * Logs statistics about the population.
      * @param population The population to analyze

@@ -1,7 +1,7 @@
 package gp.single_tree;
 
 import gp.initializers.BaseInitializer;
-import gp.utils.IndividualInitializer;
+import gp.initializers.IndividualInitializer;
 
 /**
  * An initializer for single tree individuals that wraps a base initializer.

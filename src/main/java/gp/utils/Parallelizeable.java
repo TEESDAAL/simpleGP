@@ -1,18 +1,39 @@
-package gp.breeder;
+package gp.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+
 /**
  * Interface for operations that can be parallelized.
  */
 public interface Parallelizeable {
+
+    /**
+     * Creates a Parallelizeable instance with the specified batch size.
+     * @param batchSize The batch size for parallel operations.
+     *                  Must be greater than 0.
+     * @return A Parallelizeable instance with the specified batch size
+     */
+    static Parallelizeable of(int batchSize) {
+        if (batchSize <= 0) {
+            throw new IllegalArgumentException("Batch size must be greater than 0");
+        }
+        return new Parallelizeable() {
+            @Override
+            public boolean shouldParallelize() {
+                return true;
+            }
+
+            @Override
+            public int batchSize() {
+                return batchSize;
+            }
+        };
+    }
+
     /**
      * Whether operations should be parallelized.
      * @return true if should parallelize
@@ -48,8 +69,7 @@ public interface Parallelizeable {
      * @param n The number of elements to generate
      * @return A generated stream
      */
-    default <T> Stream<T> generateN(
-            Supplier<T> supplier, int n) {
+    default <T> Stream<T> generateN(Supplier<T> supplier, int n) {
         return this.parallelize(
                 IntStream.range(0, n).boxed(),
                 ignored -> supplier.get());
@@ -67,38 +87,16 @@ public interface Parallelizeable {
             Stream<T> stream,
             Function<? super T, ? extends U> mapper) {
         if (shouldParallelize()) {
+            assert batchSize() > 0 : "Batch size must be greater than 0";
+
             if (batchSize() == 1) {
                 return stream.parallel().map(mapper);
             }
-            return group(stream, this.batchSize())
-                    .parallel()
+            return GroupingIterable.group(stream.parallel(), this.batchSize())
                     .flatMap(l -> l.map(mapper));
         }
 
         return stream.map(mapper);
-    }
-
-    /**
-     * Groups a stream into batches.
-     * @param <T> The element type
-     * @param stream The input stream
-     * @param groupSize The size of each group
-     * @return A stream of grouped streams
-     */
-    static <T> Stream<Stream<T>> group(Stream<T> stream, int groupSize) {
-       Iterator<T> source = stream.iterator();
-       return Stream.generate(() -> {
-            List<T> list = new ArrayList<>();
-
-            for (int i = 0; i < groupSize; i++) {
-                if (!source.hasNext()) {
-                    break;
-                }
-                list.add(source.next());
-            }
-            return list;
-        }).takeWhile(list -> !list.isEmpty())
-               .map(Collection::stream);
     }
 }
 

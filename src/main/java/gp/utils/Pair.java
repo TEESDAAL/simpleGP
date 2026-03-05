@@ -1,5 +1,6 @@
 package gp.utils;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -20,6 +21,18 @@ public record Pair<A, B>(A first, B second) {
      */
     public static <A, B> Pair<A, B> of(final A first, final B second) {
         return new Pair<>(first, second);
+    }
+
+
+    /**
+     * Maps the values in this pair to a new value
+     *       using the provided mapping function.
+     * @param <T> The type of the new value
+     * @param mapper A function that maps the first and second values to a new value
+     * @return The result of applying the mapping function to the values in this pair
+     */
+    public <T> T map(final BiFunction<A, B, T> mapper) {
+        return mapper.apply(this.first, this.second);
     }
 
     /**

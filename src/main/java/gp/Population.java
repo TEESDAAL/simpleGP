@@ -2,6 +2,9 @@ package gp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A record representing a population of individuals.
@@ -16,6 +19,7 @@ public record Population<I>(List<I> individuals) {
         individuals = List.copyOf(individuals);
     }
 
+
     /**
      * Creates a new population from a list of individuals.
      * @param <I> The type of individuals
@@ -24,6 +28,26 @@ public record Population<I>(List<I> individuals) {
      */
     public static <I> Population<I> of(final List<I> individuals) {
         return new Population<>(individuals);
+    }
+
+    /**
+     * Converts the population to a stream of individuals.
+     * @return A stream of individuals in the population
+     */
+    public Stream<I> stream() {
+        return individuals.stream();
+    }
+
+    /**
+     * A collector that collects a stream of individuals into a population.
+     * @return A collector that collects a stream of individuals into a population
+     * @param <I> The individual type.
+     */
+    public static <I> Collector<I, ?, Population<I>> toPopulation() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                Population::of
+        );
     }
 
     /**

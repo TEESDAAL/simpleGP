@@ -1,9 +1,9 @@
 package gp.tree;
 
-import gp.utils.UnaryOperator;
+import gp.utils.operators.UnaryOperator;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An immutable terminal node record implementation.
@@ -31,7 +31,7 @@ public record ImmutableTerminal<
     private static final Map<
             ImmutableTerminal<?, ?>,
             ImmutableTerminal<?, ?>
-    > CACHE = new HashMap<>();
+    > CACHE = new ConcurrentHashMap<>();
 
     /**
      * Creates or retrieves a cached immutable terminal.

@@ -1,6 +1,6 @@
 package gp.tree;
 
-import gp.utils.UnaryOperator;
+import gp.utils.operators.UnaryOperator;
 
 /**
  * A mutable terminal node implementation.

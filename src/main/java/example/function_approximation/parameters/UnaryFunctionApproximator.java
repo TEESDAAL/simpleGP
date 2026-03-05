@@ -8,10 +8,12 @@ import gp.initializers.TypedTerminal;
 import gp.single_tree.SingleObjectiveFitness;
 import gp.single_tree.SingleTreeIndividual;
 import gp.statistics.Statistic;
-import gp.utils.Operator;
+import gp.utils.operators.Operator;
 import gp.utils.Pair;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -97,8 +99,8 @@ public interface UnaryFunctionApproximator
      * Gets the stream of terminals.
      * @return The stream of terminals
      */
-    default Stream<TypedTerminal<Double, ?>> terminals() {
-        return Stream.of(
+    default List<TypedTerminal<Double, ?>> terminals() {
+        return List.of(
                 TypedTerminal.of(x -> x, Double.class)
         );
     }
@@ -122,11 +124,11 @@ public interface UnaryFunctionApproximator
      * @return The stream of non-terminal operators.
      */
     @Override
-    default Stream<TypedNonTerminal<?, ?>> nonTerminals() {
-        return doubleNonTerminals()
+    default List<TypedNonTerminal<?, ?>> nonTerminals() {
+        return Collections.unmodifiableList(doubleNonTerminals()
                 .map(op -> TypedNonTerminal.of(
                                 op, Double.class, Double.class
-                ));
+                )).toList());
     }
 
     /**

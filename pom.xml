@@ -14,6 +14,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+
+
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -27,6 +36,12 @@
             <artifactId>guava</artifactId>
             <version>33.5.0-jre</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.TEESDAAL</groupId>
+            <artifactId>Result</artifactId>
+            <version>6a8a8eece08315705f548eb6a1094c2e6e5098c5</version>
         </dependency>
     </dependencies>
 

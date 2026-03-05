@@ -83,7 +83,12 @@ public record RandomSampler<T>(
      *     empty
      */
     public static <T> Optional<T> sample(
-            final Collection<T> data, final Random random) {
+            final Collection<T> data, final Random random
+    ) {
+        if (data.isEmpty()) {
+            return Optional.empty();
+        }
+
         int randomIndex = random.nextInt(data.size());
         int i = 0;
         for (T element : data) {

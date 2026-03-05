@@ -3,7 +3,7 @@ package gp.single_tree;
 import gp.individual.Individual;
 import gp.tree.ImmutableNode;
 import gp.tree.Node;
-import gp.utils.Operator;
+import gp.utils.operators.Operator;
 
 import java.util.ArrayList;
 import java.util.List;

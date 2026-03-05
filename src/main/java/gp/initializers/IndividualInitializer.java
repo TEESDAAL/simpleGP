@@ -1,10 +1,7 @@
-package gp.utils;
+package gp.initializers;
 
 import gp.Population;
-import gp.breeder.Initializer;
-import gp.breeder.Parallelizeable;
-
-import java.util.stream.IntStream;
+import gp.utils.Parallelizeable;
 
 /**
  * Initializer for creating populations of individuals.
@@ -18,13 +15,8 @@ public interface IndividualInitializer<I>
      */
     @Override
     default Population<I> initialize() {
-//        return Population.of(
-//                this.generateN(this::createIndividual, this.populationSize())
-//                        .toList()
-//        );
         return Population.of(
-                IntStream.range(0, this.populationSize())
-                        .mapToObj(ignored -> this.createIndividual())
+                this.generateN(this::createIndividual, this.populationSize())
                         .toList()
         );
     }
