@@ -25,6 +25,8 @@ public final class MutableNonTerminal<Terminals, Input, Output>
     private final Class<Output> returnType;
     /** The input type of this non-terminal. */
     private final Class<Input> inputType;
+    /** The name of this non-terminal. */
+    private String name;
 
     /** The child nodes. */
     private List<MutableNode<
@@ -37,12 +39,14 @@ public final class MutableNonTerminal<Terminals, Input, Output>
     /**
      * Constructs a mutable non-terminal with the given function and
      * children.
+     * @param name The name of this non-terminal
      * @param operatorFunction The operator function
      * @param childList The child nodes
      * @param inType The input type
      * @param outType The output type
      */
     public MutableNonTerminal(
+            final String name,
             final Operator<Input, Output> operatorFunction,
             final List<MutableNode<
                 Terminals, ?, Input,
@@ -51,10 +55,16 @@ public final class MutableNonTerminal<Terminals, Input, Output>
             >> childList,
             final Class<Input> inType,
             final Class<Output> outType) {
+        this.name = name;
         this.function = operatorFunction;
         this.children = childList;
         this.inputType = inType;
         this.returnType = outType;
+    }
+
+    @Override
+    public String name() {
+        return this.name;
     }
 
     @Override
@@ -143,6 +153,16 @@ public final class MutableNonTerminal<Terminals, Input, Output>
                     ? extends ImmutableNode<Terminals, ?, Input, ?, ?>
             >> newChildren) {
         this.children = newChildren;
+        return this;
+    }
+
+    /**
+     * Sets the name of this non-terminal.
+     * @param name The new name
+     * @return This mutable non-terminal with the updated name for method chaining
+     */
+    public MutableNonTerminal<Terminals, Input, Output> setName(final String name) {
+        this.name = name;
         return this;
     }
 }

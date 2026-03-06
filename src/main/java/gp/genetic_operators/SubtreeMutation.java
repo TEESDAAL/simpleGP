@@ -24,21 +24,21 @@ import java.util.Random;
  * with a new randomly generated one.
  * @param <T> The terminal input type
  * @param <Out> The output type
- * @param randomGen The random number generator
+ * @param random The random number generator
  * @param terminals Map of terminals by return type
  * @param nonTerminals Map of non-terminals by return type
  * @param depthLimit Maximum depth for generated subtrees
  * @param attemptLimit Maximum attempts to generate a valid subtree
  */
 public record SubtreeMutation<T, Out>(
-        Random randomGen,
+        Random random,
         List<TypedTerminal<T, ?>> terminals,
         List<TypedNonTerminal<?, ?>> nonTerminals,
         int depthLimit,
         int attemptLimit
 ) implements UnaryOperator<
         Node<T, ?, Out, ?, ?>,
-        ImmutableNode<T, ?, Out, ?, ?>
+        List<ImmutableNode<T, ?, Out, ?, ?>>
 > {
 
     /**
@@ -71,10 +71,10 @@ public record SubtreeMutation<T, Out>(
      */
     @Override
     @SuppressWarnings("unchecked") // Type erasure :(
-    public ImmutableNode<T, ?, Out, ?, ?> produce(
+    public List<ImmutableNode<T, ?, Out, ?, ?>> produce(
             final Node<T, ?, Out, ?, ?> root
     ) {
-        return switch (root) {
+        ImmutableNode<T, ?, Out, ?, ?> node = switch (root) {
             case Terminal<?, ?> term -> {
                 Terminal<T, Out> actualTermTypes = (Terminal<T, Out>) term;
                 yield randomTerminal(actualTermTypes.returnType());
@@ -85,13 +85,14 @@ public record SubtreeMutation<T, Out>(
                 yield replaceChild(actualNonTerminalTypes.mutableCopy());
             }
         };
+
+        return List.of(node);
     }
 
     @SuppressWarnings("unchecked")
-    private <MutationPointInputType> ImmutableNonTerminal<T, ?, Out>
-            replaceChild(
-                    final MutableNonTerminal<T, ?, Out> root
-            ) {
+    private <MutationPointInputType> ImmutableNonTerminal<T, ?, Out> replaceChild(
+            final MutableNonTerminal<T, ?, Out> root
+    ) {
         List<MutableNonTerminal<T, ?, ?>> nonTerminals = new ArrayList<>();
         for (Node<T, ?, ?, ?, ?> node : root.stream().toList()) {
             if (node instanceof MutableNonTerminal<?, ?, ?> nonTerm) {
@@ -101,7 +102,7 @@ public record SubtreeMutation<T, Out>(
 
         MutableNonTerminal<T, MutationPointInputType, ?> mutationPoint
                 = (MutableNonTerminal<T, MutationPointInputType, ?>)
-                RandomSampler.sample(nonTerminals, randomGen)
+                RandomSampler.sample(nonTerminals, random)
                 .orElseThrow(() -> new IllegalStateException(
                         "Tree somehow has no nodes?"));
 
@@ -116,7 +117,7 @@ public record SubtreeMutation<T, Out>(
 
         mutationPoint.replaceChild(
                 RandomSampler.sampleIndex(
-                        mutationPoint.children(), randomGen)
+                        mutationPoint.children(), random)
                 .orElseThrow(),
                 subTree
         );
@@ -130,7 +131,7 @@ public record SubtreeMutation<T, Out>(
                     final Class<OutputType> returnType
             ) {
         return BaseInitializer.grow(
-                randomGen, terminals, nonTerminals, 1,
+                random, terminals, nonTerminals, 1,
                 attemptLimit, maxDepthParam, returnType
         ).createIndividual().mutableCopy();
     }
@@ -143,11 +144,11 @@ public record SubtreeMutation<T, Out>(
                 OperatorSelector.validTerminals(
                         this.terminals, returnType
                 ),
-                this.randomGen
-        ).map(term -> Node.term(term.terminal(), term.returnType()))
-                .orElseThrow(() -> new IllegalStateException(
-                        "Should be impossible as you can always"
-                        + " reselect the same terminal"
-                ));
+                this.random
+        ).map(term -> Node.term(
+                term.name(), term.terminal(), term.returnType()
+        )).orElseThrow(() -> new IllegalStateException(
+                "Should be impossible as you can always reselect the same terminal"
+        ));
     }
 }

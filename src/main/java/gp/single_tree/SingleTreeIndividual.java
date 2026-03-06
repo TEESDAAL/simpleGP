@@ -46,16 +46,16 @@ public record SingleTreeIndividual<T, Out>(
     public static <T, Out>
             Operator<
                 SingleTreeIndividual<T, Out>,
-                SingleTreeIndividual<T, Out>
+                List<SingleTreeIndividual<T, Out>>
             > operator(
             final Operator<
                     Node<T, ?, Out, ?, ?>,
-                    ImmutableNode<T, ?, Out, ?, ?>
+                    List<ImmutableNode<T, ?, Out, ?, ?>>
                     > nodeOperator
     ) {
         return new Operator<>() {
             @Override
-            public SingleTreeIndividual<T, Out> produce(
+            public List<SingleTreeIndividual<T, Out>> produce(
                     final List<SingleTreeIndividual<T, Out>> parents
             ) {
                 List<Node<T, ?, Out, ?, ?>> trees
@@ -63,9 +63,10 @@ public record SingleTreeIndividual<T, Out>(
                 for (SingleTreeIndividual<T, Out> parent : parents) {
                     trees.add(parent.tree);
                 }
-                return SingleTreeIndividual.of(
-                        nodeOperator.produce(trees)
-                );
+                return nodeOperator.produce(trees)
+                        .stream()
+                        .map(SingleTreeIndividual::of)
+                        .toList();
             }
 
             @Override

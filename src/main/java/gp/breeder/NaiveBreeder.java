@@ -30,7 +30,7 @@ import java.util.List;
 public record NaiveBreeder<
         T, R, I extends Individual<T, R>, F extends Fitness<F>
 >(
-        WeightedRandomSampler<Operator<I, I>> distribution,
+        WeightedRandomSampler<Operator<I, List<I>>> distribution,
         int desiredSize,
         SelectorBuilder<EvaluatedIndividual<T, R, I, F>> selectionMechanism,
         int elitesToPreserve
@@ -43,11 +43,11 @@ public record NaiveBreeder<
      */
     public NaiveBreeder {
         Preconditions.assertTrue(
-                desiredSize <= 0,
+                desiredSize >= 0,
                 "Desired size must be positive, got: " + desiredSize
         );
         Preconditions.assertTrue(
-                selectionMechanism == null,
+                selectionMechanism != null,
                 "Selection mechanism cannot be null"
         );
         if (elitesToPreserve < 0) {
@@ -75,12 +75,17 @@ public record NaiveBreeder<
         addElites(nextGeneration, population);
 
         while (nextGeneration.size() < this.desiredSize) {
-            Operator<I, I> operator = this.distribution.sample();
-            nextGeneration.add(operator.sampleFrom(
+            Operator<I, List<I>> operator = this.distribution.sample();
+            nextGeneration.addAll(operator.sampleFrom(
                     selector,
                     EvaluatedIndividual::individual
             ));
         }
+
+        if (nextGeneration.size() > this.desiredSize) {
+            nextGeneration = nextGeneration.subList(0, this.desiredSize);
+        }
+
         return Population.of(
                 nextGeneration
         );

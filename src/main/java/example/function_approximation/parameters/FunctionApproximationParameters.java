@@ -1,6 +1,7 @@
 package example.function_approximation.parameters;
 
 import gp.breeder.Breeder;
+import gp.genetic_operators.CrossOver;
 import gp.initializers.Initializer;
 import gp.breeder.NaiveBreeder;
 import gp.breeder.SelectorBuilder;
@@ -154,11 +155,11 @@ public interface FunctionApproximationParameters<T>
      */
     default List<ProbabilisticElement<Operator<
             SingleTreeIndividual<T, Double>,
-            SingleTreeIndividual<T, Double>>>>
-            operatorProbabilities() {
+            List<SingleTreeIndividual<T, Double>>
+    >>> operatorProbabilities() {
         return List.of(
                 ProbabilisticElement.of(
-                        0.3,
+                        0.2,
                         SingleTreeIndividual.operator(
                                 new SubtreeMutation<>(
                                 this.random(), this.terminals(),
@@ -166,7 +167,10 @@ public interface FunctionApproximationParameters<T>
                                 this.maxDepth(), this.maxTries()
                                 )
                         )),
-                ProbabilisticElement.of(0.7, new Identity<>())
+                ProbabilisticElement.of(0.3, SingleTreeIndividual.operator(
+                                new CrossOver<>(this.random())
+                )),
+                ProbabilisticElement.of(0.5, new Identity<>())
         );
     }
 
@@ -181,7 +185,7 @@ public interface FunctionApproximationParameters<T>
             SingleTreeIndividual<T, Double>> breeder() {
         WeightedRandomSampler<Operator<
                 SingleTreeIndividual<T, Double>,
-                SingleTreeIndividual<T, Double>
+                List<SingleTreeIndividual<T, Double>>
         >> operatorSelector = new WeightedRandomSampler<>(
                 this.random(),
                 this.operatorProbabilities()

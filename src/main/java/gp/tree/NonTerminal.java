@@ -60,6 +60,7 @@ public sealed interface NonTerminal<
     @Override
     default MutableNonTerminal<Terminals, Input, Output> mutableCopy() {
         return new MutableNonTerminal<>(
+                this.name(),
                 this.function(),
                 this.children().stream()
                         .map(child -> child.mutableCopy())
@@ -72,6 +73,7 @@ public sealed interface NonTerminal<
     @Override
     default ImmutableNonTerminal<Terminals, Input, Output> immutableCopy() {
         return new ImmutableNonTerminal<>(
+                this.name(),
                 this.function(),
                 this.children().stream()
                         .map(child -> child.immutableCopy())
@@ -94,5 +96,12 @@ public sealed interface NonTerminal<
     default int depth() {
         return 1 + children().stream().mapToInt(Node::depth).max()
                 .orElseThrow();
+    }
+
+    @Override
+    default String getExpression() {
+        return this.name() + this.children().stream()
+                .map(Node::getExpression)
+                .collect(Collectors.joining(", ", "(", ")"));
     }
 }

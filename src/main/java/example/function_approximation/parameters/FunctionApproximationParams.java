@@ -23,11 +23,10 @@ public interface FunctionApproximationParams<T> {
     /**
      * @return The GP breeder.
      */
-    Breeder<
-            EvaluatedIndividual<T, Double, SingleTreeIndividual<T, Double>,
-                    SingleObjectiveFitness
-            >, SingleTreeIndividual<T, Double>
-    > breeder();
+    Breeder<EvaluatedIndividual<
+            T, Double, SingleTreeIndividual<T, Double>,
+            SingleObjectiveFitness
+    >, SingleTreeIndividual<T, Double>> breeder();
 
 
     /**

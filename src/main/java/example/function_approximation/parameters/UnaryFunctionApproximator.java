@@ -14,6 +14,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -101,7 +102,7 @@ public interface UnaryFunctionApproximator
      */
     default List<TypedTerminal<Double, ?>> terminals() {
         return List.of(
-                TypedTerminal.of(x -> x, Double.class)
+                TypedTerminal.of("x", x -> x, Double.class)
         );
     }
 
@@ -109,13 +110,16 @@ public interface UnaryFunctionApproximator
      * Gets the double non-terminals.
      * @return The stream of double operators
      */
-    default Stream<Operator<Double, Double>> doubleNonTerminals() {
-        return Stream.of(
-                Operator.bin(Math::max),
-                Operator.bin(Math::min),
-                Operator.unary(x -> -x),
-                Operator.unary(x -> x * x),
-                Operator.unary(Math::abs)
+    default Map<String, Operator<Double, Double>> doubleNonTerminals() {
+        return Map.of(
+                "max", Operator.bin(Math::max),
+                "min", Operator.bin(Math::min),
+                "neg", Operator.unary(x -> -x),
+                "square", Operator.unary(x -> x * x),
+                "abs", Operator.unary(Math::abs),
+                "div", Operator.bin((a, b) -> b == 0.0 ? 1.0 : a / b)
+//                "exp", Operator.unary(Math::exp)
+//                "pow", Operator.bin(Math::pow)
         );
     }
 
@@ -125,10 +129,14 @@ public interface UnaryFunctionApproximator
      */
     @Override
     default List<TypedNonTerminal<?, ?>> nonTerminals() {
-        return Collections.unmodifiableList(doubleNonTerminals()
-                .map(op -> TypedNonTerminal.of(
-                                op, Double.class, Double.class
-                )).toList());
+        return Collections.unmodifiableList(
+                doubleNonTerminals()
+                        .entrySet().stream()
+                        .map(e -> TypedNonTerminal.of(
+                                e.getKey(), e.getValue(),
+                                Double.class, Double.class
+                        )).toList()
+        );
     }
 
     /**

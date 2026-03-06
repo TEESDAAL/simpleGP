@@ -14,15 +14,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class InitializerTest {
     Random random = new Random();
     List<TypedTerminal<Double, ?>> terminals = List.of(
-        TypedTerminal.of(x -> x, Double.class),
-        TypedTerminal.of(x -> x * x, Double.class)
+        TypedTerminal.of("x", x -> x, Double.class),
+        TypedTerminal.of("square", x -> x * x, Double.class)
     );
 
     List<TypedNonTerminal<?, ?>> nonTerminals = List.of(
-        TypedNonTerminal.of(Operator.bin(Math::max), Double.class, Double.class),
-        TypedNonTerminal.of(Operator.bin(Math::min), Double.class, Double.class),
-        TypedNonTerminal.of(Operator.unary(x -> -x), Double.class, Double.class),
-        TypedNonTerminal.of(Operator.unary(Object::toString), Object.class, String.class)
+        TypedNonTerminal.of("max", Operator.bin(Math::max), Double.class, Double.class),
+        TypedNonTerminal.of("min", Operator.bin(Math::min), Double.class, Double.class),
+        TypedNonTerminal.of("neg", Operator.unary(x -> -x), Double.class, Double.class),
+        TypedNonTerminal.of("toStr", Operator.unary(Object::toString), Object.class, String.class)
     );
 
     @Test

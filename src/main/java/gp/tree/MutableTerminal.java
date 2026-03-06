@@ -14,20 +14,25 @@ public final class MutableTerminal<Terminals, Output> implements
                 MutableTerminal<Terminals, Output>,
                 ImmutableTerminal<Terminals, Output>
         > {
-    /** The extractor function. */
+    /** The extractor function for this terminal. */
     private UnaryOperator<Terminals, Output> extractor;
-    /** The return type. */
+    /** The return type of this terminal. */
     private final Class<Output> returnType;
-
+    /** The name of this terminal. */
+    private String name;
 
     /**
      * Constructs a mutable terminal with the given extractor.
+     * @param name The name of this terminal
      * @param extractor The function to extract values from terminals
      * @param returnType The output type
      */
     public MutableTerminal(
+            final String name,
             final UnaryOperator<Terminals, Output> extractor,
-            final Class<Output> returnType) {
+            final Class<Output> returnType
+    ) {
+        this.name = name;
         this.extractor = extractor;
         this.returnType = returnType;
     }
@@ -43,8 +48,24 @@ public final class MutableTerminal<Terminals, Output> implements
      * @return This mutable terminal for method chaining
      */
     public MutableTerminal<Terminals, Output> setExtractor(
-            final UnaryOperator<Terminals, Output> newExtractor) {
+            final UnaryOperator<Terminals, Output> newExtractor
+    ) {
         this.extractor = newExtractor;
+        return this;
+    }
+
+    @Override
+    public String name() {
+        return this.name;
+    }
+
+    /**
+     * Sets the name of this terminal.
+     * @param name The new name
+     * @return The mutable terminal with the updated name for method chaining
+     */
+    public MutableTerminal<Terminals, Output> setName(final String name) {
+        this.name = name;
         return this;
     }
 

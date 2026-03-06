@@ -64,7 +64,8 @@ public interface TreeConstructor<T, R>
                             this.terminals(), returnType
                     ), this.random()
             ).map(term -> Node.term(
-                    term.terminal(), term.returnType()));
+                    term.name(), term.terminal(), term.returnType()
+            ));
         }
 
 
@@ -100,6 +101,7 @@ public interface TreeConstructor<T, R>
         }
 
         return Optional.of(Node.nonTerm(
+                nonTerminal.name(),
                 nonTerminal.nonTerminal(),
                 Collections.unmodifiableList(children),
                 nonTerminal.inputType(),

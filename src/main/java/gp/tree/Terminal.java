@@ -16,7 +16,6 @@ public sealed interface Terminal<Terminals, Output>
         MutableTerminal<Terminals, Output>,
         ImmutableTerminal<Terminals, Output>
         > permits MutableTerminal, ImmutableTerminal {
-
     /**
      * Gets the extractor function for this terminal.
      * @return The unary operator that extracts a value from terminals
@@ -29,6 +28,7 @@ public sealed interface Terminal<Terminals, Output>
      */
     default MutableTerminal<Terminals, Output> mutableCopy() {
         return new MutableTerminal<>(
+                name(),
                 extractor(),
                 returnType()
         );
@@ -41,6 +41,7 @@ public sealed interface Terminal<Terminals, Output>
      */
     default ImmutableTerminal<Terminals, Output> immutableCopy() {
         return new ImmutableTerminal<>(
+                name(),
                 extractor(),
                 returnType()
         );
@@ -64,5 +65,10 @@ public sealed interface Terminal<Terminals, Output>
     @Override
     default int depth() {
         return 0;
+    }
+
+    @Override
+    default String getExpression() {
+        return name();
     }
 }

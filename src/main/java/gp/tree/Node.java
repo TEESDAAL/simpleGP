@@ -18,7 +18,18 @@ public sealed interface Node<
         Terminals, Input, Output,
         Mutable extends MutableNode<Terminals, Input, Output, Mutable, Immutable>,
         Immutable extends ImmutableNode<Terminals, Input, Output, Immutable, Mutable>
-        > permits Terminal, NonTerminal, MutableNode, ImmutableNode {
+> permits Terminal, NonTerminal, MutableNode, ImmutableNode {
+
+    /**
+     * @return The Lisp expression representing this tree.
+     */
+    String getExpression();
+
+    /**
+     * @return The name of this node.
+     */
+    String name();
+
     /**
      * Returns a stream of all nodes in this subtree.
      * @return A stream of all nodes
@@ -60,15 +71,17 @@ public sealed interface Node<
      * Creates a terminal node.
      * @param <Term> The terminal type
      * @param <Out> The output type
+     * @param name The name of the terminal
      * @param extractor The function that extracts values from terminals
      * @param returnType The output type class
      * @return An immutable terminal node
      */
     static <Term, Out> ImmutableTerminal<Term, Out> term(
+            String name,
             final UnaryOperator<Term, Out> extractor,
             final Class<Out> returnType
     ) {
-        return ImmutableTerminal.of(extractor, returnType);
+        return ImmutableTerminal.of(name, extractor, returnType);
     }
 
     /**
@@ -76,6 +89,7 @@ public sealed interface Node<
      * @param <Term> The terminal type
      * @param <In> The input type
      * @param <Out> The output type
+     * @param name The name of the non-terminal
      * @param function The operator function
      * @param children The child nodes
      * @param inputType The input type class
@@ -83,13 +97,14 @@ public sealed interface Node<
      * @return An immutable non-terminal node
      */
     static <Term, In, Out> ImmutableNonTerminal<Term, In, Out> nonTerm(
+            final String name,
             final Operator<In, Out> function,
             final List<ImmutableNode<Term, ?, In, ?, ?>> children,
             final Class<In> inputType,
             final Class<Out> outputType
     ) {
         return new ImmutableNonTerminal<>(
-                function, children, inputType, outputType
+                name, function, children, inputType, outputType
         );
     }
 }

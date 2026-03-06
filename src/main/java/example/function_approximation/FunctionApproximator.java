@@ -14,6 +14,8 @@ import gp.single_tree.SingleTreeIndividual;
 import gp.statistics.SideEffect;
 import gp.statistics.Statistic;
 
+import java.util.Comparator;
+
 /**
  * An example GP run that aims to learn an approximation.
  * to a given function
@@ -63,9 +65,17 @@ public record FunctionApproximator(
     public static void main(final String[] args) {
         assert args[0].equals("--config");
 
-        FunctionApproximator.fromParams(
+        var finalGen = FunctionApproximator.fromParams(
                 UnaryFunctionApproximator.of(Math::sin, 0)
         ).train(50);
+
+        System.out.println(
+                "Best Individual: "
+                        + finalGen.stream()
+                        .min(Comparator.comparing(EvaluatedIndividual::fitness))
+                        .map(ind -> ind.individual().tree().getExpression())
+                        .orElseThrow()
+        );
     }
 
     /**
@@ -73,7 +83,13 @@ public record FunctionApproximator(
      * @param numGenerations The number of generations to train for
      * @return The final Population
      */
-    public Population<?> train(final int numGenerations) {
+    public Population<EvaluatedIndividual<
+            Double, Double,
+            SingleTreeIndividual<Double, Double>,
+            SingleObjectiveFitness
+    >> train(
+            final int numGenerations
+    ) {
         return GPPipeLine
                 .start(initializer::initialize)
                 .repeat(TerminationCriterion.nIters(numGenerations),

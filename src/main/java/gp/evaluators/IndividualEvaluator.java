@@ -38,4 +38,14 @@ public interface IndividualEvaluator<
                 ).toList()
         );
     }
+
+    @Override
+    default boolean shouldParallelize() {
+        return true;
+    }
+
+    @Override
+    default int batchSize() {
+        return 50;
+    }
 }
