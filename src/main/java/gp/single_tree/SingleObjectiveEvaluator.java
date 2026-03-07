@@ -2,6 +2,7 @@ package gp.single_tree;
 
 import gp.evaluators.IndividualEvaluator;
 import gp.fitness.Goal;
+import gp.fitness.SingleObjectiveFitness;
 import gp.individual.EvaluatedIndividual;
 
 import java.util.function.Function;

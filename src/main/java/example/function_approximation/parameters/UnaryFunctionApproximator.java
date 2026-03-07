@@ -5,7 +5,7 @@ import gp.fitness.Goal;
 import gp.individual.EvaluatedIndividual;
 import gp.initializers.TypedNonTerminal;
 import gp.initializers.TypedTerminal;
-import gp.single_tree.SingleObjectiveFitness;
+import gp.fitness.SingleObjectiveFitness;
 import gp.single_tree.SingleTreeIndividual;
 import gp.statistics.Statistic;
 import gp.utils.operators.Operator;

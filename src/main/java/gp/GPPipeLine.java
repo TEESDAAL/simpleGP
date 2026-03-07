@@ -57,7 +57,7 @@ public record GPPipeLine<T>(T population) {
             result = block.iterate(iterations, result);
         }
         return result;
-    }
+}
 
     /**
      * Finishes the pipeline and returns the final result.

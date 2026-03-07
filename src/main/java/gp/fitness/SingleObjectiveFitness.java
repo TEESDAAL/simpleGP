@@ -1,8 +1,4 @@
-package gp.single_tree;
-
-import gp.fitness.Comparison;
-import gp.fitness.Fitness;
-import gp.fitness.Goal;
+package gp.fitness;
 
 /**
  * A record representing fitness for single-objective optimization.

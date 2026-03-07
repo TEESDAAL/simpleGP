@@ -16,7 +16,7 @@ import gp.random.ProbabilisticElement;
 import gp.random.WeightedRandomSampler;
 import gp.selectors.TournamentSelection;
 import gp.single_tree.SingleObjectiveEvaluator;
-import gp.single_tree.SingleObjectiveFitness;
+import gp.fitness.SingleObjectiveFitness;
 import gp.single_tree.SingleTreeIndividual;
 import gp.single_tree.SingleTreeInitializer;
 import gp.utils.operators.Operator;

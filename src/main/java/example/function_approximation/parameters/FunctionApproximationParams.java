@@ -4,7 +4,7 @@ import gp.breeder.Breeder;
 import gp.initializers.Initializer;
 import gp.individual.EvaluatedIndividual;
 import gp.single_tree.SingleObjectiveEvaluator;
-import gp.single_tree.SingleObjectiveFitness;
+import gp.fitness.SingleObjectiveFitness;
 import gp.single_tree.SingleTreeIndividual;
 import gp.statistics.Statistic;
 

@@ -1,7 +1,5 @@
 package gp.fitness;
 
-import gp.single_tree.SingleObjectiveFitness;
-
 import java.util.List;
 
 /**
