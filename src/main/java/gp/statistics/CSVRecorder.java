@@ -6,7 +6,6 @@ import gp.utils.Preconditions;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -34,7 +33,8 @@ public record CSVRecorder<T>(
                 "At least one column must be provided"
         );
         Preconditions.assertEquals(
-                columns.size(), new HashSet<>(columns)::size,
+                columns.size(),
+                columns.stream().map(CSVColumn::name).distinct().count(),
                 "Column names must be unique"
         );
 

@@ -1,16 +1,15 @@
 package example.function_approximation.parameters;
 
-import com.google.common.collect.Streams;
 import gp.fitness.Goal;
 import gp.individual.EvaluatedIndividual;
 import gp.initializers.TypedNonTerminal;
 import gp.initializers.TypedTerminal;
-import gp.fitness.SingleObjectiveFitness;
+import gp.fitness.single_objective.SingleObjectiveFitness;
 import gp.single_tree.SingleTreeIndividual;
 import gp.statistics.Statistic;
+import gp.utils.StreamZipper;
 import gp.utils.operators.Operator;
 import gp.utils.Pair;
-import org.jspecify.annotations.NonNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -123,6 +122,7 @@ public interface UnaryFunctionApproximator
         );
     }
 
+
     /**
      * Converts unary operators into typed non-terminals.
      * @return The stream of non-terminal operators.
@@ -215,9 +215,9 @@ public interface UnaryFunctionApproximator
      */
     @Override
     default double error(
-            Stream<@NonNull Double> outputs,
-            Stream<@NonNull Double> trueOutputs) {
-        return Streams.zip(
+            Stream<Double> outputs,
+            Stream<Double> trueOutputs) {
+        return StreamZipper.zip(
                         outputs, trueOutputs,
                         (a, b) -> Math.pow(a - b, 2)
                 ).mapToDouble(error -> error)

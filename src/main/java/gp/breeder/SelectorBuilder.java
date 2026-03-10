@@ -4,15 +4,12 @@ import gp.statistics.Selector;
 
 import java.util.Collection;
 
-/**
- * Interface for building selectors from collections.
- * @param <I> The individual type
- */
-public interface SelectorBuilder<I> {
+public interface SelectorBuilder<I> extends SelectorFrom<I, I> {
     /**
      * Primes the selector with items.
      * @param items The items to select from
      * @return A primed selector
      */
+    @Override
     Selector<I> prime(Collection<I> items);
 }

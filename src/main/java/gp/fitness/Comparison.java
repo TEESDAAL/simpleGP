@@ -62,7 +62,7 @@ public enum Comparison {
      * @param item2 The second item
      * @return The comparison result
      */
-    public static <T extends Comparable<T>> Comparison of(
+    public static <T extends java.lang.Comparable<T>> Comparison of(
             final T item1,
             final T item2
     ) {

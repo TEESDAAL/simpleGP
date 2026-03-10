@@ -22,7 +22,7 @@ public interface UnaryOperator<I, O> extends Operator<I, O> {
     O produce(I parent);
 
     @Override
-    default Integer size() {
+    default Integer arity() {
         return 1;
     }
 }

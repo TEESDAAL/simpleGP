@@ -70,8 +70,8 @@ public record SingleTreeIndividual<T, Out>(
             }
 
             @Override
-            public Integer size() {
-                return nodeOperator.size();
+            public Integer arity() {
+                return nodeOperator.arity();
             }
         };
     }

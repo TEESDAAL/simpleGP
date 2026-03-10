@@ -14,9 +14,10 @@ import gp.initializers.TypedNonTerminal;
 import gp.initializers.TypedTerminal;
 import gp.random.ProbabilisticElement;
 import gp.random.WeightedRandomSampler;
+import gp.selectors.Elitism;
 import gp.selectors.TournamentSelection;
 import gp.single_tree.SingleObjectiveEvaluator;
-import gp.fitness.SingleObjectiveFitness;
+import gp.fitness.single_objective.SingleObjectiveFitness;
 import gp.single_tree.SingleTreeIndividual;
 import gp.single_tree.SingleTreeInitializer;
 import gp.utils.operators.Operator;
@@ -199,11 +200,20 @@ public interface FunctionApproximationParameters<T>
                 this.random(), tournamentSize()
         );
 
-        return new NaiveBreeder<>(
+        return new NaiveBreeder<
+                T, Double,
+                SingleTreeIndividual<T, Double>,
+                SingleObjectiveFitness
+                >(
                 operatorSelector,
                 this.populationSize(),
                 selectorBuilder,
-                numElites()
+                Elitism.<T, Double,
+                        SingleTreeIndividual<T, Double>,
+                        SingleObjectiveFitness>of(
+                        numElites(),
+                        ignored -> SingleObjectiveFitness::compareTo
+                )
         );
     }
 

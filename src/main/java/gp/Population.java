@@ -79,11 +79,41 @@ public record Population<I>(List<I> individuals) {
         return individuals.get(index);
     }
 
+
+    /**
+     * Gets the index of the specified individual in the population.
+     * @param individual The individual to find
+     * @return The index of the individual, or -1 if not found
+     */
+    public int indexOf(I individual) {
+        return this.individuals.indexOf(individual);
+    }
+
+    /**
+     * Gets a subset of the population from the specified indices.
+     *      Provides a view of the population between the specified indices,
+     *      this means that changes to the subpopulation will affect the
+     *      original population and vice versa.
+     * @param fromIndex The starting index (inclusive)
+     * @param toIndex The ending index (exclusive)
+     * @return A new population containing the individuals in the specified range
+     */
+    public Population<I> subPopulation(int fromIndex, int toIndex) {
+        return new Population<>(individuals.subList(fromIndex, toIndex));
+    }
+
     /**
      * Gets the size of the population.
      * @return The number of individuals in the population
      */
     public int size() {
         return individuals.size();
+    }
+
+    /**
+     * @return if the population is empty (contains no individuals)
+     */
+    public boolean isEmpty() {
+        return this.individuals.isEmpty();
     }
 }

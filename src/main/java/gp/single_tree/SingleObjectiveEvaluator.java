@@ -2,7 +2,8 @@ package gp.single_tree;
 
 import gp.evaluators.IndividualEvaluator;
 import gp.fitness.Goal;
-import gp.fitness.SingleObjectiveFitness;
+import gp.fitness.single_objective.SingleObjectiveFit;
+import gp.fitness.single_objective.SingleObjectiveFitness;
 import gp.individual.EvaluatedIndividual;
 
 import java.util.function.Function;
@@ -40,7 +41,7 @@ public record SingleObjectiveEvaluator<T>(
             final Goal goal
     ) {
         return new SingleObjectiveEvaluator<>(
-                ind -> new SingleObjectiveFitness(evaluator.apply(ind), goal)
+                ind -> SingleObjectiveFit.of(evaluator.apply(ind), goal)
         );
     }
 

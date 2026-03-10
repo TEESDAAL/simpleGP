@@ -24,7 +24,7 @@ public interface Operator<I, O> {
      * Returns the number of parents this operator requires.
      * @return The expected size of the parents list
      */
-    Integer size();
+    Integer arity();
 
     /**
      * Produces output by sampling parents from a selector.
@@ -32,7 +32,7 @@ public interface Operator<I, O> {
      * @return The produced output
      */
     default O sampleFrom(final Selector<I> selector) {
-        return produce(IntStream.range(0, size())
+        return produce(IntStream.range(0, arity())
                 .mapToObj(ignored -> selector.sample())
                 .toList()
         );
@@ -51,7 +51,7 @@ public interface Operator<I, O> {
             final Selector<T> selector,
             final Function<T, I> mapper
     ) {
-        return produce(IntStream.range(0, size())
+        return produce(IntStream.range(0, arity())
                     .mapToObj(ignored -> selector.sample())
                 .map(mapper)
                 .toList()
@@ -59,7 +59,7 @@ public interface Operator<I, O> {
     }
 
     /**
-     * Casts an operator to a BinaryOperator type.
+     * Show a binary operator is a BinaryOperator.
      * @param <I> The input type
      * @param <O> The output type
      * @param operator The binary operator
@@ -79,7 +79,8 @@ public interface Operator<I, O> {
      * @return The same operator
      */
     static <I, O> UnaryOperator<I, O> unary(
-            final UnaryOperator<I, O> operator) {
+            final UnaryOperator<I, O> operator
+    ) {
         return operator;
     }
 }

@@ -9,7 +9,7 @@ import gp.breeder.Breeder;
 import gp.initializers.Initializer;
 import gp.individual.EvaluatedIndividual;
 import gp.single_tree.SingleObjectiveEvaluator;
-import gp.fitness.SingleObjectiveFitness;
+import gp.fitness.single_objective.SingleObjectiveFitness;
 import gp.single_tree.SingleTreeIndividual;
 import gp.statistics.SideEffect;
 import gp.statistics.Statistic;

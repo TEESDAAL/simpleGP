@@ -24,7 +24,7 @@ public interface BinaryOperator<I, O> extends Operator<I, O> {
      * @return The number of operands, always 2 for binary operators.
      */
     @Override
-    default Integer size() {
+    default Integer arity() {
         return 2;
     }
 

@@ -88,7 +88,7 @@ public interface TreeConstructor<T, R>
         List<ImmutableNode<T, ?, I, ?, ?>> children =
                 new ArrayList<>();
 
-        for (int i = 0; i < nonTerminal.nonTerminal().size(); i++) {
+        for (int i = 0; i < nonTerminal.nonTerminal().arity(); i++) {
             Optional<ImmutableNode<T, ?, I, ?, ?>> child =
                     recursivelyConstructIndividual(
                             currentDepth + 1,
