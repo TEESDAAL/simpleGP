@@ -33,6 +33,11 @@ public record Elitism<T, R, I extends Individual<T, R>, F extends Fitness<F>>(
         List<EvaluatedIndividual<T, R, I, F>>
 > {
 
+    /**
+     * Compact constructor to validate parameters.
+     * @param elitismCount The number of elite individuals to select
+     * @param fitnessComparatorFunction A function that produces a fitness comparator
+     */
     public Elitism {
         Preconditions.assertTrue(elitismCount > 0, "elitismCount must be > 0");
     }
