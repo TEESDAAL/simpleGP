@@ -3,6 +3,7 @@ SimpleGP is a genetic programming library written in Java.
 
 It aims to achieve rich type safety avoiding uncertainty and runtime errors as much as possible.
 Currently the library is bogged down by an overuse of generics to achieve type guarantees, hopefully this improves in the future.
+
 It aims to be simple to use, enabling easy configuration and extension. It also aims to allow for "easy" parallelization.
 
 ## Usage
