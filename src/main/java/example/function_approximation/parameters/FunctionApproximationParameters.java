@@ -1,234 +1,32 @@
 package example.function_approximation.parameters;
 
-import gp.breeder.Breeder;
-import gp.genetic_operators.CrossOver;
-import gp.initializers.Initializer;
-import gp.breeder.NaiveBreeder;
-import gp.breeder.SelectorBuilder;
-import gp.fitness.Goal;
-import gp.genetic_operators.Identity;
-import gp.genetic_operators.SubtreeMutation;
-import gp.individual.EvaluatedIndividual;
-import gp.initializers.BaseInitializer;
-import gp.initializers.TypedNonTerminal;
-import gp.initializers.TypedTerminal;
-import gp.random.ProbabilisticElement;
-import gp.random.WeightedRandomSampler;
-import gp.selectors.Elitism;
-import gp.selectors.TournamentSelection;
-import gp.single_tree.SingleObjectiveEvaluator;
-import gp.fitness.single_objective.SingleObjectiveFitness;
-import gp.single_tree.SingleTreeIndividual;
-import gp.single_tree.SingleTreeInitializer;
-import gp.utils.operators.Operator;
-import gp.utils.Pair;
+import gp.core.breeder.Breeder;
+import gp.core.evaluators.Evaluator;
+import gp.core.fitness.SingleObjectiveFitness;
+import gp.core.individual.EvaluatedIndividual;
+import gp.core.individual.Individual;
+import gp.core.initializers.Initializer;
+import gp.core.statistics.Statistic;
 
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Stream;
+import java.io.Serializable;
 
-/**
- * Further specification of parameters.
- * @param <T> The terminal Type.
- */
-public interface FunctionApproximationParameters<T>
-        extends FunctionApproximationParams<T> {
-    /**
-     * Gets a Stream of typed terminals: T -&gt; U.
-     * @return A Stream of typed terminals: T -&gt; U.
-     */
-    List<TypedTerminal<T, ?>> terminals();
+/// GP params for performing function approximation.
+/// All individuals take a (x, y) input and return a double
+public interface FunctionApproximationParameters<
+    X, Y,
+    Ind extends Individual<X, Y>,
+    E extends Evaluator<X, Y, Ind, SingleObjectiveFitness>
+> extends Serializable {
+    Initializer<Ind> initializer();
+    Breeder<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>, Ind> breeder();
 
-    /**
-     * Gets a stream of typed nonTerminals: list[U] -&gt; V.
-     * @return A stream of typed nonTerminals: list[U] -&gt; V.
-     */
-    List<TypedNonTerminal<?, ?>> nonTerminals();
+    E trainEvaluator();
 
-    /**
-     * Gets the training data.
-     * @return The training data
-     */
-    Stream<Pair<T, Double>> trainingData();
+    E testEvaluator();
 
-    /**
-     * Gets the testing data.
-     * @return The testing data
-     */
-    Stream<Pair<T, Double>> testingData();
+    Statistic<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>, ?> scoreLogger();
 
-    /**
-     * Computes error.
-     * @param outputs The outputs
-     * @param trueOutputs The true outputs
-     * @return The error
-     */
-    double error(Stream<Double> outputs, Stream<Double> trueOutputs);
-
-    /**
-     * Gets the optimization goal.
-     * @return The goal
-     */
-    Goal goal();
-
-    /**
-     * Gets the random seed.
-     * @return The seed
-     */
-    long seed();
-
-    /**
-     * Gets the population size.
-     * @return The population size
-     */
-    int populationSize();
-
-    /**
-     * Gets the max tries.
-     * @return The max tries
-     */
-    int maxTries();
-
-    /**
-     * Gets the max depth.
-     * @return The max depth
-     */
-    int maxDepth();
-
-    /**
-     * Gets the random number generator.
-     * @return The random number generator
-     */
-    default Random random() {
-        return new Random(seed());
-    }
-
-    /**
-     * Builds a tree initializer using the configured terminals,
-     * non-terminals, and limits.
-     * @return The initializer for single-tree individuals.
-     */
-    @Override
-    default Initializer<SingleTreeIndividual<T, Double>>
-            initializer() {
-        return new SingleTreeInitializer<>(BaseInitializer.grow(
-                this.random(),
-                this.terminals(),
-                this.nonTerminals(),
-                this.populationSize(),
-                this.maxTries(),
-                this.maxDepth(),
-                Double.class
-        ));
-    }
-
-    /**
-     * Creates the evaluator for training data.
-     * @return The training evaluator.
-     */
-    @Override
-    default SingleObjectiveEvaluator<T> trainEvaluator() {
-        return SingleObjectiveEvaluator.of(
-                (ind) -> this.error(
-                        trainingData().map(Pair::first).map(ind::evaluate),
-                        trainingData().map(Pair::second)
-                ), this.goal()
-        );
-    }
-
-    /**
-     * Creates the evaluator for testing data.
-     * @return The testing evaluator.
-     */
-    @Override
-    default SingleObjectiveEvaluator<T> testEvaluator() {
-        return SingleObjectiveEvaluator.of(
-                (ind) -> this.error(
-                        testingData().map(Pair::first).map(ind::evaluate),
-                        testingData().map(Pair::second)
-                ), this.goal()
-        );
-    }
-
-    /**
-     * Gets operator probabilities.
-     * @return The list of operator probabilities
-     */
-    default List<ProbabilisticElement<Operator<
-            SingleTreeIndividual<T, Double>,
-            List<SingleTreeIndividual<T, Double>>
-    >>> operatorProbabilities() {
-        return List.of(
-                ProbabilisticElement.of(
-                        0.2,
-                        SingleTreeIndividual.operator(
-                                new SubtreeMutation<>(
-                                this.random(), this.terminals(),
-                                this.nonTerminals(),
-                                this.maxDepth(), this.maxTries()
-                                )
-                        )),
-                ProbabilisticElement.of(0.3, SingleTreeIndividual.operator(
-                                new CrossOver<>(this.random())
-                )),
-                ProbabilisticElement.of(0.5, new Identity<>())
-        );
-    }
-
-    /**
-     * Creates the breeder with operator probabilities and tournament
-     * selection.
-     * @return The configured breeder.
-     */
-    @Override
-    default Breeder<EvaluatedIndividual<T, Double,
-            SingleTreeIndividual<T, Double>, SingleObjectiveFitness>,
-            SingleTreeIndividual<T, Double>> breeder() {
-        WeightedRandomSampler<Operator<
-                SingleTreeIndividual<T, Double>,
-                List<SingleTreeIndividual<T, Double>>
-        >> operatorSelector = new WeightedRandomSampler<>(
-                this.random(),
-                this.operatorProbabilities()
-        );
-
-        SelectorBuilder<EvaluatedIndividual<
-                T, Double,
-                SingleTreeIndividual<T, Double>,
-                SingleObjectiveFitness
-        >> selectorBuilder = new TournamentSelection<>(
-                this.random(), tournamentSize()
-        );
-
-        return new NaiveBreeder<
-                T, Double,
-                SingleTreeIndividual<T, Double>,
-                SingleObjectiveFitness
-                >(
-                operatorSelector,
-                this.populationSize(),
-                selectorBuilder,
-                Elitism.<T, Double,
-                        SingleTreeIndividual<T, Double>,
-                        SingleObjectiveFitness>of(
-                        numElites(),
-                        ignored -> SingleObjectiveFitness::compareTo
-                )
-        );
-    }
-
-    /**
-     * @return How many elites to keep each generation.
-     */
-    default int numElites() {
-        return 5;
-    }
-
-    /**
-     * Gets the tournament size.
-     * @return The tournament size
-     */
-    default int tournamentSize() {
-        return 7;
-    }
+    int numGenerations();
 }
+
+

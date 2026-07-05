@@ -1,7 +1,9 @@
 package gp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -11,7 +13,7 @@ import java.util.stream.Stream;
  * @param <I> The type of individuals in the population
  * @param individuals The list of individuals
  */
-public record Population<I>(List<I> individuals) {
+public record Population<I>(List<I> individuals) implements Serializable {
     /**
      * Creates a population with an immutable copy of the individuals list.
      */
@@ -83,10 +85,14 @@ public record Population<I>(List<I> individuals) {
     /**
      * Gets the index of the specified individual in the population.
      * @param individual The individual to find
-     * @return The index of the individual, or -1 if not found
+     * @return The index of the individual if present
      */
-    public int indexOf(I individual) {
-        return this.individuals.indexOf(individual);
+    public Optional<Integer> indexOf(I individual) {
+        int index = this.individuals.indexOf(individual);
+        if (index == -1) {
+            return Optional.empty();
+        }
+        return Optional.of(index);
     }
 
     /**

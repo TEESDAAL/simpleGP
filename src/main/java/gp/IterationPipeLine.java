@@ -6,6 +6,7 @@ package gp;
  * @param <T> The type of the population in the pipeline.
  */
 public interface IterationPipeLine<T> {
+
     /**
      * Perform one iteration of the pipeline.
      * @param iterationNumber The current iteration number.

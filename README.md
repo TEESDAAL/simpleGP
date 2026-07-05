@@ -93,7 +93,7 @@ public interface FunctionApproximationParams<T> {
 This library prefers to achieve code reuse and extension using composition over inheritance. 
 This aims to avoid the complexities that deeply inherited code can cause.
 
-This can be seen in [SingleObjectiveFitness.java](src/main/java/gp/fitness/SingleObjectiveFitness.java) and [MultiObjectiveFitness.java](src/main/java/gp/fitness/MultiObjectiveFitness.java)
+This can be seen in [SingleObjectiveFitness.java](src/main/java/gp/core/fitness/SingleObjectiveFitness.java) and [MultiObjectiveFitness.java](src/main/java/gp/core/fitness/MultiObjectiveFitness.java)
 
-Where they both implement the [Fitness](src/main/java/gp/fitness/Fitness.java) interface, but do not inherit from each other. Instead [MultiObjectiveFitness.java](src/main/java/gp/fitness/MultiObjectiveFitness.java) is defined as a collection of [SingleObjectiveFitness.java](src/main/java/gp/fitness/SingleObjectiveFitness.java) objects.
+Where they both implement the [Fitness](src/main/java/gp/core/fitness/Fitness.java) interface, but do not inherit from each other. Instead [MultiObjectiveFitness.java](src/main/java/gp/core/fitness/MultiObjectiveFitness.java) is defined as a collection of [SingleObjectiveFitness.java](src/main/java/gp/core/fitness/SingleObjectiveFitness.java) objects.
 

@@ -7,7 +7,7 @@ package gp;
 public interface TerminationCriterion<T> {
     /**
      * Checks if the process should terminate.
-     * @param iteration The current iteration number
+     * @param iteration The current iteration number, indexed from 0.
      * @param value The current value
      * @return true if should terminate
      */

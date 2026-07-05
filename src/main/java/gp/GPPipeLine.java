@@ -52,7 +52,7 @@ public record GPPipeLine<T>(T population) {
     ) {
         GPPipeLine<T> result = this;
         int iterations = 0;
-        while (!until.shouldTerminate(iterations, this.population)) {
+        while (!until.shouldTerminate(iterations, result.population)) {
             iterations += 1;
             result = block.iterate(iterations, result);
         }

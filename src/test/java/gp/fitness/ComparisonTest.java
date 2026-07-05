@@ -1,5 +1,6 @@
 package gp.fitness;
 
+import gp.core.fitness.Comparison;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

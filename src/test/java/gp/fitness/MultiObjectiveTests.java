@@ -1,9 +1,11 @@
 package gp.fitness;
 
-import gp.fitness.multi_objective.MultiObjectiveFit;
-import gp.fitness.multi_objective.MultiObjectiveFitness;
-import gp.fitness.single_objective.SingleObjectiveFit;
-import gp.fitness.single_objective.SingleObjectiveFitness;
+import gp.core.fitness.Comparison;
+import gp.core.fitness.Goal;
+import gp.impl.fitness.MultiObjectiveFit;
+import gp.core.fitness.MultiObjectiveFitness;
+import gp.impl.fitness.SingleObjectiveFit;
+import gp.core.fitness.SingleObjectiveFitness;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -24,7 +26,7 @@ public class MultiObjectiveTests {
                 f -> (SingleObjectiveFitness) SingleObjectiveFit.of(f, Goal.MINIMIZE)).toList()
                 ).map(MultiObjectiveFit::of)
                 .toList();
-        Map<Integer, List<MultiObjectiveFit>> ranks = MultiObjectiveFitness.paretoRanks(fitnesses);
+        Map<Integer, List<MultiObjectiveFit>> ranks = MultiObjectiveFitness.paretoRanks(fitnesses, i -> i);
 
         assertEquals(
                 List.of(fitnesses.getLast()),
@@ -56,7 +58,7 @@ public class MultiObjectiveTests {
     @Test
     public void fuzzTestParetoRankings() {
         List<MultiObjectiveFit> fitnesses = createRandomFitnesses();
-        Map<Integer, List<MultiObjectiveFit>> ranks = MultiObjectiveFitness.paretoRanks(fitnesses);
+        Map<Integer, List<MultiObjectiveFit>> ranks = MultiObjectiveFitness.paretoRanks(fitnesses, i -> i);
 
         for (List<MultiObjectiveFit> rank : ranks.values()) {
             for (MultiObjectiveFit multiObjectiveFit : rank) {

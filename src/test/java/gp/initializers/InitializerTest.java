@@ -1,21 +1,25 @@
 package gp.initializers;
 
 import gp.Population;
-import gp.tree.ImmutableNode;
-import gp.utils.operators.Operator;
+import gp.core.initializers.IndividualCreationException;
+import gp.core.initializers.TypedNonTerminal;
+import gp.core.initializers.TypedTerminal;
+import gp.impl.individual.SingleTreeIndividual;
+import gp.impl.initializers.Initializers;
+import utils.operators.Operator;
 import org.junit.jupiter.api.Test;
+import utils.random.RandomSource;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InitializerTest {
-    Random random = new Random();
+    RandomSource random = RandomSource.of(12);
     List<TypedTerminal<Double, ?>> terminals = List.of(
-        TypedTerminal.of("x", x -> x, Double.class),
-        TypedTerminal.of("square", x -> x * x, Double.class)
+        TypedTerminal.nonCached("x", x -> x, Double.class),
+        TypedTerminal.nonCached("square", x -> x * x, Double.class)
     );
 
     List<TypedNonTerminal<?, ?>> nonTerminals = List.of(
@@ -29,7 +33,7 @@ public class InitializerTest {
     public void testPopulationSizeCorrect() {
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 2_000; i++) {
-            assertEquals(i, BaseInitializer.full(
+            assertEquals(i, Initializers.full(
                     random,
                     terminals,
                     nonTerminals,
@@ -46,7 +50,7 @@ public class InitializerTest {
     public void testIllegalMaxDepth() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> BaseInitializer.grow(
+                () -> Initializers.grow(
                         random,
                         terminals,
                         nonTerminals,
@@ -59,7 +63,7 @@ public class InitializerTest {
         );
         assertThrows(
                 IndividualCreationException.class,
-                () -> BaseInitializer.grow(
+                () -> Initializers.grow(
                         random,
                         terminals,
                         nonTerminals,
@@ -75,8 +79,8 @@ public class InitializerTest {
     @Test
     public void testMaxDepth() {
         IntStream.range(2, 10).forEach(maxDepth -> {
-            Population<ImmutableNode<Double, ?, String, ?, ?>> population =
-                    BaseInitializer.full(
+            Population<SingleTreeIndividual<Double, String>> population =
+                    Initializers.full(
                             random,
                             terminals,
                             nonTerminals,
@@ -88,7 +92,7 @@ public class InitializerTest {
 
             assertTrue(
                     population.stream()
-                            .allMatch(ind -> ind.depth() == maxDepth)
+                            .allMatch(ind -> ind.tree().depth() == maxDepth)
             );
         });
     }
