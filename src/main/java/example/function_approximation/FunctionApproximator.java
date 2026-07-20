@@ -6,12 +6,16 @@ import gp.Population;
 import gp.TerminationCriterion;
 import gp.core.breeder.Breeder;
 import gp.core.evaluators.Evaluator;
+import gp.core.evaluators.IndividualEvaluator;
+import gp.core.fitness.Goal;
 import gp.core.individual.Individual;
 import gp.core.initializers.Initialiser;
 import gp.core.individual.EvaluatedIndividual;
 import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.statistics.SideEffect;
 import gp.core.statistics.Statistic;
+import gp.impl.fitness.SingleObjectiveFit;
+import gp.impl.individual.SingleTreeIndividual;
 import utils.Pair;
 import utils.random.SourceOfRandom;
 
@@ -48,7 +52,8 @@ public record FunctionApproximator<
         final var params = ParameterBuilder.<Pair<Double, Double>, Double>of()
             .initializer(new DefaultInitialiser(rand.get()))
             .breeder(new DefaultBreeder(rand.get()))
-            .trainEvaluator(new DefaultEvaluator(rand.get(), 100))
+//            .trainEvaluator(new DefaultEvaluator(rand.get(), 100))
+            .trainEvaluator((IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>) _  -> SingleObjectiveFit.of(1, Goal.MINIMIZE))
             .testEvaluator(new DefaultEvaluator(rand.get(), 1))
             .addStatistic(
                 population -> {
@@ -64,7 +69,7 @@ public record FunctionApproximator<
                 params.breeder(),
                 params.testEvaluator(),
                 params.scoreLogger()
-        ).train(500);
+        ).train(50);
         System.out.println("Training time took " + (System.currentTimeMillis() - start) + "ms");
 
         System.out.println(

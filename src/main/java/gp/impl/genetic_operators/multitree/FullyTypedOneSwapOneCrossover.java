@@ -44,7 +44,6 @@ public class FullyTypedOneSwapOneCrossover<
             parent1.constructor(listToMultiTree(c1)),
             parent2.constructor(listToMultiTree(c2))
         ));
-
     }
 
     private MultiTree<T, R, Tail, ?> listToMultiTree(

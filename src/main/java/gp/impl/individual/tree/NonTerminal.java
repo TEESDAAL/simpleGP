@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO, make evaluate hold an array that it reuses for its outputs
+
 /**
  * Represents a non-terminal node in a genetic programming tree.
  * A non-terminal is an internal node that applies a function to its children.
