@@ -12,6 +12,8 @@ import java.util.function.Function;
 /**
  * An evaluator for single-objective optimization on single tree individuals.
  * @param <T> The terminal type
+ * @param <R> The return type
+ * @param <I> The individual type
  * @param evaluator The function that evaluates individuals to produce fitness
  */
 public record SingleObjectiveEvaluator<T, R, I extends Individual<T, R>>(
@@ -23,6 +25,7 @@ public record SingleObjectiveEvaluator<T, R, I extends Individual<T, R>>(
     /**
      * Creates a single objective evaluator from an evaluation
      * function and goal.
+     *
      * @param <T> The terminal type
      * @param evaluator The function that evaluates individuals to
      *     produce scores
@@ -30,18 +33,24 @@ public record SingleObjectiveEvaluator<T, R, I extends Individual<T, R>>(
      * @return A new single objective evaluator
      */
     public static <T, R> SingleObjectiveEvaluator<
-        T, R, SingleTreeIndividual<T, R>
+            T, R, SingleTreeIndividual<T, R>
     > of(
-        Function<SingleTreeIndividual<T, R>, Double> evaluator,
-        Goal goal
+            final Function<SingleTreeIndividual<T, R>, Double> evaluator,
+            final Goal goal
     ) {
         return new SingleObjectiveEvaluator<>(
                 ind -> SingleObjectiveFit.of(evaluator.apply(ind), goal)
         );
     }
 
+    /**
+     * Evaluates the individual.
+     *
+     * @param individual the individual to evaluate
+     * @return the evaluated fitness
+     */
     @Override
-    public SingleObjectiveFitness evaluate(I individual) {
+    public SingleObjectiveFitness evaluate(final I individual) {
         return evaluator.apply(individual);
     }
 }

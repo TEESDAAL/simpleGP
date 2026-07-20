@@ -5,7 +5,7 @@ import gp.core.evaluators.Evaluator;
 import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.individual.EvaluatedIndividual;
 import gp.core.individual.Individual;
-import gp.core.initializers.Initializer;
+import gp.core.initializers.Initialiser;
 import gp.core.statistics.Statistic;
 
 import java.io.Serializable;
@@ -17,7 +17,7 @@ public interface FunctionApproximationParameters<
     Ind extends Individual<X, Y>,
     E extends Evaluator<X, Y, Ind, SingleObjectiveFitness>
 > extends Serializable {
-    Initializer<Ind> initializer();
+    Initialiser<Ind> initializer();
     Breeder<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>, Ind> breeder();
 
     E trainEvaluator();

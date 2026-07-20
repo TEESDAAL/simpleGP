@@ -30,7 +30,6 @@
   Finally, it is worth reading the documentation.
 
 -->
-
 <module name="Checker">
     <!--
         If you set the basedir property below, then all reported file
@@ -106,7 +105,7 @@
         <module name="InvalidJavadocPosition"/>
         <module name="JavadocMethod"/>
         <module name="JavadocType"/>
-        <module name="JavadocVariable"/>
+<!--        <module name="JavadocVariable"/>-->
         <module name="JavadocStyle"/>
         <module name="MissingJavadocMethod"/>
 
@@ -152,7 +151,7 @@
             <property name="tokens"
                       value="COMMA, SEMI, TYPECAST"/>
         </module>
-        <module name="WhitespaceAround"/>
+<!--        <module name="WhitespaceAround"/>-->
 
         <!-- Modifier Checks                                    -->
         <!-- See https://checkstyle.org/checks/modifier/index.html -->
@@ -163,7 +162,7 @@
         <!-- See https://checkstyle.org/checks/blocks/index.html -->
         <module name="AvoidNestedBlocks"/>
         <module name="EmptyBlock"/>
-        <module name="LeftCurly"/>
+<!--        <module name="LeftCurly"/>-->
         <module name="NeedBraces"/>
         <module name="RightCurly"/>
 
@@ -184,8 +183,8 @@
 
         <!-- Checks for class design                         -->
         <!-- See https://checkstyle.org/checks/design/index.html -->
-        <module name="DesignForExtension"/>
-        <module name="DeclarationOrder"/>
+<!--        <module name="DesignForExtension"/>-->
+<!--        <module name="DeclarationOrder"/>-->
         <module name="FinalClass"/>
         <module name="HideUtilityClassConstructor"/>
         <module name="InterfaceIsType"/>

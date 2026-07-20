@@ -12,7 +12,7 @@ import gp.impl.individual.tree.MutableNonTerminal;
 import gp.impl.individual.tree.Node;
 import gp.impl.individual.tree.NonTerminal;
 import gp.impl.individual.tree.Terminal;
-import gp.impl.initializers.NodeInitializer;
+import gp.impl.initializers.NodeInitialiser;
 import utils.operators.UnaryOperator;
 import utils.random.RandomSource;
 
@@ -130,7 +130,7 @@ public record SubtreeMutation<T, Out>(
                     final int maxDepthParam,
                     final Class<OutputType> returnType
             ) {
-        return NodeInitializer.grow(
+        return NodeInitialiser.grow(
                 random, terminals, nonTerminals, 1,
                 attemptLimit, maxDepthParam, returnType
         ).createIndividual().mutableCopy();

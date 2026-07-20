@@ -35,15 +35,13 @@ public class DefaultEvaluator implements Evaluator<Pair<Double, Double>, Double,
 
 
     DataSet<Pair<Double, Double>, Double> generateRandomDataSet() {
-        double xOffset = random.nextDouble(-0.1, 0.1);
-        double yOffset = random.nextDouble(-0.1, 0.1);
-        int end = (int) sqrt(numSamples);
         return new DataSet<>(
-            IntStream.range(0, end).boxed()
-                .flatMap(x -> IntStream.range(0, end).mapToObj(y -> Pair.of(
-                    x / (double) end + xOffset,
-                    y / (double) end + yOffset
-                )))
+            IntStream.range(0, numSamples).mapToObj(
+                    i -> Pair.of(
+                            random.nextDouble(-Math.PI, Math.PI),
+                            random.nextDouble(-Math.PI, Math.PI)
+                    )
+                )
                 .map(p -> Pair.of(p, p.reduce(targetFunction)))
                 .toList()
         );
@@ -53,9 +51,30 @@ public class DefaultEvaluator implements Evaluator<Pair<Double, Double>, Double,
     public Population<EvaluatedIndividual<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>> evaluate(Population<SingleTreeIndividual<Pair<Double, Double>, Double>> population) {
         var dataset = generateRandomDataSet();
 
-        IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness> evaluator = i -> SingleObjectiveFit.of(EvaluationFunctions.MSE(
-            dataset.zip((p, y) -> Pair.of(i.evaluate(p), y)).toList()
-        ), Goal.MINIMIZE);
+        IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness> evaluator = new IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>() {
+            @Override
+            public SingleObjectiveFitness evaluate(SingleTreeIndividual<Pair<Double, Double>, Double> individual) {
+                double sum = 0.0;
+                double expectedResult;
+                double result;
+                double currentX;
+                double currentY;
+                for (int y=0;y<100;y++) {
+                    currentX = random.nextDouble(-Math.PI, Math.PI);
+                    currentY = random.nextDouble(-Math.PI, Math.PI);
+                    expectedResult = Math.cos(currentY)*Math.exp(Math.sin(currentX));
+
+                    result = Math.abs(expectedResult - individual.evaluate(Pair.of(currentX, currentY)));
+                    sum += result;
+                }
+                return new SingleObjectiveFit(sum, Goal.MINIMIZE);
+            }
+
+            @Override
+            public boolean shouldParallelize() {
+                return false;
+            }
+        };
         return evaluator.evaluate(population);
     }
 }

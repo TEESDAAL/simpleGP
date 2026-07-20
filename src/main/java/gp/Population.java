@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -121,5 +122,13 @@ public record Population<I>(List<I> individuals) implements Serializable {
      */
     public boolean isEmpty() {
         return this.individuals.isEmpty();
+    }
+
+    /**
+     * Performs the given action for each individual in the population.
+     * @param consumer The action to perform.
+     */
+    public void forEach(Consumer<I> consumer) {
+        individuals.forEach(consumer);
     }
 }

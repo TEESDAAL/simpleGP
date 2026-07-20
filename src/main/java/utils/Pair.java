@@ -25,16 +25,27 @@ public record Pair<A, B>(A first, B second) {
         return new Pair<>(first, second);
     }
 
-    public static <A, B, R> Function<Pair<A,B>, R> fold(BiFunction<A, B, R> mapper) {
+    /**
+     * Creates a mapper that folds a pair into a value.
+     *
+     * @param mapper the mapping function
+     * @param <A> the first value type
+     * @param <B> the second value type
+     * @param <R> the result type
+     * @return a function that folds a pair into a value
+     */
+    public static <A, B, R> Function<Pair<A, B>, R> fold(
+            final BiFunction<A, B, R> mapper
+    ) {
         return pair -> pair.reduce(mapper);
     }
 
     /**
-     * Folds the values in this pair to a new value
-     *       using the provided mapping function.
+     * Folds the values in this pair to a new value using the provided function.
+     *
      * @param <T> The type of the new value
-     * @param mapper A function that maps the first and second values to a new value
-     * @return The result of applying the mapping function to the values in this pair
+     * @param mapper a function that maps the first and second values to a new value
+     * @return the result of applying the mapping function to the values in this pair
      */
     public <T> T reduce(final BiFunction<? super A, ? super B, T> mapper) {
         return mapper.apply(this.first, this.second);
@@ -69,7 +80,8 @@ public record Pair<A, B>(A first, B second) {
      *     unchanged second value
      */
     public <U> Pair<U, B> mapFirst(
-            final Function<? super A, ? extends U> firstMapper) {
+            final Function<? super A, ? extends U> firstMapper
+    ) {
         return new Pair<>(firstMapper.apply(this.first), this.second);
     }
 
@@ -83,7 +95,8 @@ public record Pair<A, B>(A first, B second) {
      *     the mapped second value
      */
     public <V> Pair<A, V> mapSecond(
-            final Function<? super B, ? extends V> secondMapper) {
+            final Function<? super B, ? extends V> secondMapper
+    ) {
         return new Pair<>(this.first, secondMapper.apply(this.second));
     }
 }

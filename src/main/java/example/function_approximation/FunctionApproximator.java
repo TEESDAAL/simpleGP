@@ -1,6 +1,5 @@
 package example.function_approximation;
 
-import example.function_approximation.parameters.*;
 import example.function_approximation.parameters.initial.ParameterBuilder;
 import gp.GPPipeLine;
 import gp.Population;
@@ -8,13 +7,11 @@ import gp.TerminationCriterion;
 import gp.core.breeder.Breeder;
 import gp.core.evaluators.Evaluator;
 import gp.core.individual.Individual;
-import gp.core.initializers.Initializer;
+import gp.core.initializers.Initialiser;
 import gp.core.individual.EvaluatedIndividual;
 import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.statistics.SideEffect;
 import gp.core.statistics.Statistic;
-import gp.impl.statistics.CommonFunctions;
-import gp.impl.statistics.NumericUtils;
 import utils.Pair;
 import utils.random.SourceOfRandom;
 
@@ -24,7 +21,7 @@ import java.util.List;
 /**
  * An example GP run that aims to learn an approximation.
  * to a given function of f(x, y)
- * @param initializer The population initializer
+ * @param initialiser The population initializer
  * @param trainEvaluator The training evaluator
  * @param breeder The breeder
  * @param testEvaluator The testing evaluator
@@ -35,7 +32,7 @@ public record FunctionApproximator<
     Ind extends Individual<X, Y>,
     E extends Evaluator<X, Y, Ind, SingleObjectiveFitness>
     >(
-        Initializer<Ind> initializer,
+        Initialiser<Ind> initialiser,
         E trainEvaluator,
         Breeder<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>, Ind> breeder,
         E testEvaluator,
@@ -47,28 +44,28 @@ public record FunctionApproximator<
      * @param args Run arguments
      */
     public static void main(final String[] args) {
-        SourceOfRandom rand = new SourceOfRandom(42);
-        System.out.println(rand.get().nextInt());
-        var params = ParameterBuilder.<Pair<Double, Double>, Double>of()
-            .initializer(new DefaultInitializer(rand.get()))
+        final SourceOfRandom rand = new SourceOfRandom(42);
+        final var params = ParameterBuilder.<Pair<Double, Double>, Double>of()
+            .initializer(new DefaultInitialiser(rand.get()))
             .breeder(new DefaultBreeder(rand.get()))
-            .testEvaluator(new DefaultEvaluator(rand.get(), 10))
-            .trainEvaluator(new DefaultEvaluator(rand.get(), 600))
+            .trainEvaluator(new DefaultEvaluator(rand.get(), 100))
+            .testEvaluator(new DefaultEvaluator(rand.get(), 1))
             .addStatistic(
                 population -> {
-                    List<Double> fitness = population.stream().map(e -> e.fitness().score()).toList();
-                    return "MEAN: "+ NumericUtils.round(CommonFunctions.MEAN(fitness), 3)+", MEDIAN: "+NumericUtils.round(CommonFunctions.MEDIAN(fitness), 3);
+                    final List<Double> fitness = population.stream().map(e -> e.fitness().score()).toList();
+                    return "BEST: " + fitness.stream().mapToDouble(d->d).min().orElse(0) + "SIZE: " + population.stream().mapToInt(i->i.individual().tree().depth()).average().orElse(0.0);
+//                    return "MEAN: "+ NumericUtils.round(CommonFunctions.MEAN(fitness), 3)+", MEDIAN: "+NumericUtils.round(CommonFunctions.MEDIAN(fitness), 3);
                 })
             .build();
-
-        var finalGen = new FunctionApproximator<>(
+        final long start = System.currentTimeMillis();
+        final var finalGen = new FunctionApproximator<>(
                 params.initializer(),
                 params.trainEvaluator(),
                 params.breeder(),
                 params.testEvaluator(),
                 params.scoreLogger()
-        ).train(5);
-        System.out.println(rand.get().nextInt());
+        ).train(500);
+        System.out.println("Training time took " + (System.currentTimeMillis() - start) + "ms");
 
         System.out.println(
                 "Best Individual: "
@@ -92,8 +89,9 @@ public record FunctionApproximator<
     public Population<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>> train(
             final int numGenerations
     ) {
+
         return GPPipeLine
-            .start(initializer::initialize)
+            .start(initialiser::initialize)
             .repeat(TerminationCriterion.nIters(numGenerations),
                     (i, pop) -> pop
                             .then(SideEffect.of((ignored) -> System.out.println(

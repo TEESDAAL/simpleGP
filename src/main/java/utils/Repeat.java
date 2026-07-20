@@ -12,7 +12,7 @@ public interface Repeat {
      * @param numTimes The number of times to run the operation
      * @param runnable The runnable to execute
      */
-    static void of(int numTimes, Runnable runnable) {
+    static void of(final int numTimes, final Runnable runnable) {
         for (int i = 0; i < numTimes; i++) {
             runnable.run();
         }
@@ -24,7 +24,7 @@ public interface Repeat {
      * @param numTimes The number of times to run the operation
      * @param runnable The runnable to execute
      */
-    static void of(int numTimes, IntConsumer runnable) {
+    static void of(final int numTimes, final IntConsumer runnable) {
         for (int i = 0; i < numTimes; i++) {
             runnable.accept(i);
         }

@@ -2,7 +2,7 @@ package example.function_approximation;
 
 import example.function_approximation.parameters.DoubleNonTerminals;
 import gp.Population;
-import gp.core.initializers.Initializer;
+import gp.core.initializers.Initialiser;
 import gp.core.initializers.TypedNonTerminal;
 import gp.core.initializers.TypedTerminal;
 import gp.impl.individual.SingleTreeIndividual;
@@ -13,8 +13,8 @@ import utils.random.RandomSource;
 import java.util.Collections;
 import java.util.List;
 
-public class DefaultInitializer implements Initializer<SingleTreeIndividual<Pair<Double, Double>, Double>> {
-    final Initializer<SingleTreeIndividual<Pair<Double, Double>, Double>> initializer;
+public class DefaultInitialiser implements Initialiser<SingleTreeIndividual<Pair<Double, Double>, Double>> {
+    final Initialiser<SingleTreeIndividual<Pair<Double, Double>, Double>> initialiser;
     final int maxDepth = 7;
     int startingPopulationSize = 1000;
     protected final List<TypedTerminal<Pair<Double, Double>, ?>> terminals = List.of(
@@ -23,8 +23,8 @@ public class DefaultInitializer implements Initializer<SingleTreeIndividual<Pair
     );
     protected final List<TypedNonTerminal<?, ?>> nonTerminals = Collections.unmodifiableList(DoubleNonTerminals.all());
     
-    DefaultInitializer(RandomSource random) {
-        this.initializer = Initializers.rampedHalfAndHalf(
+    public DefaultInitialiser(RandomSource random) {
+        this.initialiser = Initializers.rampedHalfAndHalf(
             maxDepth, 
             random,
             terminals, 
@@ -37,7 +37,7 @@ public class DefaultInitializer implements Initializer<SingleTreeIndividual<Pair
 
     @Override
     public Population<SingleTreeIndividual<Pair<Double, Double>, Double>> initialize() {
-        return this.initializer.initialize();
+        return this.initialiser.initialize();
     }
 }
 

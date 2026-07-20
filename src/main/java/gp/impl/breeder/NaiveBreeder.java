@@ -40,7 +40,8 @@ public record NaiveBreeder<
      * Compact constructor to validate parameters.
      *
      * @throws IllegalArgumentException if newPopulationSize is not positive
-     * if elitesToPreserve is negative or if elitesToPreserve exceeds newPopulationSize.
+     *  if elitesToPreserve is negative
+     *  or if elitesToPreserve exceeds newPopulationSize.
      */
     public NaiveBreeder {
         Preconditions.assertTrue(

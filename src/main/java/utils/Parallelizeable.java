@@ -115,7 +115,9 @@ public interface Parallelizeable {
      *
      * @param <T>    The input type
      * @param <U>    The output type
+        * @param <R>    The random source type
      * @param stream The input stream
+        * @param randomSource The supplier of random sources
      * @param mapper The mapping function
      * @return The mapped stream
      */

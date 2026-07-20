@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class InitializerTest {
+public class InitialiserTest {
     RandomSource random = RandomSource.of(12);
     List<TypedTerminal<Double, ?>> terminals = List.of(
         TypedTerminal.nonCached("x", x -> x, Double.class),

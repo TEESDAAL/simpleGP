@@ -1,7 +1,7 @@
 package gp.impl.initializers;
 
-import gp.core.initializers.IndividualInitializer;
-import gp.core.initializers.Initializer;
+import gp.core.initializers.IndividualInitialiser;
+import gp.core.initializers.Initialiser;
 import gp.core.initializers.TypedNonTerminal;
 import gp.core.initializers.TypedTerminal;
 import gp.impl.individual.SingleTreeIndividual;
@@ -9,7 +9,10 @@ import utils.random.RandomSource;
 
 import java.util.List;
 
-public interface Initializers {
+public final class Initializers {
+    /// Prevent construction
+    private Initializers() {}
+
     /**
      * Creates an initializer with grow method (probabilistic termination).
      * @param <T> The terminal type
@@ -23,16 +26,16 @@ public interface Initializers {
      * @param returnType The return type class
      * @return A new initializer using the grow method
      */
-    static <T, R> IndividualInitializer<SingleTreeIndividual<T, R>> grow(
-        RandomSource random,
-        List<TypedTerminal<T, ?>> terminals,
-        List<TypedNonTerminal<?, ?>> nonTerminals,
-        int populationSize,
-        int maxTries,
-        int maxDepth,
-        Class<R> returnType
+    public static <T, R> IndividualInitialiser<SingleTreeIndividual<T, R>> grow(
+            RandomSource random,
+            List<TypedTerminal<T, ?>> terminals,
+            List<TypedNonTerminal<?, ?>> nonTerminals,
+            int populationSize,
+            int maxTries,
+            int maxDepth,
+            Class<R> returnType
     ) {
-        return NodeInitializer.grow(
+        return NodeInitialiser.grow(
             random, terminals, nonTerminals,
             populationSize, maxTries, maxDepth,
             returnType
@@ -52,16 +55,16 @@ public interface Initializers {
      * @param returnType The return type class
      * @return A new initializer using the full method
      */
-    static <T, R> IndividualInitializer<SingleTreeIndividual<T, R>> full(
-        final RandomSource random,
-        final List<TypedTerminal<T, ?>> terminals,
-        final List<TypedNonTerminal<?, ?>> nonTerminals,
-        final int populationSize,
-        final int maxTries,
-        final int maxDepth,
-        final Class<R> returnType
+    public static <T, R> IndividualInitialiser<SingleTreeIndividual<T, R>> full(
+            final RandomSource random,
+            final List<TypedTerminal<T, ?>> terminals,
+            final List<TypedNonTerminal<?, ?>> nonTerminals,
+            final int populationSize,
+            final int maxTries,
+            final int maxDepth,
+            final Class<R> returnType
     ) {
-        return NodeInitializer.full(
+        return NodeInitialiser.full(
             random, terminals, nonTerminals,
             populationSize, maxTries, maxDepth,
             returnType
@@ -81,14 +84,14 @@ public interface Initializers {
      * @param returnType The return type class
      * @return A new initializer using the full method
      */
-    static <T, R> Initializer<SingleTreeIndividual<T, R>> rampedHalfAndHalf(
-        final int maxDepth,
-        final RandomSource random,
-        final List<TypedTerminal<T, ?>> terminals,
-        final List<TypedNonTerminal<?, ?>> nonTerminals,
-        final int populationSize,
-        final int maxTries,
-        final Class<R> returnType
+    public static <T, R> Initialiser<SingleTreeIndividual<T, R>> rampedHalfAndHalf(
+            final int maxDepth,
+            final RandomSource random,
+            final List<TypedTerminal<T, ?>> terminals,
+            final List<TypedNonTerminal<?, ?>> nonTerminals,
+            final int populationSize,
+            final int maxTries,
+            final Class<R> returnType
     ) {
         return new RampedHalfAndHalf<>(
             maxDepth, random, terminals, nonTerminals,

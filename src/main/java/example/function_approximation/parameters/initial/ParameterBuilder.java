@@ -6,7 +6,7 @@ import gp.core.breeder.Breeder;
 import gp.core.evaluators.Evaluator;
 import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.individual.EvaluatedIndividual;
-import gp.core.initializers.Initializer;
+import gp.core.initializers.Initialiser;
 import gp.core.statistics.Statistic;
 import gp.impl.individual.SingleTreeIndividual;
 
@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ParameterBuilder<X, Y> {
-    private Initializer<SingleTreeIndividual<X, Y>> initializer;
+    private Initialiser<SingleTreeIndividual<X, Y>> initialiser;
     private Breeder<
             EvaluatedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>,
             SingleTreeIndividual<X, Y>
@@ -38,8 +38,8 @@ public class ParameterBuilder<X, Y> {
         return new ParameterBuilder<>();
     }
 
-    public ParameterBuilder<X, Y> initializer(Initializer<SingleTreeIndividual<X, Y>> initializer) {
-        this.initializer = initializer;
+    public ParameterBuilder<X, Y> initializer(Initialiser<SingleTreeIndividual<X, Y>> initialiser) {
+        this.initialiser = initialiser;
         return this;
     }
 
@@ -82,7 +82,7 @@ public class ParameterBuilder<X, Y> {
             Evaluator<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>
     > build() {
         Map.of(
-                "Initializer", this.initializer,
+                "Initializer", this.initialiser,
                 "Breeder", this.breeder,
                 "Train Evaluator", this.trainEvaluator,
                 "Test Evaluator", this.testEvaluator
@@ -95,8 +95,8 @@ public class ParameterBuilder<X, Y> {
         ParameterBuilder<X, Y> self = this;
         return new FunctionApproximationParameters<>() {
             @Override
-            public Initializer<SingleTreeIndividual<X, Y>> initializer() {
-                return self.initializer;
+            public Initialiser<SingleTreeIndividual<X, Y>> initializer() {
+                return self.initialiser;
             }
 
             @Override

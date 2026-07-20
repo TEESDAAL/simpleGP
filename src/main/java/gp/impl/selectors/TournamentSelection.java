@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 
 /**
  * A class that creates a tournament selector of a given size.
+ *
  * @param <R> The return type
  * @param <T> The terminal type
  * @param <I> The individual type
@@ -20,15 +21,17 @@ import java.util.stream.IntStream;
  * @param random The random number generator
  * @param tournamentSize The number of individuals in each tournament
  */
-public record TournamentSelection<R, T,
-        I extends Individual<T, R>, F extends Fitness<F>>(
+public record TournamentSelection<
+        R, T, I extends Individual<T, R>, F extends Fitness<F>
+>(
         RandomSource random,
         int tournamentSize
 ) implements SimpleSelectionMechanism<EvaluatedIndividual<T, R, I, F>> {
     /**
      * Compact constructor validating tournament size.
-     * @param random The random number generator
-     * @param tournamentSize The tournament size
+     *
+     * @param random the random number generator
+     * @param tournamentSize the tournament size
      */
     public TournamentSelection {
         if (tournamentSize <= 0) {
@@ -38,39 +41,49 @@ public record TournamentSelection<R, T,
     }
 
     /**
-     * Create a new TournamentSelection
-     * @param random The source of randomness used to select individuals from the tournament.
-     * @param tournamentSize The tournament size.
-     * @return A new tournament selection.
-     * @param <R> The return type of an individual
-     * @param <T> The terminal/input type of the individuals.
-     * @param <I> The individual
-     * @param <F> The fitness that is compared by.
+     * Creates a new tournament selection.
+     *
+     * @param random the source of randomness used to select individuals
+     * @param tournamentSize the tournament size
+     * @param <R> the return type of an individual
+     * @param <T> the terminal/input type of the individuals
+     * @param <I> the individual type
+     * @param <F> the fitness type
+     * @return a new tournament selection
      */
-    public static <
-        R, T,
-        I extends Individual<T, R>,
-        F extends Fitness<F>
-    > TournamentSelection<R, T, I, F> of(RandomSource random, int tournamentSize) {
+        public static <R, T, I extends Individual<T, R>, F extends Fitness<F>>
+        TournamentSelection<R, T, I, F> of(
+            final RandomSource random,
+            final int tournamentSize
+    ) {
         return new TournamentSelection<>(random, tournamentSize);
     }
 
+    /**
+     * Creates a sampler from the provided collection.
+     *
+     * @param items the items to select from
+     * @return a sampler that performs tournament selection
+     */
     @Override
     public Sampler<EvaluatedIndividual<T, R, I, F>> selectorFrom(
-            final Collection<EvaluatedIndividual<T, R, I, F>> items) {
+            final Collection<EvaluatedIndividual<T, R, I, F>> items
+    ) {
         if (items.isEmpty()) {
             throw new IllegalArgumentException(
                     "Must be able to select an individual.");
         }
         return () -> IntStream.range(0, tournamentSize)
-            .mapToObj(ignored -> RandomSampler.sample(
-                items, random
-            ).orElseThrow())
-            .reduce((bestIndividual, currentIndividual) ->
-                switch (currentIndividual.fitness().compareWith(bestIndividual.fitness())) {
-                    case BETTER -> currentIndividual;
-                    case EQUAL, WORSE -> bestIndividual;
-                }
-            ).orElseThrow();
+                .mapToObj(ignored -> RandomSampler.sample(
+                        items, random
+                ).orElseThrow())
+                .reduce((bestIndividual, currentIndividual) ->
+                        switch (currentIndividual.fitness().compareWith(
+                                bestIndividual.fitness()
+                        )) {
+                            case BETTER -> currentIndividual;
+                            case EQUAL, WORSE -> bestIndividual;
+                        }
+                ).orElseThrow();
     }
 }

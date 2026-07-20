@@ -22,7 +22,7 @@ public interface SingleObjectiveFitness extends Fitness<SingleObjectiveFitness>,
     default Comparison compareWith(
             final SingleObjectiveFitness other
     ) {
-        Comparison result = Comparison.of(this.score(), other.score());
+        final Comparison result = Comparison.of(this.score(), other.score());
 
         return switch (this.goal()) {
             case MAXIMIZE -> result;

@@ -31,7 +31,17 @@ public record TypedTerminal<T, R>(
         return new TypedTerminal<>(name, terminal.cached(), returnType);
     }
 
-    public static <T,R> TypedTerminal<T, R> nonCached(
+    /**
+     * Creates a terminal without caching.
+     *
+     * @param name the terminal name
+     * @param terminal the terminal function
+     * @param returnType the return type class
+     * @param <T> the terminal input type
+     * @param <R> the return type
+     * @return a typed terminal
+     */
+    public static <T, R> TypedTerminal<T, R> nonCached(
             String name,
             final UnaryOperator<T, R> terminal,
             final Class<R> returnType

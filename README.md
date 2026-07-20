@@ -15,7 +15,7 @@ public Population<EvaluatedIndividual<...>> train(
         final int numGenerations
 ) {
     return GPPipeLine
-            .start(initializer::initialize)
+            .start(initialiser::initialize)
             .repeat(TerminationCriterion.nIters(numGenerations),
                     (i, pop) -> pop
                             .then(SideEffect.of((ignored) -> System.out.println(
@@ -48,7 +48,7 @@ public record FunctionApproximator(...) {
             final FunctionApproximationParams<Double> params
     ) {
         return new FunctionApproximator(
-                params.initializer(),
+                params.initialiser(),
                 params.trainEvaluator(),
                 params.breeder(),
                 params.testEvaluator(),
@@ -68,7 +68,7 @@ And then components in that run can be defined by overriding methods in that cla
  */
 public interface FunctionApproximationParams<T> {
 
-    Initializer<SingleTreeIndividual<T, Double>> initializer();
+    Initializer<SingleTreeIndividual<T, Double>> initialiser();
 
 
     Breeder<EvaluatedIndividual<

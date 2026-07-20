@@ -9,12 +9,14 @@ import java.util.function.Function;
 /**
  * Interface for collecting statistics from populations.
  * @param <I> The individual type in the population
+ * @param <R> The statistic result type
  */
 public interface Statistic<I, R> extends SideEffect<Population<I>> {
     /**
      * Performs the side effect and returns the population unchanged.
-     * @param population The population to process
-     * @return The same population
+     *
+     * @param population the population to process
+     * @return the same population
      */
     @Override
     default Population<I> sideEffect(Population<I> population) {
@@ -22,21 +24,39 @@ public interface Statistic<I, R> extends SideEffect<Population<I>> {
         return population;
     }
 
-    /// How to handle the output of the log, the default, just outputs it to the console,
-    /// However this could be very easily updated to write to a file e.t.c
-    /// @return The consumer of the log output.
+    /**
+     * Returns the consumer used to handle the statistic output.
+     *
+     * @return the consumer of the log output
+     */
     default Consumer<R> log() {
         return System.out::println;
     }
 
-
     /**
      * Logs statistics about the population.
-     * @param population The population to analyze
+     *
+     * @param population the population to analyze
+     * @return the statistic result
      */
     R statistic(Population<I> population);
 
-    static <I, T, R> Statistic<I, R> of(Function<I, T> converter, Function<List<T>, R> combiner) {
-        return population -> combiner.apply(population.stream().map(converter).toList());
+    /**
+     * Creates a statistic from a converter and combiner.
+     *
+     * @param converter converts individuals to intermediate values
+     * @param combiner combines the intermediate values into a result
+     * @param <I> the individual type
+     * @param <T> the intermediate type
+     * @param <R> the statistic result type
+     * @return the created statistic
+     */
+    static <I, T, R> Statistic<I, R> of(
+            Function<I, T> converter,
+            Function<List<T>, R> combiner
+    ) {
+        return population -> combiner.apply(
+            population.stream().map(converter).toList()
+        );
     }
 }

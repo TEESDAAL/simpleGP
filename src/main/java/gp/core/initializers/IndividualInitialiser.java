@@ -9,8 +9,8 @@ import java.util.function.Function;
  * Initializer for creating populations of individuals.
  * @param <I> The individual type
  */
-public interface IndividualInitializer<I>
-    extends Initializer<I>, Parallelizeable {
+public interface IndividualInitialiser<I>
+    extends Initialiser<I>, Parallelizeable {
     /**
      * Initializes a population of individuals.
      * @return A population containing the created individuals
@@ -31,13 +31,21 @@ public interface IndividualInitializer<I>
 
     /**
      * Returns the size of the population to initialize.
-     * @return The population size
+     *
+     * @return the population size
      */
     int populationSize();
 
-    default <U> IndividualInitializer<U> wrap(Function<I, U> function) {
+    /**
+     * Wraps initialized individuals with a mapping function.
+     *
+     * @param function the mapping function
+     * @param <U> the wrapped type
+     * @return a wrapped initializer
+     */
+    default <U> IndividualInitialiser<U> wrap(Function<I, U> function) {
         var self = this;
-        return new IndividualInitializer<>() {
+        return new IndividualInitialiser<>() {
 
             @Override
             public boolean shouldParallelize() {

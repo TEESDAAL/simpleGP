@@ -9,10 +9,10 @@ import java.util.function.Supplier;
 public enum Comparison {
     /** Indicates the left operand is better. */
     BETTER(1),
-    /** Indicates the left operand is worse. */
-    WORSE(-1),
     /** Indicates operands are equal. */
-    EQUAL(0);
+    EQUAL(0),
+    /** Indicates the left operand is worse. */
+    WORSE(-1);
 
     /** Internal ordering value for comparisons. */
     private final int ord;
@@ -112,7 +112,8 @@ public enum Comparison {
      * @return This comparison or the max comparison
      */
     public <N extends Number & Comparable<N>> Comparison thenMax(
-            final N a, final N b) {
+            final N a, final N b
+    ) {
         if (this != EQUAL) {
             return this;
         }
@@ -128,7 +129,8 @@ public enum Comparison {
      * @return This comparison or the min comparison
      */
     public <N extends Number & Comparable<N>> Comparison thenMin(
-            final N a, final N b) {
+            final N a, final N b
+    ) {
         if (this != EQUAL) {
             return this;
         }
@@ -142,8 +144,7 @@ public enum Comparison {
      * @param b The second number
      * @return The comparison result
      */
-    public static <N extends Number & Comparable<N>>
-            Comparison compareMax(
+    public static <N extends Number & Comparable<N>> Comparison compareMax(
             final N a,
             final N b
     ) {
@@ -157,8 +158,7 @@ public enum Comparison {
      * @param b The second number
      * @return The comparison result
      */
-    public static <N extends Number & Comparable<N>>
-            Comparison compareMin(
+    public static <N extends Number & Comparable<N>> Comparison compareMin(
             final N a,
             final N b
     ) {
@@ -166,7 +166,11 @@ public enum Comparison {
     }
 
     /**
-     * Match this against
+     * Matches this comparison against a handler.
+     *
+     * @param match the handler to invoke
+     * @param <R> the result type
+     * @return the handled result
      */
     <R> R match(ComparisonMatch<R> match) {
         return switch (this) {

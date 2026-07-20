@@ -4,7 +4,7 @@ import example.function_approximation.parameters.FunctionApproximationParameters
 import gp.core.breeder.Breeder;
 import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.individual.EvaluatedIndividual;
-import gp.core.initializers.Initializer;
+import gp.core.initializers.Initialiser;
 import gp.core.statistics.Statistic;
 import gp.impl.evaluators.SingleObjectiveEvaluator;
 import gp.impl.individual.SingleTreeIndividual;
@@ -18,7 +18,7 @@ public class Parameters implements FunctionApproximationParameters<
 > {
 
     @Override
-    public Initializer<SingleTreeIndividual<Pair<Double, Double>, Double>> initializer() {
+    public Initialiser<SingleTreeIndividual<Pair<Double, Double>, Double>> initializer() {
         return null;
     }
 

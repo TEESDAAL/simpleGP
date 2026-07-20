@@ -11,7 +11,7 @@ public interface TerminationCriterion<T> {
      * @param value The current value
      * @return true if should terminate
      */
-    boolean shouldTerminate(Integer iteration, T value);
+    boolean shouldTerminate(int iteration, T value);
 
     /**
      * Creates a termination criterion based on iteration count.

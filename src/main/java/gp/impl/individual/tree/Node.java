@@ -17,20 +17,32 @@ import java.util.stream.Stream;
  */
 public sealed interface Node<
     Terminals, Input, Output,
-        Mutable extends MutableNode<
-            Terminals, Input, Output, Mutable, Immutable
-        >,
-        Immutable extends ImmutableNode<
-            Terminals, Input, Output, Immutable, Mutable
-        >
+    Mutable extends MutableNode<
+        Terminals, Input, Output, Mutable, Immutable
+    >,
+    Immutable extends ImmutableNode<
+        Terminals, Input, Output, Immutable, Mutable
+    >
 > permits Terminal, NonTerminal, MutableNode, ImmutableNode {
 
+    /**
+     * A helpful utility method to extract information from the tree.
+     * @param extractor The extractor to pull information from the tree.
+     * @return the output of the extractor applied to this node.
+     * @param <T> The return type of the extractor.
+     */
     default <T> T extract(
-        TreeExtractor<T> extractor
+        final TreeExtractor<T> extractor
     ) {
         return switch (this) {
-            case Terminal<?, ?> term -> extractor.terminal(term);
-            case NonTerminal<?, ?, ?, ?> nonTerm -> extractor.nonTerminal(nonTerm);
+            case final Terminal<?, ?> term -> extractor.terminal(term);
+            case final NonTerminal<?, ?, ?, ?> nonTerm -> extractor.nonTerminal(
+                nonTerm
+            );
+            default -> throw new IllegalStateException(
+                "This situation is provably impossible, "
+                    + "but for some reason java needs a case for it..."
+            );
         };
     }
 
@@ -93,9 +105,9 @@ public sealed interface Node<
      * @return An immutable terminal node
      */
     static <Term, Out> ImmutableTerminal<Term, Out> term(
-            String name,
-            final UnaryOperator<Term, Out> extractor,
-            final Class<Out> returnType
+        final String name,
+        final UnaryOperator<Term, Out> extractor,
+        final Class<Out> returnType
     ) {
         return ImmutableTerminal.of(name, extractor, returnType);
     }
@@ -127,12 +139,12 @@ public sealed interface Node<
 
 class LispString implements TreeExtractor<String> {
     @Override
-    public String terminal(Terminal<?, ?> node) {
+    public String terminal(final Terminal<?, ?> node) {
         return node.name();
     }
 
     @Override
-    public String nonTerminal(NonTerminal<?, ?, ?, ?> node) {
+    public String nonTerminal(final NonTerminal<?, ?, ?, ?> node) {
         return node.name() + node.children().stream()
             .map(n -> n.extract(this))
             .collect(Collectors.joining(", ", "(", ")"));

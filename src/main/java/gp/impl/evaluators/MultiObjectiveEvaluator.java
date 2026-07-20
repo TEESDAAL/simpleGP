@@ -13,15 +13,26 @@ import java.util.function.Function;
  * An evaluator for single-objective optimization on single tree individuals.
  * @param <T> The terminal type
  * @param evaluator The function that evaluates individuals to produce fitness
+ * @param <R> The return type
+ * @param <I> The individual type
  */
 public record MultiObjectiveEvaluator<T, R, I extends Individual<T, R>>(
         Function<I, MultiObjectiveFit> evaluator
 ) implements IndividualEvaluator<T, R, I, MultiObjectiveFit> {
 
+    /**
+     * Creates a multi-objective evaluator.
+     *
+     * @param evaluators the single-objective evaluators to combine
+     * @param <T> the terminal type
+     * @param <R> the return type
+     * @param <I> the individual type
+     * @return a new multi-objective evaluator
+     */
     public static  <T, R, I extends Individual<T, R>> MultiObjectiveEvaluator<
-        T, R, I
+            T, R, I
     > of(
-        List<Function<I, SingleObjectiveFit>> evaluators
+            final List<Function<I, SingleObjectiveFit>> evaluators
     ) {
         return new MultiObjectiveEvaluator<>(
                 ind -> MultiObjectiveFit.of(
@@ -32,8 +43,14 @@ public record MultiObjectiveEvaluator<T, R, I extends Individual<T, R>>(
         );
     }
 
+    /**
+     * Evaluates the individual.
+     *
+     * @param individual the individual to evaluate
+     * @return the evaluated fitness
+     */
     @Override
-    public MultiObjectiveFit evaluate(I individual) {
+    public MultiObjectiveFit evaluate(final I individual) {
         return evaluator.apply(individual);
     }
 }

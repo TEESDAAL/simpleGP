@@ -1,6 +1,7 @@
 package utils.operators;
 
 import gp.core.selectors.Sampler;
+import utils.Pair;
 
 import java.util.List;
 import java.util.Map;
@@ -24,9 +25,32 @@ public interface Operator<I, O> {
 
     /**
      * Returns the number of parents this operator requires.
-     * @return The expected size of the parents list
+     * @return The expected size of the parents list.
      */
     Integer arity();
+
+
+    /**
+     * Convert this operator from a function of I->O into I->R
+     *  by wrapping it in a function that converts O->R.
+     * @param wrapper the function to wrap the operator in
+     * @return the new wrapped I->R function.
+     * @param <R> the new return type of the function.
+     */
+    default <R> Operator<I, R> wrap(final Function<O, R> wrapper) {
+        final Operator<I, O> self = this;
+        return new Operator<>() {
+            @Override
+            public R produce(final List<I> parents) {
+                return wrapper.apply(Operator.this.produce(parents));
+            }
+
+            @Override
+            public Integer arity() {
+                return self.arity();
+            }
+        };
+    }
 
     /**
      * Produces output by sampling parents from a selector.
@@ -86,29 +110,59 @@ public interface Operator<I, O> {
         return operator;
     }
 
+    /**
+     * Create a version of this operator that caches it's inputs.
+     * @return a version of this operator that caches it's inputs.
+     */
     default Operator<I, O> cached() {
         return CacherCache.cached(this);
     }
 
 }
 
-class CacherCache {
-    private static final Map<Operator<?, ?>, Operator<?, ?>> cacheCache = new ConcurrentHashMap<>();
-    private static final Map<UnaryOperator<?, ?>, UnaryOperator<?, ?>> unCache = new ConcurrentHashMap<>();
-    private static final Map<BinaryOperator<?, ?>, BinaryOperator<?, ?>> biCache = new ConcurrentHashMap<>();
+/**
+ * A class for handling the conversion of an singleton operator to
+ *  a singleton cached operator.
+ */
+final class CacherCache {
+    private CacherCache() {
+    }
+    /**
+     * The cache to maintain singletons for general operators.
+     */
+    private static final Map<Operator<?, ?>, Operator<?, ?>> CACHE_CACHE =
+        new ConcurrentHashMap<>();
+    /**
+     * The cache to maintain singletons for unary operators.
+     */
+    private static final Map<UnaryOperator<?, ?>, UnaryOperator<?, ?>> UNARY_CACHE =
+        new ConcurrentHashMap<>();
 
+    /**
+     * The cache to maintain singletons for binary operators.
+     */
+    private static final Map<BinaryOperator<?, ?>, BinaryOperator<?, ?>> BI_CACHE =
+        new ConcurrentHashMap<>();
+
+    /**
+     * Return a cached version of the operator.
+     * @param operator The operator to make cached.
+     * @return A general operator that caches it's inputs.
+     * @param <I> The input type of the operator.
+     * @param <O> The output type of the operator.
+     */
     @SuppressWarnings("unchecked")
-    static <I, O> Operator<I, O> cached(Operator<I, O> operator) {
-        return (Operator<I, O>) cacheCache.computeIfAbsent(
+    static <I, O> Operator<I, O> cached(final Operator<I, O> operator) {
+        return (Operator<I, O>) CACHE_CACHE.computeIfAbsent(
             operator,
             op -> new Operator<I, O>() {
-                final Map<List<I>, O> cache = new ConcurrentHashMap<>();
+                private final Map<List<I>, O> cache = new ConcurrentHashMap<>();
 
                 @Override
-                public O produce(List<I> parents) {
+                public O produce(final List<I> parents) {
                     return cache.computeIfAbsent(
                         parents,
-                        k -> ((Operator<I, O>) op).produce(parents)
+                        p -> ((Operator<I, O>) op).produce(p)
                     );
                 }
 
@@ -120,20 +174,55 @@ class CacherCache {
         );
     }
 
+    /**
+     * Return a cached version of the operator.
+     * @param operator The operator to make cached.
+     * @return A unary operator that caches it's inputs.
+     * @param <I> The input type of the operator.
+     * @param <O> The output type of the operator.
+     */
     @SuppressWarnings("unchecked")
-    static <I, O> UnaryOperator<I, O> unaryCached(UnaryOperator<I, O> operator) {
-        return (UnaryOperator<I, O>) unCache.computeIfAbsent(
+    static <I, O> UnaryOperator<I, O> unaryCached(
+        final UnaryOperator<I, O> operator
+    ) {
+        return (UnaryOperator<I, O>) UNARY_CACHE.computeIfAbsent(
             operator,
-            op -> (UnaryOperator<I, O>) parent -> ((UnaryOperator<I, O>) op).produce(parent)
+            _ -> new  UnaryOperator<I, O>() {
+                private final Map<I, O> cache = new ConcurrentHashMap<>();
+                @Override
+                public O produce(I parent) {
+                    return cache.computeIfAbsent(
+                        parent,
+                        operator::produce
+                    );
+                }
+            }
         );
     }
 
+    /**
+     * Return a cached version of the operator.
+     * @param operator The operator to make cached.
+     * @return A unary operator that caches it's inputs.
+     * @param <I> The input type of the operator.
+     * @param <O> The output type of the operator.
+     */
     @SuppressWarnings("unchecked")
-    static <I, O> BinaryOperator<I, O> biCached(BinaryOperator<I, O> operator) {
-        return (BinaryOperator<I, O>) biCache.computeIfAbsent(
+    static <I, O> BinaryOperator<I, O> biCached(
+        final BinaryOperator<I, O> operator
+    ) {
+        return (BinaryOperator<I, O>) BI_CACHE.computeIfAbsent(
             operator,
-            op -> (BinaryOperator<I, O>) operator::produce
+            _ -> new BinaryOperator<I, O>() {
+                private final Map<Pair<I, I>, O> cache = new ConcurrentHashMap<>();
+                @Override
+                public O produce(I parent1, I parent2) {
+                    return cache.computeIfAbsent(
+                        Pair.of(parent1, parent2),
+                        _ -> operator.produce(parent1, parent2)
+                    );
+                }
+            }
         );
     }
-
 }

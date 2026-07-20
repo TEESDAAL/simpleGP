@@ -13,15 +13,13 @@ import java.util.function.Function;
 
 /**
  * Elitism selector that always selects the best individual.
- * @param elitismCount The number of elite individuals to select
- * @param fitnessComparatorFunction A function that produces a fitness comparator
- *     from a collection of evaluated individuals.
- *     Note this has to produce a comparator from the list of individuals
- *      to allow for pareto dominance relations
+ *
  * @param <ReturnType> The return type
  * @param <TerminalHolder> The terminal type
  * @param <Ind> The individual type
  * @param <Fit> The fitness type
+ * @param elitismCount The number of elite individuals to select
+ * @param fitnessComparatorFunction A function that produces a fitness comparator
  */
 public record Elitism<
         TerminalHolder, ReturnType,
@@ -41,6 +39,7 @@ public record Elitism<
 > {
     /**
      * Compact constructor to validate parameters.
+     *
      * @param elitismCount The number of elite individuals to select
      * @param fitnessComparatorFunction A function that produces a fitness comparator
      */
@@ -52,24 +51,21 @@ public record Elitism<
     }
 
     /**
-     * Creates an elitism selector with the given elitism count
-     * and fitness comparator function.
-     * @param elitismCount The number of elite individuals to select
-     * @param fitnessComparatorFunction A function that produces a fitness comparator
-     *     from a collection of evaluated individuals.
-     * @param <R> The return type
-     * @param <T> The terminal type
-     * @param <I> The individual type
-     * @param <F> The fitness type
-
+     * Creates an elitism selector with the given elitism count and comparator.
+     *
+     * @param elitismCount the number of elite individuals to select
+     * @param fitnessComparatorFunction a function that produces a fitness comparator
+     *     from a collection of evaluated individuals
+     * @param <T> the terminal type
+     * @param <R> the return type
+     * @param <I> the individual type
+     * @param <F> the fitness type
+     * @return a new elitism selector
      */
-    public static <
-            T, R,
-            I extends Individual<T, R>,
-            F extends Fitness<F>
-    > Elitism<T, R, I, F> of(
-            int elitismCount,
-            Function<
+    public static <T, R, I extends Individual<T, R>, F extends Fitness<F>>
+    Elitism<T, R, I, F> of(
+            final int elitismCount,
+            final Function<
                     Collection<EvaluatedIndividual<T, R, I, F>>,
                     Comparator<F>
             > fitnessComparatorFunction
@@ -79,24 +75,32 @@ public record Elitism<
                 fitnessComparatorFunction
         );
     }
+
     /**
      * Creates a selector that always returns the best individual.
-     * @param items The population to select from
-     * @return A selector that returns the best individual
+     *
+     * @param items the population to select from
+     * @return a selector that returns the best individual
      */
     @Override
     public Sampler<
-                    Collection<EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>>
-            > selectorFrom(
-            final Collection<
-                    EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>
-            > items
+            Collection<EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>>
+    >
+    selectorFrom(
+            final Collection<EvaluatedIndividual<
+                    TerminalHolder,
+                    ReturnType,
+                    Ind,
+                    Fit
+            >> items
     ) {
-        Comparator<Fit> fitnessComparator = fitnessComparatorFunction.apply(items);
+        final Comparator<Fit> fitnessComparator =
+                fitnessComparatorFunction.apply(items);
         return () -> items.stream()
                 .sorted((e1, e2) -> fitnessComparator.compare(
                         e2.fitness(), e1.fitness()
-                )).limit(elitismCount)
+                ))
+                .limit(elitismCount)
                 .toList();
     }
 }

@@ -35,15 +35,31 @@ public record ProbabilisticElement<E>(Double probability, E element) {
      * @throws IllegalArgumentException if probability is invalid
      */
     public static <E> ProbabilisticElement<E> of(
-            final Double probability, final E element
+            final Double probability,
+            final E element
     ) throws IllegalArgumentException {
         return new ProbabilisticElement<>(probability, element);
     }
 
-    public static <E> List<ProbabilisticElement<E>> withFallback(E fallback, List<ProbabilisticElement<E>> others) {
-        double sum = others.stream().mapToDouble(e -> e.probability).sum();
-        Preconditions.assertTrue(sum <= 1.0, "Probabilities sum to "+sum+", they should be <= 1.0");
-        List<ProbabilisticElement<E>> list = new ArrayList<>(others.size() + 1);
+        /**
+         * Appends a fallback element with the remaining probability mass.
+         *
+         * @param fallback the fallback element
+         * @param others the existing probabilistic elements
+         * @param <E> the element type
+         * @return the combined list including the fallback
+         */
+        public static <E> List<ProbabilisticElement<E>> withFallback(
+            final E fallback,
+            final List<ProbabilisticElement<E>> others
+        ) {
+        final double sum = others.stream().mapToDouble(e -> e.probability).sum();
+        Preconditions.assertTrue(
+            sum <= 1.0,
+            "Probabilities sum to " + sum + ", they should be <= 1.0"
+        );
+        final List<ProbabilisticElement<E>> list =
+            new ArrayList<>(others.size() + 1);
         list.addAll(others);
         list.add(new ProbabilisticElement<>(1.0 - sum, fallback));
         return list;

@@ -1,6 +1,9 @@
 package gp.impl.initializers;
 
-import gp.core.initializers.*;
+import gp.core.initializers.IndividualCreationException;
+import gp.core.initializers.TreeConstructor;
+import gp.core.initializers.TypedNonTerminal;
+import gp.core.initializers.TypedTerminal;
 import gp.impl.individual.tree.ImmutableNode;
 import utils.Preconditions;
 import utils.random.RandomSource;
@@ -24,7 +27,7 @@ import java.util.function.IntPredicate;
  * @param maxDepth Maximum tree depth
  * @param returnType The return type class
  */
-public record NodeInitializer<T, R>(
+public record NodeInitialiser<T, R>(
         RandomSource random,
         List<TypedTerminal<T, ?>> terminals,
         List<TypedNonTerminal<?, ?>> nonTerminals,
@@ -40,7 +43,7 @@ public record NodeInitializer<T, R>(
      * @throws IllegalArgumentException if the populationSize, or maxTries
      * is negative, or if maxDepth is negative, or if any parameter is null
      */
-    public NodeInitializer {
+    public NodeInitialiser {
         List.of(random, terminals, nonTerminals, shouldTerminate, returnType)
                 .forEach(Objects::requireNonNull);
         Preconditions.assertTrue(
@@ -69,7 +72,7 @@ public record NodeInitializer<T, R>(
      * @param returnType The return type class
      * @return A new initializer using the full method
      */
-    static <T, R> NodeInitializer<T, R> full(
+    static <T, R> NodeInitialiser<T, R> full(
         final RandomSource random,
         final List<TypedTerminal<T, ?>> terminals,
         final List<TypedNonTerminal<?, ?>> nonTerminals,
@@ -78,7 +81,7 @@ public record NodeInitializer<T, R>(
         final int maxDepth,
         final Class<R> returnType
     ) {
-        return new NodeInitializer<>(
+        return new NodeInitialiser<>(
             random, terminals, nonTerminals,
             depth -> depth >= maxDepth,
             populationSize, maxTries, maxDepth,
@@ -99,7 +102,7 @@ public record NodeInitializer<T, R>(
      * @param returnType The return type class
      * @return A new initializer using the grow method
      */
-    public static <T, R> NodeInitializer<T, R> grow(
+    public static <T, R> NodeInitialiser<T, R> grow(
         final RandomSource random,
         final List<TypedTerminal<T, ?>> terminals,
         final List<TypedNonTerminal<?, ?>> nonTerminals,
@@ -110,7 +113,7 @@ public record NodeInitializer<T, R>(
     ) {
         double probabilityOfSamplingTerminal = terminals.size()
             / ((double) terminals.size() + nonTerminals.size());
-        return new NodeInitializer<>(
+        return new NodeInitialiser<>(
             random, terminals, nonTerminals,
             depth -> depth >= maxDepth
                 || random.nextDouble()

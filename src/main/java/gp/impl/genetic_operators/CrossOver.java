@@ -24,8 +24,8 @@ public record CrossOver<T, Out>(RandomSource random) implements BinaryOperator<
 
     @Override
     public List<ImmutableNode<T, ?, Out, ?, ?>> produce(
-            Node<T, ?, Out, ?, ?> parent1,
-            Node<T, ?, Out, ?, ?> parent2
+        final Node<T, ?, Out, ?, ?> parent1,
+        final Node<T, ?, Out, ?, ?> parent2
     ) {
         return helper(
                 parent1.mutableCopy(),
@@ -35,15 +35,15 @@ public record CrossOver<T, Out>(RandomSource random) implements BinaryOperator<
 
     @SuppressWarnings("unchecked")
     private <R> List<ImmutableNode<T, ?, Out, ?, ?>> helper(
-            MutableNode<T, ?, Out, ?, ?> parent1,
-            MutableNode<T, ?, Out, ?, ?> parent2
+        final MutableNode<T, ?, Out, ?, ?> parent1,
+        final MutableNode<T, ?, Out, ?, ?> parent2
     ) {
         // Handle special case of tree
         // Give this type R so we can talk it
-        NodeWithParent<T, R> mutationPoint1 = (NodeWithParent<T, R>)
+        final NodeWithParent<T, R> mutationPoint1 = (NodeWithParent<T, R>)
                 getMutationPoint(parent1.mutableCopy());
 
-        NodeWithParent<T, R> mutationPoint2 = getMutationPoint(
+        final NodeWithParent<T, R> mutationPoint2 = getMutationPoint(
                 parent2.mutableCopy(),
                 mutationPoint1.node().returnType()
         );
@@ -67,10 +67,10 @@ public record CrossOver<T, Out>(RandomSource random) implements BinaryOperator<
     }
 
     private <R> List<ImmutableNode<T, ?, Out, ?, ?>> regularCrossOver(
-            MutableNode<T, ?, Out, ?, ?> parent1,
-            MutableNode<T, ?, Out, ?, ?> parent2,
-            NodeWithParent<T, R> mutationPoint1,
-            NodeWithParent<T, R> mutationPoint2
+        final MutableNode<T, ?, Out, ?, ?> parent1,
+        final MutableNode<T, ?, Out, ?, ?> parent2,
+        final NodeWithParent<T, R> mutationPoint1,
+        final NodeWithParent<T, R> mutationPoint2
     ) {
         mutationPoint1.parent().orElseThrow().replaceChild(
                 mutationPoint1.childIndex().orElseThrow(),
@@ -89,9 +89,9 @@ public record CrossOver<T, Out>(RandomSource random) implements BinaryOperator<
     }
 
     private List<ImmutableNode<T, ?, Out, ?, ?>> handleCrossOverAtRoot(
-            MutableNode<T, ?, Out, ?, ?> rootParent,
-            NodeWithParent<T, Out> nonRootParentMutationPoint,
-            MutableNode<T, ?, Out, ?, ?> nonRootParent
+        final MutableNode<T, ?, Out, ?, ?> rootParent,
+        final NodeWithParent<T, Out> nonRootParentMutationPoint,
+        final MutableNode<T, ?, Out, ?, ?> nonRootParent
     ) {
 
         if (nonRootParentMutationPoint.isRoot()) {
@@ -114,7 +114,7 @@ public record CrossOver<T, Out>(RandomSource random) implements BinaryOperator<
 
 
     private NodeWithParent<T, ?> getMutationPoint(
-            MutableNode<T, ?, Out, ?, ?> parent
+        final MutableNode<T, ?, Out, ?, ?> parent
     ) {
         return RandomSampler
                 .sample(NodeWithParent.collect(parent), random)
@@ -123,11 +123,11 @@ public record CrossOver<T, Out>(RandomSource random) implements BinaryOperator<
 
 
     private <R> NodeWithParent<T, R> getMutationPoint(
-            MutableNode<T, ?, Out, ?, ?> parent,
-                Class<R> returnType
+        final MutableNode<T, ?, Out, ?, ?> parent,
+        final Class<R> returnType
     ) throws NoSuchElementException {
         @SuppressWarnings("unchecked")
-        List<NodeWithParent<T, R>> candidates = NodeWithParent.collect(parent)
+        final List<NodeWithParent<T, R>> candidates = NodeWithParent.collect(parent)
                 .stream()
                 .filter(n -> returnType
                         .isAssignableFrom(n.node().returnType())

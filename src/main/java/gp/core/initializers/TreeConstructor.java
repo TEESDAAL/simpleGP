@@ -16,7 +16,7 @@ import java.util.Optional;
  * @param <R> The return/output type
  */
 public interface TreeConstructor<T, R>
-    extends IndividualInitializer<ImmutableNode<T, ?, R, ?, ?>> {
+    extends IndividualInitialiser<ImmutableNode<T, ?, R, ?, ?>> {
     /**
      * Gets the random number generator.
      *
@@ -26,6 +26,7 @@ public interface TreeConstructor<T, R>
 
     /**
      * Gets the map of terminals by return type.
+     *
      * @return Map from return types to terminal lists
      */
     List<TypedTerminal<T, ?>> terminals();
@@ -39,6 +40,7 @@ public interface TreeConstructor<T, R>
 
     /**
      * Checks if tree construction should terminate at this depth.
+     *
      * @param depth The current depth
      * @return True if construction should terminate
      */
@@ -46,55 +48,56 @@ public interface TreeConstructor<T, R>
 
     /**
      * Recursively constructs a tree node of the given return type.
-     * @param <I> The input type for non-terminals
+     *
+     * @param <I>          The input type for non-terminals
      * @param <ReturnType> The return type
      * @param currentDepth The current depth in the tree
-     * @param returnType The desired return type
+     * @param returnType   The desired return type
      * @return An optional containing the constructed node if
-     *     successful
+     * successful
      */
     default <I, ReturnType> Optional<
-            ImmutableNode<T, ?, ReturnType, ?, ?>
-    > recursivelyConstructIndividual(
-            final int currentDepth,
-            final Class<ReturnType> returnType
+        ImmutableNode<T, ?, ReturnType, ?, ?>
+        > recursivelyConstructIndividual(
+        final int currentDepth,
+        final Class<ReturnType> returnType
     ) {
         if (shouldTerminate(currentDepth)) {
             return RandomSampler.sample(
-                    OperatorSelector.validTerminals(
-                            this.terminals(), returnType
-                    ), this.random()
+                OperatorSelector.validTerminals(
+                    this.terminals(), returnType
+                ), this.random()
             ).map(term -> Node.term(
-                    term.name(), term.terminal(), term.returnType()
+                term.name(), term.terminal(), term.returnType()
             ));
         }
 
 
-        Optional<TypedNonTerminal<?, ReturnType>>
-                potentialNonTerminal = RandomSampler.sample(
+        final Optional<TypedNonTerminal<?, ReturnType>> potentialNonTerminal =
+            RandomSampler.sample(
                 OperatorSelector.validNonTerminals(
-                        this.nonTerminals(), returnType),
+                    this.nonTerminals(), returnType
+                ),
                 this.random()
-        );
+            );
 
         if (potentialNonTerminal.isEmpty()) {
             return Optional.empty();
         }
 
         @SuppressWarnings("unchecked")
-        // Add type I so we can talk about it later...
-        TypedNonTerminal<I, ReturnType> nonTerminal =
-                (TypedNonTerminal<I, ReturnType>)
-                        potentialNonTerminal.get();
-        List<ImmutableNode<T, ?, I, ?, ?>> children =
-                new ArrayList<>();
+        final TypedNonTerminal<I, ReturnType> typedNonTerminal =
+            (TypedNonTerminal<I, ReturnType>) potentialNonTerminal.get();
 
-        for (int i = 0; i < nonTerminal.nonTerminal().arity(); i++) {
-            Optional<ImmutableNode<T, ?, I, ?, ?>> child =
-                    recursivelyConstructIndividual(
-                            currentDepth + 1,
-                            nonTerminal.inputType()
-                    );
+        final List<ImmutableNode<T, ?, I, ?, ?>> children = new ArrayList<>(
+            typedNonTerminal.nonTerminal().arity()
+        );
+
+        for (int i = 0; i < typedNonTerminal.nonTerminal().arity(); i++) {
+            final var child = recursivelyConstructIndividual(
+                currentDepth + 1,
+                typedNonTerminal.inputType()
+            );
             if (child.isEmpty()) {
                 return Optional.empty();
             }
@@ -102,11 +105,11 @@ public interface TreeConstructor<T, R>
         }
 
         return Optional.of(Node.nonTerm(
-                nonTerminal.name(),
-                nonTerminal.nonTerminal(),
-                Collections.unmodifiableList(children),
-                nonTerminal.inputType(),
-                nonTerminal.returnType()
+            typedNonTerminal.name(),
+            typedNonTerminal.nonTerminal(),
+            Collections.unmodifiableList(children),
+            typedNonTerminal.inputType(),
+            typedNonTerminal.returnType()
         ));
     }
 }
