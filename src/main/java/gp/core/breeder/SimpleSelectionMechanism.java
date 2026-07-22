@@ -2,7 +2,7 @@ package gp.core.breeder;
 
 import gp.core.selectors.Sampler;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * A selector builder that creates selectors from collections of items.
@@ -15,6 +15,6 @@ public interface SimpleSelectionMechanism<E> extends SelectionMechanism<E, E> {
      * @return A primed selector
      */
     @Override
-    Sampler<E> selectorFrom(Collection<E> items);
+    Sampler<E> selectorFrom(List<E> items);
 }
 

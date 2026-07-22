@@ -111,7 +111,7 @@ public record NodeInitialiser<T, R>(
         final int maxDepth,
         final Class<R> returnType
     ) {
-        double probabilityOfSamplingTerminal = terminals.size()
+        final double probabilityOfSamplingTerminal = terminals.size()
             / ((double) terminals.size() + nonTerminals.size());
         return new NodeInitialiser<>(
             random, terminals, nonTerminals,
@@ -140,7 +140,7 @@ public record NodeInitialiser<T, R>(
     public ImmutableNode<T, ?, R, ?, ?> createIndividual()
             throws IndividualCreationException {
         for (int i = 0; i < maxTries; i++) {
-            Optional<ImmutableNode<T, ?, R, ?, ?>> possibleTree
+            final Optional<ImmutableNode<T, ?, R, ?, ?>> possibleTree
                     = this.recursivelyConstructIndividual(0, returnType
             );
             if (possibleTree.isPresent()) {

@@ -3,6 +3,7 @@ package gp.impl.individual;
 import gp.core.individual.Individual;
 import gp.impl.individual.tree.ImmutableNode;
 import gp.impl.individual.tree.Node;
+import utils.ArrayUtils;
 import utils.operators.Operator;
 
 import java.util.ArrayList;
@@ -79,14 +80,14 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
                     final List<SingleTreeIndividual<T, Out>> parents
             ) {
                 final List<Node<T, ?, Out, ?, ?>> trees
-                        = new ArrayList<>(parents.size());
+                    = new ArrayList<>(parents.size());
                 for (final SingleTreeIndividual<T, Out> parent : parents) {
                     trees.add(parent.tree());
                 }
                 return nodeOperator.produce(trees)
-                        .stream()
-                        .map(SingleTreeIndividual::of)
-                        .toList();
+                    .stream()
+                    .map(SingleTreeIndividual::of)
+                    .toList();
             }
 
             @Override
@@ -96,3 +97,4 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
         };
     }
 }
+

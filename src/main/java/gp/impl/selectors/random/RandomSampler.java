@@ -1,6 +1,7 @@
 package gp.impl.selectors.random;
 
 import gp.core.selectors.Sampler;
+import result.Result;
 import utils.random.RandomSource;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.Optional;
  * @param random The random number generator
  */
 public record RandomSampler<T>(
-        Collection<T> data, RandomSource random
+        List<T> data, RandomSource random
 ) implements Sampler<T> {
     /**
      * Compact constructor ensuring the data is not empty.
@@ -32,7 +33,7 @@ public record RandomSampler<T>(
      * @return An optional containing a sampler if data is not empty
      */
     public static <T> Optional<RandomSampler<T>> of(
-            final Collection<T> data, final RandomSource random
+            final List<T> data, final RandomSource random
     ) {
         if (data.isEmpty()) {
             return Optional.empty();
@@ -70,7 +71,7 @@ public record RandomSampler<T>(
      *     empty
      */
     public static Optional<Integer> sampleIndex(
-            final Collection<?> data, final RandomSource random
+            final List<?> data, final RandomSource random
     ) {
         if (data.isEmpty()) {
             return Optional.empty();
@@ -81,6 +82,7 @@ public record RandomSampler<T>(
 
     /**
      * Samples an optional element from the collection.
+     * @see #sampleOrThrow If you know the collection is non-empty
      * @param <T> The element type
      * @param data The collection to sample from
      * @param random The random number generator
@@ -88,23 +90,71 @@ public record RandomSampler<T>(
      *     empty
      */
     public static <T> Optional<T> sample(
-            final Collection<T> data, final RandomSource random
+            final List<T> data, final RandomSource random
     ) {
         if (data.isEmpty()) {
             return Optional.empty();
         }
 
-        int randomIndex = random.nextInt(0, data.size());
+        final int randomIndex = random.nextInt(0, data.size());
+        return Optional.of(data.get(randomIndex));
+    }
+
+    /**
+     * Samples an optional element from the collection.
+     * @see #sample If you don't know if the collection is empty
+     * @param <T> The element type
+     * @param data The collection to sample from
+     * @param random The random number generator
+     * @return An optional containing a random element if data is not
+     *     empty
+     */
+    public static <T> T sampleOrThrow(
+        final List<T> data, final RandomSource random
+    ) throws IllegalArgumentException {
+        if (data.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Cannot sample from empty collection"
+            );
+        }
+
+        final int randomIndex = random.nextInt(0, data.size());
+        return data.get(randomIndex);
+    }
+
+
+    /**
+     * Samples an optional element from the collection.
+     * @see #sample If you don't know if the collection is empty
+     * @param <T> The element type
+     * @param data The collection to sample from
+     * @param random The random number generator
+     * @return An optional containing a random element if data is not
+     *     empty
+     */
+    public static <T> T potentiallyNonDeterministicSampleOrThrow(
+        final Collection<T> data, final RandomSource random
+    ) throws IllegalArgumentException {
+        if (data.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Cannot sample from empty collection."
+            );
+        }
+
+        final int randomIndex = random.nextInt(0, data.size());
         if (data instanceof List<T> list) {
-            return Optional.of(list.get(randomIndex));
+            return list.get(randomIndex);
         }
         int i = 0;
         for (T element : data) {
             if (i == randomIndex) {
-                return Optional.of(element);
+                return element;
             }
             i++;
         }
-        return Optional.empty();
+        throw new IllegalStateException(
+            "Should be impossible, if the random index is with data bounds. Index: "
+                + randomIndex
+        );
     }
 }

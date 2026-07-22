@@ -126,6 +126,7 @@ public record CrossOver<T, Out>(RandomSource random) implements BinaryOperator<
         final MutableNode<T, ?, Out, ?, ?> parent,
         final Class<R> returnType
     ) throws NoSuchElementException {
+        assert returnType != null : "Return type cannot be null";
         @SuppressWarnings("unchecked")
         final List<NodeWithParent<T, R>> candidates = NodeWithParent.collect(parent)
                 .stream()

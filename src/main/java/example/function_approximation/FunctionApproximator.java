@@ -52,8 +52,8 @@ public record FunctionApproximator<
         final var params = ParameterBuilder.<Pair<Double, Double>, Double>of()
             .initializer(new DefaultInitialiser(rand.get()))
             .breeder(new DefaultBreeder(rand.get()))
-//            .trainEvaluator(new DefaultEvaluator(rand.get(), 100))
-            .trainEvaluator((IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>) _  -> SingleObjectiveFit.of(1, Goal.MINIMIZE))
+            .trainEvaluator(new DefaultEvaluator(rand.get(), 100))
+//            .trainEvaluator((IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>) _  -> SingleObjectiveFit.of(1, Goal.MINIMIZE))
             .testEvaluator(new DefaultEvaluator(rand.get(), 1))
             .addStatistic(
                 population -> {
@@ -98,13 +98,13 @@ public record FunctionApproximator<
         return GPPipeLine
             .start(initialiser::initialize)
             .repeat(TerminationCriterion.nIters(numGenerations),
-                    (i, pop) -> pop
-                            .then(SideEffect.of((ignored) -> System.out.println(
-                                    "Evaluating population for gen " + i)
-                            ))
-                            .then(trainEvaluator::evaluate)
-                            .then(postEvaluationStatistics)
-                            .then(breeder::breed)
+                (i, pop) -> pop
+                    .then(SideEffect.of((ignored) -> System.out.println(
+                        "Evaluating population for gen " + i)
+                    ))
+                    .then(trainEvaluator::evaluate)
+                    .then(postEvaluationStatistics)
+                    .then(breeder::breed)
             )
             .then(testEvaluator::evaluate)
             .then(postEvaluationStatistics)

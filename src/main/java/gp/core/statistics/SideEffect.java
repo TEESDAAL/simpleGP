@@ -31,7 +31,7 @@ public interface SideEffect<T> extends Function<T, T> {
      * @return A single side effect that applies all the given side effects in order
      */
     static <T> SideEffect<T> of(Collection<SideEffect<T>> sideEffects) {
-        Function<T, T> combined = sideEffects.stream()
+        final Function<T, T> combined = sideEffects.stream()
                 .map(f -> (Function<T, T>) f)
                 .reduce(i -> i, Function::andThen);
 

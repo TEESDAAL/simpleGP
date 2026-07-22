@@ -9,15 +9,27 @@ import java.util.List;
  */
 public interface BinaryOperator<I, O> extends Operator<I, O> {
     /**
-        * Produces output from a list of parents by delegating
-        * to the two-parent method.
+    * Produces output from a list of parents by delegating
+    * to the two-parent method.
+     * @param parents A list containing exactly two parents
+     * @return The produced output
+     */
+    @Override
+    default O produce(I[] parents) {
+        assert parents.length == 2;
+        return produce(parents[0], parents[1]);
+    }
+
+    /**
+     * Produces output from a list of parents by delegating
+     * to the two-parent method.
      * @param parents A list containing exactly two parents
      * @return The produced output
      */
     @Override
     default O produce(List<I> parents) {
         assert parents.size() == 2;
-        return produce(parents.get(0), parents.get(1));
+        return produce(parents.getFirst(), parents.get(1));
     }
 
     /**

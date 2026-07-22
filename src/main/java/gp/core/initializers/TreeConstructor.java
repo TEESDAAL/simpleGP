@@ -58,7 +58,7 @@ public interface TreeConstructor<T, R>
      */
     default <I, ReturnType> Optional<
         ImmutableNode<T, ?, ReturnType, ?, ?>
-        > recursivelyConstructIndividual(
+    > recursivelyConstructIndividual(
         final int currentDepth,
         final Class<ReturnType> returnType
     ) {

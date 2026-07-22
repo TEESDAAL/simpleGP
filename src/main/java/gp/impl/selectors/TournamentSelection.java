@@ -9,6 +9,7 @@ import gp.impl.selectors.random.RandomSampler;
 import utils.random.RandomSource;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -67,7 +68,7 @@ public record TournamentSelection<
      */
     @Override
     public Sampler<EvaluatedIndividual<T, R, I, F>> selectorFrom(
-            final Collection<EvaluatedIndividual<T, R, I, F>> items
+            final List<EvaluatedIndividual<T, R, I, F>> items
     ) {
         if (items.isEmpty()) {
             throw new IllegalArgumentException(

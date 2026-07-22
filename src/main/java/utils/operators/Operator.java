@@ -1,13 +1,13 @@
 package utils.operators;
 
 import gp.core.selectors.Sampler;
-import utils.Pair;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 /**
  * A generic operator that takes a list[O] of size `size()` and
@@ -22,7 +22,14 @@ public interface Operator<I, O> {
      * @return The produced output
      */
     O produce(List<I> parents);
-
+    /**
+     * Produces output from a list of parents.
+     * @param parents The list of parents to operate on
+     * @return The produced output
+     */
+    default O produce(I[] parents) {
+        return produce(Arrays.asList(parents));
+    };
     /**
      * Returns the number of parents this operator requires.
      * @return The expected size of the parents list.
@@ -41,7 +48,7 @@ public interface Operator<I, O> {
         final Operator<I, O> self = this;
         return new Operator<>() {
             @Override
-            public R produce(final List<I> parents) {
+            public R produce(List<I> parents) {
                 return wrapper.apply(Operator.this.produce(parents));
             }
 
@@ -58,10 +65,11 @@ public interface Operator<I, O> {
      * @return The produced output
      */
     default O sampleFrom(final Sampler<I> sampler) {
-        return produce(IntStream.range(0, arity())
-                .mapToObj(ignored -> sampler.sample())
-                .toList()
-        );
+        @SuppressWarnings("unchecked") final I[] input = (I[]) new Object[arity()];
+        for (int i = 0; i < arity(); i++) {
+            input[i] = sampler.sample();
+        }
+        return produce(input);
     }
 
     /**
@@ -77,11 +85,11 @@ public interface Operator<I, O> {
             final Sampler<T> sampler,
             final Function<T, I> mapper
     ) {
-        return produce(IntStream.range(0, arity())
-                    .mapToObj(ignored -> sampler.sample())
-                .map(mapper)
-                .toList()
-        );
+        @SuppressWarnings("unchecked") final I[] input = (I[]) new Object[arity()];
+        for (int i = 0; i < arity(); i++) {
+            input[i] = mapper.apply(sampler.sample());
+        }
+        return produce(input);
     }
 
     /**
@@ -156,13 +164,13 @@ final class CacherCache {
         return (Operator<I, O>) CACHE_CACHE.computeIfAbsent(
             operator,
             op -> new Operator<I, O>() {
-                private final Map<List<I>, O> cache = new ConcurrentHashMap<>();
+                private final Map<Integer, O> cache = new ConcurrentHashMap<>();
 
                 @Override
                 public O produce(final List<I> parents) {
                     return cache.computeIfAbsent(
-                        parents,
-                        p -> ((Operator<I, O>) op).produce(p)
+                        parents.hashCode(),
+                        _ -> ((Operator<I, O>) op).produce(parents)
                     );
                 }
 
@@ -214,11 +222,11 @@ final class CacherCache {
         return (BinaryOperator<I, O>) BI_CACHE.computeIfAbsent(
             operator,
             _ -> new BinaryOperator<I, O>() {
-                private final Map<Pair<I, I>, O> cache = new ConcurrentHashMap<>();
+                private final Map<Integer, O> cache = new ConcurrentHashMap<>();
                 @Override
                 public O produce(I parent1, I parent2) {
                     return cache.computeIfAbsent(
-                        Pair.of(parent1, parent2),
+                        Objects.hash(parent1, parent2),
                         _ -> operator.produce(parent1, parent2)
                     );
                 }

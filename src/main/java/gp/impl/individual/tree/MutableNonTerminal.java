@@ -2,6 +2,7 @@ package gp.impl.individual.tree;
 
 import utils.operators.Operator;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,30 +12,14 @@ import java.util.List;
  * @param <Output> The output type
  */
 public final class MutableNonTerminal<Terminals, Input, Output>
-        implements NonTerminal<
+    extends NonTerminal<
         Terminals, Input, Output,
         MutableNode<Terminals, ?, Input, ?, ?>
-        >, MutableNode<
+    > implements MutableNode<
         Terminals, Input, Output,
         MutableNonTerminal<Terminals, Input, Output>,
         ImmutableNonTerminal<Terminals, Input, Output>
-        > {
-    /** The operator function. */
-    private Operator<Input, Output> function;
-    /** The return type of this non-terminal. */
-    private final Class<Output> returnType;
-    /** The input type of this non-terminal. */
-    private final Class<Input> inputType;
-    /** The name of this non-terminal. */
-    private String name;
-
-    /** The child nodes. */
-    private List<MutableNode<
-                Terminals, ?, Input,
-                ? extends MutableNode<Terminals, ?, Input, ?, ?>,
-                ? extends ImmutableNode<Terminals, ?, Input, ?, ?>
-            >> children;
-
+    > {
 
     /**
      * Constructs a mutable non-terminal with the given function and
@@ -46,48 +31,15 @@ public final class MutableNonTerminal<Terminals, Input, Output>
      * @param outType The output type
      */
     public MutableNonTerminal(
-            final String name,
-            final Operator<Input, Output> operatorFunction,
-            final List<MutableNode<
+        String name, Operator<Input, Output> operatorFunction,
+        MutableNode<
                 Terminals, ?, Input,
                 ? extends MutableNode<Terminals, ?, Input, ?, ?>,
                 ? extends ImmutableNode<Terminals, ?, Input, ?, ?>
-            >> childList,
-            final Class<Input> inType,
-            final Class<Output> outType) {
-        this.name = name;
-        this.function = operatorFunction;
-        this.children = childList;
-        this.inputType = inType;
-        this.returnType = outType;
-    }
-
-    @Override
-    public String name() {
-        return this.name;
-    }
-
-    @Override
-    public Class<Output> returnType() {
-        return this.returnType;
-    }
-
-
-    @Override
-    public Output evaluate(final Terminals terminals) {
-        return this.function.produce(
-                children.stream()
-                        .map(child -> child.evaluate(terminals))
-                        .toList()
-        );
-    }
-
-    /**
-     * Gets the operator function.
-     * @return The function
-     */
-    public Operator<Input, Output> function() {
-        return function;
+        >[] childList,
+        Class<Input> inType, Class<Output> outType
+    ) {
+        super(name, operatorFunction, childList, inType, outType);
     }
 
     /**
@@ -96,26 +48,10 @@ public final class MutableNonTerminal<Terminals, Input, Output>
      * @return This mutable non-terminal for method chaining
      */
     public MutableNonTerminal<Terminals, Input, Output> setFunction(
-            final Operator<Input, Output> newFunction) {
+        Operator<Input, Output> newFunction
+    ) {
         this.function = newFunction;
         return this;
-    }
-
-    /**
-     * Gets the child nodes.
-     * @return The list of children
-     */
-    public List<MutableNode<
-            Terminals, ?, Input,
-            ? extends MutableNode<Terminals, ?, Input, ?, ?>,
-            ? extends ImmutableNode<Terminals, ?, Input, ?, ?>
-            >> children() {
-        return children;
-    }
-
-    @Override
-    public Class<Input> inputType() {
-        return inputType;
     }
 
     /**
@@ -124,9 +60,10 @@ public final class MutableNonTerminal<Terminals, Input, Output>
      * @param child The new child node
      */
     public void replaceChild(
-            final int index,
-            final MutableNode<Terminals, ?, Input, ?, ?> child) {
-        this.children.set(index, child);
+        int index,
+        MutableNode<Terminals, ?, Input, ?, ?> child
+    ) {
+        this.children[index] = child;
     }
 
     /**
@@ -134,11 +71,11 @@ public final class MutableNonTerminal<Terminals, Input, Output>
      * @return The children list
      */
     public List<MutableNode<
-            Terminals, ?, Input,
-            ? extends MutableNode<Terminals, ?, Input, ?, ?>,
-            ? extends ImmutableNode<Terminals, ?, Input, ?, ?>
-            >> getChildren() {
-        return children;
+        Terminals, ?, Input,
+        ? extends MutableNode<Terminals, ?, Input, ?, ?>,
+        ? extends ImmutableNode<Terminals, ?, Input, ?, ?>
+    >> getChildren() {
+        return Arrays.asList(children);
     }
 
     /**
@@ -147,11 +84,12 @@ public final class MutableNonTerminal<Terminals, Input, Output>
      * @return This mutable non-terminal for method chaining
      */
     public MutableNonTerminal<Terminals, Input, Output> setChildren(
-            final List<MutableNode<
-                    Terminals, ?, Input,
-                    ? extends MutableNode<Terminals, ?, Input, ?, ?>,
-                    ? extends ImmutableNode<Terminals, ?, Input, ?, ?>
-            >> newChildren) {
+        MutableNode<
+            Terminals, ?, Input,
+            ? extends MutableNode<Terminals, ?, Input, ?, ?>,
+            ? extends ImmutableNode<Terminals, ?, Input, ?, ?>
+        >[] newChildren
+    ) {
         this.children = newChildren;
         return this;
     }

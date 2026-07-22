@@ -9,6 +9,7 @@ import utils.Preconditions;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -28,14 +29,14 @@ public record Elitism<
 >(
         int elitismCount,
         Function<
-                Collection<EvaluatedIndividual<
+                List<EvaluatedIndividual<
                         TerminalHolder, ReturnType, Ind, Fit
                 >>,
                 Comparator<Fit>
         > fitnessComparatorFunction
 ) implements SelectionMechanism<
         EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>,
-        Collection<EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>>
+        List<EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>>
 > {
     /**
      * Compact constructor to validate parameters.
@@ -66,7 +67,7 @@ public record Elitism<
     Elitism<T, R, I, F> of(
             final int elitismCount,
             final Function<
-                    Collection<EvaluatedIndividual<T, R, I, F>>,
+                    List<EvaluatedIndividual<T, R, I, F>>,
                     Comparator<F>
             > fitnessComparatorFunction
     ) {
@@ -83,24 +84,22 @@ public record Elitism<
      * @return a selector that returns the best individual
      */
     @Override
-    public Sampler<
-            Collection<EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>>
-    >
-    selectorFrom(
-            final Collection<EvaluatedIndividual<
-                    TerminalHolder,
-                    ReturnType,
-                    Ind,
-                    Fit
-            >> items
+    public Sampler<List<EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>>> selectorFrom(
+        final List<EvaluatedIndividual<
+            TerminalHolder,
+            ReturnType,
+            Ind,
+            Fit
+        >> items
     ) {
-        final Comparator<Fit> fitnessComparator =
-                fitnessComparatorFunction.apply(items);
+        final Comparator<Fit> fitnessComparator = fitnessComparatorFunction.apply(
+            items
+        );
+
         return () -> items.stream()
                 .sorted((e1, e2) -> fitnessComparator.compare(
-                        e2.fitness(), e1.fitness()
-                ))
-                .limit(elitismCount)
+                    e2.fitness(), e1.fitness()
+                )).limit(elitismCount)
                 .toList();
     }
 }

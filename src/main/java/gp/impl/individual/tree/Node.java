@@ -127,7 +127,7 @@ public sealed interface Node<
     static <Term, In, Out> ImmutableNonTerminal<Term, In, Out> nonTerm(
             final String name,
             final Operator<In, Out> function,
-            final List<ImmutableNode<Term, ?, In, ?, ?>> children,
+            final ImmutableNode<Term, ?, In, ?, ?>[] children,
             final Class<In> inputType,
             final Class<Out> outputType
     ) {
@@ -135,6 +135,8 @@ public sealed interface Node<
                 name, function, children, inputType, outputType
         );
     }
+
+    Output performantEvaluate(Terminals terminals, Object[] inputs);
 }
 
 class LispString implements TreeExtractor<String> {

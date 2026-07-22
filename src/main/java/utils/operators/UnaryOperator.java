@@ -14,6 +14,11 @@ public interface UnaryOperator<I, O> extends Operator<I, O> {
         return produce(parents.getFirst());
     }
 
+    @Override
+    default O produce(I[] parents) {
+        return produce(parents[0]);
+    }
+
     /**
      * Produces output from a single parent.
      * @param parent The parent to operate on

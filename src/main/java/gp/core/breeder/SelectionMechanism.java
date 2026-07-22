@@ -3,6 +3,7 @@ package gp.core.breeder;
 import gp.core.selectors.Sampler;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Interface for building selectors from collections.
@@ -15,6 +16,6 @@ public interface SelectionMechanism<From, To> {
      * @param items The items to select from
      * @return A primed selector
      */
-    Sampler<To> selectorFrom(Collection<From> items);
+    Sampler<To> selectorFrom(List<From> items);
 }
 

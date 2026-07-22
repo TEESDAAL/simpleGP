@@ -74,13 +74,13 @@ public record SubtreeMutation<T, Out>(
     public List<ImmutableNode<T, ?, Out, ?, ?>> produce(
             final Node<T, ?, Out, ?, ?> root
     ) {
-        ImmutableNode<T, ?, Out, ?, ?> node = switch (root) {
+        final ImmutableNode<T, ?, Out, ?, ?> node = switch (root) {
             case Terminal<?, ?> term -> {
-                Terminal<T, Out> actualTermTypes = (Terminal<T, Out>) term;
+                final Terminal<T, Out> actualTermTypes = (Terminal<T, Out>) term;
                 yield randomTerminal(actualTermTypes.returnType());
             }
             case NonTerminal<?, ?, ?, ?> nonTerminal -> {
-                NonTerminal<T, ?, Out, ?> actualNonTerminalTypes =
+                final NonTerminal<T, ?, Out, ?> actualNonTerminalTypes =
                         (NonTerminal<T, ?, Out, ?>) nonTerminal;
                 yield replaceChild(actualNonTerminalTypes.mutableCopy());
             }
@@ -93,23 +93,23 @@ public record SubtreeMutation<T, Out>(
     private <MutationPointInputType> ImmutableNonTerminal<T, ?, Out> replaceChild(
             final MutableNonTerminal<T, ?, Out> root
     ) {
-        List<MutableNonTerminal<T, ?, ?>> nonTerminals = new ArrayList<>();
+        final List<MutableNonTerminal<T, ?, ?>> nonTerminals = new ArrayList<>();
         for (Node<T, ?, ?, ?, ?> node : root.stream().toList()) {
             if (node instanceof MutableNonTerminal<?, ?, ?> nonTerm) {
                 nonTerminals.add((MutableNonTerminal<T, ?, ?>) nonTerm);
             }
         }
 
-        MutableNonTerminal<T, MutationPointInputType, ?> mutationPoint
+        final MutableNonTerminal<T, MutationPointInputType, ?> mutationPoint
                 = (MutableNonTerminal<T, MutationPointInputType, ?>)
                 RandomSampler.sample(nonTerminals, random)
                 .orElseThrow(() -> new IllegalStateException(
                         "Tree somehow has no nodes?"));
 
-        int depthOfMutationPoint = root.depth()
+        final int depthOfMutationPoint = root.depth()
                 - mutationPoint.depth();
 
-        MutableNode<T, ?, MutationPointInputType, ?, ?> subTree
+        final MutableNode<T, ?, MutationPointInputType, ?, ?> subTree
                 = this.createSubTree(
                 depthLimit - depthOfMutationPoint,
                 mutationPoint.inputType()

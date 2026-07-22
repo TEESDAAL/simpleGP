@@ -3,6 +3,7 @@ package gp.impl.individual.tree;
 import utils.operators.UnaryOperator;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -13,25 +14,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <Terminals> The terminal type
  * @param <Output> The output type
  */
-public final class ImmutableTerminal<Terminals, Output> implements
-    Terminal<Terminals, Output>,
+public final class ImmutableTerminal<Terminals, Output> extends Terminal<Terminals, Output> implements
     ImmutableNode<
             Terminals, Terminals, Output,
             ImmutableTerminal<Terminals, Output>,
             MutableTerminal<Terminals, Output>
     > {
-    private final String name;
-    private final UnaryOperator<Terminals, Output> extractor;
-    private final Class<Output> returnType;
-
     private ImmutableTerminal(
         String name,
         UnaryOperator<Terminals, Output> extractor,
         Class<Output> returnType
     ) {
-        this.name = name;
-        this.extractor = extractor;
-        this.returnType = returnType;
+        super(name, extractor, returnType);
     }
 
     /** Cache for flyweight pattern. */
@@ -39,21 +33,6 @@ public final class ImmutableTerminal<Terminals, Output> implements
             ImmutableTerminal<?, ?>,
             ImmutableTerminal<?, ?>
     > CACHE = new ConcurrentHashMap<>();
-
-    @Override
-    public UnaryOperator<Terminals, Output> extractor() {
-        return this.extractor;
-    }
-
-    @Override
-    public String name() {
-        return this.name;
-    }
-
-    @Override
-    public Class<Output> returnType() {
-        return this.returnType;
-    }
 
     /**
      * Creates or retrieves a singleton immutable terminal.

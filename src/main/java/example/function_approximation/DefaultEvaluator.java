@@ -37,7 +37,7 @@ public class DefaultEvaluator implements Evaluator<Pair<Double, Double>, Double,
     DataSet<Pair<Double, Double>, Double> generateRandomDataSet() {
         return new DataSet<>(
             IntStream.range(0, numSamples).mapToObj(
-                    i -> Pair.of(
+                    _ -> Pair.of(
                             random.nextDouble(-Math.PI, Math.PI),
                             random.nextDouble(-Math.PI, Math.PI)
                     )
@@ -49,9 +49,7 @@ public class DefaultEvaluator implements Evaluator<Pair<Double, Double>, Double,
 
     @Override
     public Population<EvaluatedIndividual<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>> evaluate(Population<SingleTreeIndividual<Pair<Double, Double>, Double>> population) {
-        var dataset = generateRandomDataSet();
-
-        IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness> evaluator = new IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>() {
+        final IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness> evaluator = new IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>() {
             @Override
             public SingleObjectiveFitness evaluate(SingleTreeIndividual<Pair<Double, Double>, Double> individual) {
                 double sum = 0.0;

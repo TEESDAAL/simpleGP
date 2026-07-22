@@ -7,19 +7,12 @@ import utils.operators.UnaryOperator;
  * @param <Terminals> The type of terminal inputs
  * @param <Output> The output type
  */
-public final class MutableTerminal<Terminals, Output> implements
-        Terminal<Terminals, Output>,
-        MutableNode<
-                Terminals, Terminals, Output,
-                MutableTerminal<Terminals, Output>,
-                ImmutableTerminal<Terminals, Output>
-        > {
-    /** The extractor function for this terminal. */
-    private UnaryOperator<Terminals, Output> extractor;
-    /** The return type of this terminal. */
-    private final Class<Output> returnType;
-    /** The name of this terminal. */
-    private String name;
+public final class MutableTerminal<Terminals, Output> extends Terminal<Terminals, Output>
+    implements MutableNode<
+            Terminals, Terminals, Output,
+            MutableTerminal<Terminals, Output>,
+            ImmutableTerminal<Terminals, Output>
+    > {
 
     /**
      * Constructs a mutable terminal with the given extractor.
@@ -28,18 +21,11 @@ public final class MutableTerminal<Terminals, Output> implements
      * @param returnType The output type
      */
     public MutableTerminal(
-            final String name,
-            final UnaryOperator<Terminals, Output> extractor,
-            final Class<Output> returnType
+            String name,
+            UnaryOperator<Terminals, Output> extractor,
+            Class<Output> returnType
     ) {
-        this.name = name;
-        this.extractor = extractor;
-        this.returnType = returnType;
-    }
-
-    @Override
-    public UnaryOperator<Terminals, Output> extractor() {
-        return this.extractor;
+        super(name, extractor, returnType);
     }
 
     /**
@@ -54,11 +40,6 @@ public final class MutableTerminal<Terminals, Output> implements
         return this;
     }
 
-    @Override
-    public String name() {
-        return this.name;
-    }
-
     /**
      * Sets the name of this terminal.
      * @param name The new name
@@ -69,12 +50,5 @@ public final class MutableTerminal<Terminals, Output> implements
         return this;
     }
 
-    /**
-     * Gets the return type of this terminal.
-     * @return The output type class
-     */
-    @Override
-    public Class<Output> returnType() {
-        return returnType;
-    }
+
 }
