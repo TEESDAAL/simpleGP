@@ -3,13 +3,15 @@ package example.function_approximation.parameters.initial;
 import example.function_approximation.parameters.FunctionApproximationParameters;
 import gp.Population;
 import gp.core.breeder.Breeder;
-import gp.core.evaluators.Evaluator;
+import gp.core.assessor.Assessor;
 import gp.core.fitness.SingleObjectiveFitness;
-import gp.core.individual.EvaluatedIndividual;
-import gp.core.initializers.Initialiser;
-import gp.core.statistics.Statistic;
+import gp.core.individual.AssessedIndividual;
+import gp.core.initializer.Initialiser;
+import gp.core.statistic.Statistic;
 import gp.impl.individual.SingleTreeIndividual;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -17,23 +19,15 @@ import java.util.function.Consumer;
 public class ParameterBuilder<X, Y> {
     private Initialiser<SingleTreeIndividual<X, Y>> initialiser;
     private Breeder<
-            EvaluatedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>,
+            AssessedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>,
             SingleTreeIndividual<X, Y>
     > breeder;
-    private Evaluator<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> trainEvaluator;
-    private Evaluator<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> testEvaluator;
-    private Statistic<EvaluatedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>, ?> statistic = new Statistic<>() {
-        @Override
-        public Object statistic(Population<EvaluatedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>> population) {
-            return "Hello";
-        }
+    private Assessor<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> trainAssessor;
+    private Assessor<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> testAssessor;
+    private final List<Statistic<AssessedIndividual<
+        X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness
+    >, ?>> statistics = new ArrayList<>();
 
-        @Override
-        public Consumer<Object> log() {
-            return e -> {
-            };
-        }
-    };
     public static <X, Y> ParameterBuilder<X, Y> of() {
         return new ParameterBuilder<>();
     }
@@ -44,55 +38,53 @@ public class ParameterBuilder<X, Y> {
     }
 
     public ParameterBuilder<X, Y> breeder(
-            Breeder<EvaluatedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>, SingleTreeIndividual<X, Y>> breeder
+            Breeder<AssessedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>, SingleTreeIndividual<X, Y>> breeder
     ) {
         this.breeder = breeder;
         return this;
     }
 
     public ParameterBuilder<X, Y> trainEvaluator(
-        Evaluator<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> evaluator
+        Assessor<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> assessor
     ) {
-        this.trainEvaluator = evaluator;
+        this.trainAssessor = assessor;
         return this;
     }
 
     public ParameterBuilder<X, Y> testEvaluator(
-        Evaluator<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> evaluator
+        Assessor<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> assessor
     ) {
-        this.testEvaluator = evaluator;
+        this.testAssessor = assessor;
         return this;
     }
     public ParameterBuilder<X, Y> addStatistic(
-        Statistic<EvaluatedIndividual<
-            X, Y,
-            SingleTreeIndividual<X, Y>,
-            SingleObjectiveFitness
-        >, ?> statistic
+        Statistic<AssessedIndividual<
+                    X, Y,
+                    SingleTreeIndividual<X, Y>,
+                    SingleObjectiveFitness
+                >, ?> statistic
     ) {
-        this.statistic = statistic;
-//        var prev = this.statistic;
-//        this.statistic = p -> statistic.sideEffect(prev.sideEffect(p));
+        this.statistics.add(statistic);
         return this;
     }
 
     public FunctionApproximationParameters<
             X, Y,
             SingleTreeIndividual<X, Y>,
-            Evaluator<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>
+            Assessor<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>
     > build() {
         Map.of(
                 "Initializer", this.initialiser,
                 "Breeder", this.breeder,
-                "Train Evaluator", this.trainEvaluator,
-                "Test Evaluator", this.testEvaluator
-        ).forEach((key, value) -> Objects.requireNonNull(
-                value,
+                "Train Evaluator", this.trainAssessor,
+                "Test Evaluator", this.testAssessor
+        ).forEach((key, v) -> Objects.requireNonNull(
+                v,
                 "Cannot build parameters with unset" + key
         ));
 
 
-        ParameterBuilder<X, Y> self = this;
+        final ParameterBuilder<X, Y> self = this;
         return new FunctionApproximationParameters<>() {
             @Override
             public Initialiser<SingleTreeIndividual<X, Y>> initializer() {
@@ -100,23 +92,35 @@ public class ParameterBuilder<X, Y> {
             }
 
             @Override
-            public Breeder<EvaluatedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>, SingleTreeIndividual<X, Y>> breeder() {
+            public Breeder<AssessedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>, SingleTreeIndividual<X, Y>> breeder() {
                 return self.breeder;
             }
 
             @Override
-            public Evaluator<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> trainEvaluator() {
-                return self.trainEvaluator;
+            public Assessor<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> trainEvaluator() {
+                return self.trainAssessor;
             }
 
             @Override
-            public Evaluator<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> testEvaluator() {
-                return self.testEvaluator;
+            public Assessor<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness> testEvaluator() {
+                return self.testAssessor;
             }
 
             @Override
-            public Statistic<EvaluatedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>, ?> scoreLogger() {
-                return self.statistic;
+            public Statistic<AssessedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>, ?> scoreLogger() {
+                final var statistics = List.copyOf(self.statistics);
+                return new Statistic<AssessedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>, Void>() {
+                    @Override
+                    public Void statistic(Population<AssessedIndividual<X, Y, SingleTreeIndividual<X, Y>, SingleObjectiveFitness>> population) {
+                        statistics.forEach(s -> s.sideEffect(population));
+                        return null;
+                    }
+
+                    @Override
+                    public Consumer<Void> log() {
+                        return _ -> {};
+                    }
+                };
             }
 
             @Override

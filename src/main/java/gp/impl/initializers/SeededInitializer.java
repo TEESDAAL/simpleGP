@@ -1,8 +1,8 @@
 package gp.impl.initializers;
 
 import gp.Population;
-import gp.core.initializers.IndividualInitialiser;
-import gp.core.initializers.Initialiser;
+import gp.core.initializer.IndividualInitialiser;
+import gp.core.initializer.Initialiser;
 import utils.Preconditions;
 
 import java.util.function.IntFunction;
@@ -11,8 +11,9 @@ import java.util.stream.IntStream;
 /**
  * A utility class for creating population initializers from a seed population.
  */
-public final class SeededInitializer {
-    private SeededInitializer() {}
+public enum SeededInitializer {
+    ;
+
     /**
      * Create population initializer from a seed population,
      *  padded by an individual initializer.

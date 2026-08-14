@@ -3,7 +3,7 @@ package gp.impl.individual.tree;
 import utils.operators.Operator;
 import utils.operators.UnaryOperator;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,6 +77,7 @@ public sealed interface Node<
      */
     Output evaluate(Terminals terminals);
 
+//    List<Output> evaluateAll(List<Terminals> terminalsList);/
     /**
      * Creates a mutable copy of this node.
      * @return A mutable copy
@@ -94,6 +95,24 @@ public sealed interface Node<
      * @return The depth (0 for terminals)
      */
     int depth();
+
+    /**
+     * Return the total number of nodes in the subtree.
+     * @return the total number of nodes.
+     */
+    default int size() {
+        return this.extract(new TreeExtractor<>() {
+            @Override
+            public Integer terminal(Terminal<?, ?> node) {
+                return 1;
+            }
+
+            @Override
+            public Integer nonTerminal(NonTerminal<?, ?, ?, ?> node) {
+                return Arrays.stream(node.children).mapToInt(c -> c.extract(this)).sum();
+            }
+        });
+    }
 
     /**
      * Creates a terminal node.
@@ -137,6 +156,8 @@ public sealed interface Node<
     }
 
     Output performantEvaluate(Terminals terminals, Object[] inputs);
+
+    int numChildren();
 }
 
 class LispString implements TreeExtractor<String> {
@@ -147,7 +168,7 @@ class LispString implements TreeExtractor<String> {
 
     @Override
     public String nonTerminal(final NonTerminal<?, ?, ?, ?> node) {
-        return node.name() + node.children().stream()
+        return node.name() + Arrays.stream(node.children)
             .map(n -> n.extract(this))
             .collect(Collectors.joining(", ", "(", ")"));
     }

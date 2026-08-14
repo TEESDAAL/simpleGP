@@ -9,19 +9,10 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>26</maven.compiler.source>
+        <maven.compiler.target>26</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
-
 
     <dependencies>
         <dependency>
@@ -29,13 +20,6 @@
             <artifactId>junit-jupiter</artifactId>
             <version>5.13.4</version>
             <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.github.TEESDAAL</groupId>
-            <artifactId>Result</artifactId>
-            <version>6a8a8eece08315705f548eb6a1094c2e6e5098c5</version>
         </dependency>
     </dependencies>
 
@@ -62,8 +46,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>22</source>
-                    <target>22</target>
+                    <source>26</source>
+                    <target>26</target>
                 </configuration>
             </plugin>
         </plugins>

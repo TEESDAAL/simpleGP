@@ -1,8 +1,7 @@
 package gp.impl.genetic_operators;
 
-import gp.core.initializers.OperatorSelector;
-import gp.core.initializers.TypedNonTerminal;
-import gp.core.initializers.TypedTerminal;
+import gp.core.initializer.PrimitiveSet;
+import gp.core.initializer.TypedTerminal;
 import gp.impl.selectors.random.RandomSampler;
 import gp.impl.individual.tree.ImmutableNode;
 import gp.impl.individual.tree.ImmutableNonTerminal;
@@ -25,15 +24,12 @@ import java.util.List;
  * @param <T> The terminal input type
  * @param <Out> The output type
  * @param random The random number generator
- * @param terminals Map of terminals by return type
- * @param nonTerminals Map of non-terminals by return type
  * @param depthLimit Maximum depth for generated subtrees
  * @param attemptLimit Maximum attempts to generate a valid subtree
  */
 public record SubtreeMutation<T, Out>(
         RandomSource random,
-        List<TypedTerminal<T, ?>> terminals,
-        List<TypedNonTerminal<?, ?>> nonTerminals,
+        PrimitiveSet<T> primitiveSet,
         int depthLimit,
         int attemptLimit
 ) implements UnaryOperator<
@@ -46,21 +42,19 @@ public record SubtreeMutation<T, Out>(
      * @param <T> The terminal type
      * @param <Out> The output type
      * @param random The random generator
-     * @param terminals Map of terminals by return type
-     * @param nonTerminals Map of non-terminals by return type
+     * @param primitiveSet The set of terminals and non-terminals
      * @param maxDepth Maximum depth
      * @param maxTries Maximum attempts
      * @return A new subtree mutation operator
      */
     public static <T, Out> SubtreeMutation<T, Out> of(
             final RandomSource random,
-            final List<TypedTerminal<T, ?>> terminals,
-            final List<TypedNonTerminal<?, ?>> nonTerminals,
+            final PrimitiveSet<T> primitiveSet,
             final int maxDepth,
             final int maxTries
     ) {
         return new SubtreeMutation<>(
-                random, terminals, nonTerminals, maxDepth, maxTries
+                random, primitiveSet, maxDepth, maxTries
         );
     }
 
@@ -94,17 +88,14 @@ public record SubtreeMutation<T, Out>(
             final MutableNonTerminal<T, ?, Out> root
     ) {
         final List<MutableNonTerminal<T, ?, ?>> nonTerminals = new ArrayList<>();
-        for (Node<T, ?, ?, ?, ?> node : root.stream().toList()) {
+        for (final Node<T, ?, ?, ?, ?> node : root.stream().toList()) {
             if (node instanceof MutableNonTerminal<?, ?, ?> nonTerm) {
                 nonTerminals.add((MutableNonTerminal<T, ?, ?>) nonTerm);
             }
         }
 
         final MutableNonTerminal<T, MutationPointInputType, ?> mutationPoint
-                = (MutableNonTerminal<T, MutationPointInputType, ?>)
-                RandomSampler.sample(nonTerminals, random)
-                .orElseThrow(() -> new IllegalStateException(
-                        "Tree somehow has no nodes?"));
+                = (MutableNonTerminal<T, MutationPointInputType, ?>) RandomSampler.sampleOrThrow(nonTerminals, random);
 
         final int depthOfMutationPoint = root.depth()
                 - mutationPoint.depth();
@@ -118,7 +109,7 @@ public record SubtreeMutation<T, Out>(
         mutationPoint.replaceChild(
             RandomSampler.sampleIndex(
                 mutationPoint.children(), random
-            ).orElseThrow(),
+            ),
             subTree
         );
         return root.immutableCopy();
@@ -131,24 +122,18 @@ public record SubtreeMutation<T, Out>(
                     final Class<OutputType> returnType
             ) {
         return NodeInitialiser.grow(
-                random, terminals, nonTerminals, 1,
+                random, primitiveSet, 1,
                 attemptLimit, maxDepthParam, returnType
         ).createIndividual().mutableCopy();
     }
 
 
-    private <R> ImmutableTerminal<T, R> randomTerminal(
-            final Class<R> returnType
-    ) {
-        return RandomSampler.sample(
-                OperatorSelector.validTerminals(
-                        this.terminals, returnType
-                ),
+    private <R> ImmutableTerminal<T, R> randomTerminal(final Class<R> returnType) {
+        final TypedTerminal<T, R> term = RandomSampler.sampleOrThrow(
+                primitiveSet.terminalsOfType(returnType),
                 this.random
-        ).map(term -> Node.term(
-                term.name(), term.terminal(), term.returnType()
-        )).orElseThrow(() -> new IllegalStateException(
-                "Should be impossible as you can always reselect the same terminal"
-        ));
+        );
+
+        return Node.term(term.name(), term.terminal(), term.returnType());
     }
 }

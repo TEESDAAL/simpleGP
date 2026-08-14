@@ -1,12 +1,12 @@
 package example.function_approximation.parameters;
 
 import gp.core.breeder.Breeder;
-import gp.core.evaluators.Evaluator;
+import gp.core.assessor.Assessor;
 import gp.core.fitness.SingleObjectiveFitness;
-import gp.core.individual.EvaluatedIndividual;
+import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
-import gp.core.initializers.Initialiser;
-import gp.core.statistics.Statistic;
+import gp.core.initializer.Initialiser;
+import gp.core.statistic.Statistic;
 
 import java.io.Serializable;
 
@@ -15,16 +15,16 @@ import java.io.Serializable;
 public interface FunctionApproximationParameters<
     X, Y,
     Ind extends Individual<X, Y>,
-    E extends Evaluator<X, Y, Ind, SingleObjectiveFitness>
+    E extends Assessor<X, Y, Ind, SingleObjectiveFitness>
 > extends Serializable {
     Initialiser<Ind> initializer();
-    Breeder<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>, Ind> breeder();
+    Breeder<AssessedIndividual<X, Y, Ind, SingleObjectiveFitness>, Ind> breeder();
 
     E trainEvaluator();
 
     E testEvaluator();
 
-    Statistic<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>, ?> scoreLogger();
+    Statistic<AssessedIndividual<X, Y, Ind, SingleObjectiveFitness>, ?> scoreLogger();
 
     int numGenerations();
 }

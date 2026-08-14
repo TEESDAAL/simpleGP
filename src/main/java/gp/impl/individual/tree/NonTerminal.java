@@ -3,11 +3,9 @@ package gp.impl.individual.tree;
 import utils.ArrayUtils;
 import utils.operators.Operator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // TODO, make evaluate hold an array that it reuses for its outputs
@@ -70,7 +68,7 @@ public sealed abstract class NonTerminal<
      */
     protected int maximumArity() {
         int maximumArity = this.function.arity();
-        for (Child child : children) {
+        for (final Child child : children) {
             final int childArity = switch (child) {
                 case NonTerminal<?, ?, ?, ?> nonTerminal -> nonTerminal
                     .maximumArity();
@@ -158,7 +156,6 @@ public sealed abstract class NonTerminal<
      * @param inputs The array to hold the children
      * @return The output of this node when given the terminals.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Output performantEvaluate(Terminals terminals, Object[] inputs) {
        throw new UnsupportedOperationException();
@@ -169,8 +166,8 @@ public sealed abstract class NonTerminal<
         return new MutableNonTerminal<>(
                 this.name,
                 this.function,
-                ArrayUtils.mapInPlaceInvalidatingOldReferences(
-                    Arrays.copyOf(this.children, this.children.length),
+                ArrayUtils.map(
+                    this.children, MutableNode.class,
                     child -> child.mutableCopy()
                 ),
                 this.inputType,
@@ -183,8 +180,8 @@ public sealed abstract class NonTerminal<
         return new ImmutableNonTerminal<>(
                 this.name,
                 this.function,
-                ArrayUtils.mapInPlaceInvalidatingOldReferences(
-                    Arrays.copyOf(this.children, this.children.length),
+                ArrayUtils.map(
+                    this.children, ImmutableNode.class,
                     child -> child.immutableCopy()
                 ),
                 this.inputType,
@@ -196,14 +193,19 @@ public sealed abstract class NonTerminal<
     public Stream<Node<Terminals, ?, ?, ?, ?>> stream() {
         return Stream.concat(
                 Stream.of(this),
-                this.children.stream()
+                Arrays.stream(this.children)
                         .flatMap(Node::stream)
         );
     }
 
     @Override
     public int depth() {
-        return 1 + children().stream().mapToInt(Node::depth).max()
+        return 1 + Arrays.stream(children).mapToInt(Node::depth).max()
                 .orElseThrow();
+    }
+
+    @Override
+    public int numChildren() {
+        return children.length;
     }
 }

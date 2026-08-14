@@ -1,6 +1,6 @@
 package gp.core.breeder;
 
-import gp.core.selectors.Sampler;
+import gp.core.selector.Sampler;
 
 import java.util.List;
 

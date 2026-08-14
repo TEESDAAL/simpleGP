@@ -1,6 +1,6 @@
 package example.function_approximation.parameters;
 
-import gp.core.initializers.TypedNonTerminal;
+import gp.core.initializer.TypedNonTerminal;
 import utils.operators.BinaryOperator;
 import utils.operators.Operator;
 import utils.operators.UnaryOperator;

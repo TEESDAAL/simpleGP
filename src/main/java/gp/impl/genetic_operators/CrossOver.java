@@ -117,8 +117,7 @@ public record CrossOver<T, Out>(RandomSource random) implements BinaryOperator<
         final MutableNode<T, ?, Out, ?, ?> parent
     ) {
         return RandomSampler
-                .sample(NodeWithParent.collect(parent), random)
-                .orElseThrow();
+                .sampleOrThrow(NodeWithParent.collect(parent), random);
     }
 
 
@@ -136,8 +135,7 @@ public record CrossOver<T, Out>(RandomSource random) implements BinaryOperator<
                 .toList();
 
         return RandomSampler
-                .sample(candidates, random)
-                .orElseThrow();
+                .sampleOrThrow(candidates, random);
     }
 }
 

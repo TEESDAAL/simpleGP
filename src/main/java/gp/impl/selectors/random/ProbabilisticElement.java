@@ -22,7 +22,8 @@ public record ProbabilisticElement<E>(Double probability, E element) {
         if (!Double.isFinite(probability)
                 || probability < 0.0 || probability > 1.0) {
             throw new IllegalArgumentException(
-                    probability + " is not a valid probability");
+                    probability + " is not a valid probability"
+            );
         }
     }
 
@@ -64,5 +65,5 @@ public record ProbabilisticElement<E>(Double probability, E element) {
         list.add(new ProbabilisticElement<>(1.0 - sum, fallback));
         return list;
     }
-
 }
+

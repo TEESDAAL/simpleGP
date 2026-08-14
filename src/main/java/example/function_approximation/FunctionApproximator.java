@@ -1,24 +1,24 @@
 package example.function_approximation;
 
+import example.function_approximation.parameters.DoubleNonTerminals;
 import example.function_approximation.parameters.initial.ParameterBuilder;
 import gp.GPPipeLine;
 import gp.Population;
 import gp.TerminationCriterion;
 import gp.core.breeder.Breeder;
-import gp.core.evaluators.Evaluator;
-import gp.core.evaluators.IndividualEvaluator;
-import gp.core.fitness.Goal;
+import gp.core.assessor.Assessor;
 import gp.core.individual.Individual;
-import gp.core.initializers.Initialiser;
-import gp.core.individual.EvaluatedIndividual;
+import gp.core.initializer.Initialiser;
+import gp.core.individual.AssessedIndividual;
 import gp.core.fitness.SingleObjectiveFitness;
-import gp.core.statistics.SideEffect;
-import gp.core.statistics.Statistic;
-import gp.impl.fitness.SingleObjectiveFit;
-import gp.impl.individual.SingleTreeIndividual;
+import gp.core.initializer.PrimitiveSet;
+import gp.core.initializer.PrimitiveSetBuilder;
+import gp.core.statistic.SideEffect;
+import gp.core.statistic.Statistic;
 import utils.Pair;
 import utils.random.SourceOfRandom;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,29 +32,34 @@ import java.util.List;
  * @param postEvaluationStatistics A score logger
  */
 public record FunctionApproximator<
-    X extends Pair<Double, Double>, Y extends Double,
-    Ind extends Individual<X, Y>,
-    E extends Evaluator<X, Y, Ind, SingleObjectiveFitness>
+    Ind extends Individual<Pair<Double, Double>, Double>,
+    E extends Assessor<Pair<Double, Double>, Double, Ind, SingleObjectiveFitness>
     >(
         Initialiser<Ind> initialiser,
         E trainEvaluator,
-        Breeder<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>, Ind> breeder,
+        Breeder<AssessedIndividual<Pair<Double, Double>, Double, Ind, SingleObjectiveFitness>, Ind> breeder,
         E testEvaluator,
-        Statistic<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>, ?> postEvaluationStatistics
+        Statistic<AssessedIndividual<Pair<Double, Double>, Double, Ind, SingleObjectiveFitness>, ?> postEvaluationStatistics
 ) {
 
     /**
      * Initialize a run.
-     * @param args Run arguments
      */
-    public static void main(final String[] args) {
+    static void main() {
         final SourceOfRandom rand = new SourceOfRandom(42);
+
+        final PrimitiveSet<Pair<Double, Double>> primitiveSet = PrimitiveSetBuilder.<Pair<Double, Double>>empty()
+                .addUncachedTerminal("x", Pair::first, Double.class)
+                .addUncachedTerminal("y", Pair::second, Double.class)
+                .addAllNonTerminals(Collections.unmodifiableList(DoubleNonTerminals.all()))
+                .build();
+
         final var params = ParameterBuilder.<Pair<Double, Double>, Double>of()
-            .initializer(new DefaultInitialiser(rand.get()))
-            .breeder(new DefaultBreeder(rand.get()))
-            .trainEvaluator(new DefaultEvaluator(rand.get(), 100))
+            .initializer(new DefaultInitialiser(rand.get(), primitiveSet))
+            .breeder(new DefaultBreeder(rand.get(), primitiveSet))
+            .trainEvaluator(new DefaultAssessor(rand.get(), 100))
 //            .trainEvaluator((IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>) _  -> SingleObjectiveFit.of(1, Goal.MINIMIZE))
-            .testEvaluator(new DefaultEvaluator(rand.get(), 1))
+            .testEvaluator(new DefaultAssessor(rand.get(), 1))
             .addStatistic(
                 population -> {
                     final List<Double> fitness = population.stream().map(e -> e.fitness().score()).toList();
@@ -70,12 +75,13 @@ public record FunctionApproximator<
                 params.testEvaluator(),
                 params.scoreLogger()
         ).train(50);
+
         System.out.println("Training time took " + (System.currentTimeMillis() - start) + "ms");
 
         System.out.println(
                 "Best Individual: "
                         + finalGen.stream()
-                        .min(Comparator.comparing(EvaluatedIndividual::fitness))
+                        .min(Comparator.comparing(AssessedIndividual::fitness))
                         .map(ind -> ind.individual().tree().getExpression())
                     .orElseThrow()
                     .replace("%", "d")
@@ -91,7 +97,7 @@ public record FunctionApproximator<
      * @param numGenerations The number of generations to train for
      * @return The final Population
      */
-    public Population<EvaluatedIndividual<X, Y, Ind, SingleObjectiveFitness>> train(
+    public Population<AssessedIndividual<Pair<Double, Double>, Double, Ind, SingleObjectiveFitness>> train(
             final int numGenerations
     ) {
 
@@ -102,11 +108,11 @@ public record FunctionApproximator<
                     .then(SideEffect.of((ignored) -> System.out.println(
                         "Evaluating population for gen " + i)
                     ))
-                    .then(trainEvaluator::evaluate)
+                    .then(trainEvaluator::assess)
                     .then(postEvaluationStatistics)
                     .then(breeder::breed)
             )
-            .then(testEvaluator::evaluate)
+            .then(testEvaluator::assess)
             .then(postEvaluationStatistics)
             .finish();
     }

@@ -2,13 +2,12 @@ package gp.impl.selectors;
 
 import gp.core.breeder.SimpleSelectionMechanism;
 import gp.core.fitness.Fitness;
-import gp.core.individual.EvaluatedIndividual;
+import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
-import gp.core.selectors.Sampler;
+import gp.core.selector.Sampler;
 import gp.impl.selectors.random.RandomSampler;
 import utils.random.RandomSource;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -27,7 +26,7 @@ public record TournamentSelection<
 >(
         RandomSource random,
         int tournamentSize
-) implements SimpleSelectionMechanism<EvaluatedIndividual<T, R, I, F>> {
+) implements SimpleSelectionMechanism<AssessedIndividual<T, R, I, F>> {
     /**
      * Compact constructor validating tournament size.
      *
@@ -67,21 +66,18 @@ public record TournamentSelection<
      * @return a sampler that performs tournament selection
      */
     @Override
-    public Sampler<EvaluatedIndividual<T, R, I, F>> selectorFrom(
-            final List<EvaluatedIndividual<T, R, I, F>> items
+    public Sampler<AssessedIndividual<T, R, I, F>> selectorFrom(
+            final List<AssessedIndividual<T, R, I, F>> items
     ) {
         if (items.isEmpty()) {
             throw new IllegalArgumentException(
                     "Must be able to select an individual.");
         }
         return () -> IntStream.range(0, tournamentSize)
-                .mapToObj(ignored -> RandomSampler.sample(
+                .mapToObj(ignored -> RandomSampler.sampleOrThrow(
                         items, random
-                ).orElseThrow())
-                .reduce((bestIndividual, currentIndividual) ->
-                        switch (currentIndividual.fitness().compareWith(
-                                bestIndividual.fitness()
-                        )) {
+                )).reduce((bestIndividual, currentIndividual) ->
+                        switch (currentIndividual.fitness().compareWith(bestIndividual.fitness())) {
                             case BETTER -> currentIndividual;
                             case EQUAL, WORSE -> bestIndividual;
                         }

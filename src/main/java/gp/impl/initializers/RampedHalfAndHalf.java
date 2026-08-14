@@ -1,16 +1,15 @@
 package gp.impl.initializers;
 
 import gp.Population;
-import gp.core.initializers.IndividualInitialiser;
-import gp.core.initializers.Initialiser;
-import gp.core.initializers.TypedNonTerminal;
-import gp.core.initializers.TypedTerminal;
+import gp.core.initializer.*;
 import gp.impl.individual.SingleTreeIndividual;
+import utils.Cache;
 import utils.random.RandomSource;
+import utils.stream_utils.Product;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.IntFunction;
+import java.util.stream.IntStream;
 
 /**
  * An initializer that creates a population of individuals using
@@ -34,24 +33,27 @@ public class RampedHalfAndHalf<Terminal, R> implements Initialiser<
 
     private final int populationSize;
 
+    private final RandomSource random;
+    private final PrimitiveSet<Terminal> primitiveSet;
+    private final int maxTries;
+    private final Class<R> returnType;
+
     /**
      * Create a RampedHalfAndHalf initializer.
      * @param maxDepth The final maxDepth of the tree.
      * @param random The source of randomness.
-     * @param terminals The set of terminal to sample from.
-     * @param nonTerminals The set of non-terminals to sample from.
+     * @param primitiveSet The set of terminals and non-terminals.
      * @param populationSize The desired population size.
      * @param maxTries the number of times to try re-creating an individual.
      * @param returnType The desired return type of all the trees.
      */
     public RampedHalfAndHalf(
-        int maxDepth,
-        RandomSource random,
-        List<TypedTerminal<Terminal, ?>> terminals,
-        List<TypedNonTerminal<?, ?>> nonTerminals,
-        int populationSize,
-        int maxTries,
-        Class<R> returnType
+            int maxDepth,
+            RandomSource random,
+            PrimitiveSet<Terminal> primitiveSet,
+            int populationSize,
+            int maxTries,
+            Class<R> returnType
     ) {
         if (maxDepth < 2) {
             throw new IllegalArgumentException("maxDepth must be at least 2");
@@ -59,44 +61,53 @@ public class RampedHalfAndHalf<Terminal, R> implements Initialiser<
         this.populationSize = populationSize;
         this.maxDepth = maxDepth;
         this.full = depth -> Initializers.full(
-            random,
-            terminals,
-            nonTerminals,
-            populationSize,
-            maxTries,
-            depth,
-            returnType
+                random,
+                primitiveSet,
+                populationSize,
+                maxTries,
+                depth,
+                returnType
         );
         this.grow = depth -> Initializers.grow(
             random,
-            terminals,
-            nonTerminals,
+            primitiveSet,
             populationSize,
             maxTries,
             depth,
             returnType
         );
+        this.random = random;
+        this.primitiveSet = primitiveSet;
+        this.maxTries = maxTries;
+        this.returnType = returnType;
     }
 
     @Override
     public Population<SingleTreeIndividual<Terminal, R>> initialize() {
-        final List<SingleTreeIndividual<Terminal, R>> pop = new ArrayList<>(
-            populationSize
-        );
+        return Product.cycle(
+                IntStream.range(2, maxDepth+1).boxed().toList(),
+                List.of(full, grow),
+                (depth, method) -> method.apply(depth).createIndividual()
+        ).limit(populationSize)
+                .collect(Population.toPopulation());
+    }
 
-        while (pop.size() < populationSize) {
-            for (int i = 2; i <= maxDepth; i++) {
-                if (pop.size() == populationSize) { break; }
-                pop.add(
-                    full.apply(i).createIndividual()
-                );
-                if (pop.size() == populationSize) { break; }
-                pop.add(
-                    grow.apply(i).createIndividual()
-                );
+
+    public RampedHalfAndHalf<Terminal, R> attemptToEnforceUniqueness(int numTries) {
+        return new RampedHalfAndHalf<>(maxDepth, random, primitiveSet, populationSize, maxTries, returnType) {
+            @Override
+            public Population<SingleTreeIndividual<Terminal, R>> initialize() {
+                final Cache<SingleTreeIndividual<Terminal, R>> cache = Cache.empty();
+
+                return Product.cycle(
+                        IntStream.range(2, maxDepth+1).boxed().toList(),
+                        List.of(full, grow),
+                        (depth, method) -> cache.repeatUntilAbsent(
+                                method.apply(depth)::createIndividual, numTries
+                        )
+                ).limit(populationSize)
+                        .collect(Population.toPopulation());
             }
-        }
-
-        return Population.of(pop);
+        };
     }
 }

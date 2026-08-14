@@ -1,12 +1,12 @@
 package utils;
 
 import utils.random.RandomSource;
-import utils.stream_utils.GroupingIterable;
 import utils.stream_utils.StreamZipper;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Gatherers;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -103,8 +103,8 @@ public interface Parallelizeable {
             if (batchSize() == 1) {
                 return stream.parallel().map(mapper);
             }
-            return GroupingIterable.group(stream.parallel(), this.batchSize())
-                .flatMap(l -> l.map(mapper));
+            return stream.parallel().gather(Gatherers.windowFixed(this.batchSize()))
+                .flatMap(l -> l.stream().map(mapper));
         }
 
         return stream.map(mapper);
@@ -125,7 +125,7 @@ public interface Parallelizeable {
         Stream<T> stream,
         Supplier<R> randomSource,
         BiFunction<R, ? super T, ? extends U> mapper) {
-        Stream<Pair<R, T>> randomStream = StreamZipper.zip(
+        final Stream<Pair<R, T>> randomStream = StreamZipper.zip(
             Stream.generate(randomSource),
             stream.sequential()
         );
@@ -136,11 +136,8 @@ public interface Parallelizeable {
                 return randomStream.parallel()
                     .map(p -> p.reduce(mapper));
             }
-            return GroupingIterable.group(randomStream, this.batchSize())
-                .parallel()
-                .flatMap(l -> l.map(
-                    p -> p.reduce(mapper))
-                );
+            return randomStream.gather(Gatherers.windowFixed(this.batchSize())).parallel()
+                    .flatMap(l -> l.stream().map( p -> p.reduce(mapper)));
         }
 
         return randomStream.map(p -> p.reduce(mapper));

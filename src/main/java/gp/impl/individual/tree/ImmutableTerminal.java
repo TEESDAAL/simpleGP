@@ -1,10 +1,8 @@
 package gp.impl.individual.tree;
 
+import utils.Cache;
 import utils.operators.UnaryOperator;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An immutable terminal node record implementation.
@@ -29,10 +27,7 @@ public final class ImmutableTerminal<Terminals, Output> extends Terminal<Termina
     }
 
     /** Cache for flyweight pattern. */
-    private static final Map<
-            ImmutableTerminal<?, ?>,
-            ImmutableTerminal<?, ?>
-    > CACHE = new ConcurrentHashMap<>();
+    private static final Cache<ImmutableTerminal<?, ?>> CACHE = Cache.empty();
 
     /**
      * Creates or retrieves a singleton immutable terminal.
@@ -53,8 +48,7 @@ public final class ImmutableTerminal<Terminals, Output> extends Terminal<Termina
         );
 
         //noinspection unchecked
-        return (ImmutableTerminal<Terminals, Output>)
-                CACHE.computeIfAbsent(term, k -> term);
+        return (ImmutableTerminal<Terminals, Output>) CACHE.getOrInsert(term);
     }
 
     @Override

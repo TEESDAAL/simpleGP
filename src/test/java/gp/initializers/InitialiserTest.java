@@ -1,42 +1,37 @@
 package gp.initializers;
 
 import gp.Population;
-import gp.core.initializers.IndividualCreationException;
-import gp.core.initializers.TypedNonTerminal;
-import gp.core.initializers.TypedTerminal;
+import gp.core.initializer.*;
 import gp.impl.individual.SingleTreeIndividual;
 import gp.impl.initializers.Initializers;
 import utils.operators.Operator;
 import org.junit.jupiter.api.Test;
 import utils.random.RandomSource;
 
-import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InitialiserTest {
-    RandomSource random = RandomSource.of(12);
-    List<TypedTerminal<Double, ?>> terminals = List.of(
-        TypedTerminal.nonCached("x", x -> x, Double.class),
-        TypedTerminal.nonCached("square", x -> x * x, Double.class)
-    );
-
-    List<TypedNonTerminal<?, ?>> nonTerminals = List.of(
-        TypedNonTerminal.of("max", Operator.bin(Math::max), Double.class, Double.class),
-        TypedNonTerminal.of("min", Operator.bin(Math::min), Double.class, Double.class),
-        TypedNonTerminal.of("neg", Operator.unary(x -> -x), Double.class, Double.class),
-        TypedNonTerminal.of("toStr", Operator.unary(Object::toString), Object.class, String.class)
-    );
+    public static final int ITERATIONS = 2_000;
+    int seed = 12;
+    RandomSource random = RandomSource.of(seed);
+    PrimitiveSet<Double> primitiveSet = PrimitiveSetBuilder.<Double>empty()
+            .addUncachedTerminal("x", x -> x, Double.class)
+            .addUncachedTerminal("square", x -> x*x, Double.class)
+            .addNonTerminal("max", Operator.bin(Math::max), Double.class, Double.class)
+            .addNonTerminal("min", Operator.bin(Math::min), Double.class, Double.class)
+            .addNonTerminal("neg", Operator.unary(x -> -x), Double.class, Double.class)
+            .addNonTerminal("toStr", Operator.unary(Object::toString), Object.class, String.class)
+            .build();
 
     @Test
     public void testPopulationSizeCorrect() {
-        long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 2_000; i++) {
+        final long startTime = System.currentTimeMillis();
+        for (int i = 0; i < ITERATIONS; i++) {
             assertEquals(i, Initializers.full(
                     random,
-                    terminals,
-                    nonTerminals,
+                    primitiveSet,
                     i,
                     100,
                     7,
@@ -52,8 +47,7 @@ public class InitialiserTest {
                 IllegalArgumentException.class,
                 () -> Initializers.grow(
                         random,
-                        terminals,
-                        nonTerminals,
+                        primitiveSet,
                         100,
                         100,
                         -1,
@@ -65,8 +59,7 @@ public class InitialiserTest {
                 IndividualCreationException.class,
                 () -> Initializers.grow(
                         random,
-                        terminals,
-                        nonTerminals,
+                        primitiveSet,
                         100,
                         100,
                         0,
@@ -79,16 +72,14 @@ public class InitialiserTest {
     @Test
     public void testMaxDepth() {
         IntStream.range(2, 10).forEach(maxDepth -> {
-            Population<SingleTreeIndividual<Double, String>> population =
-                    Initializers.full(
-                            random,
-                            terminals,
-                            nonTerminals,
-                            100,
-                            100,
-                            maxDepth,
-                            String.class
-                    ).initialize();
+            final Population<SingleTreeIndividual<Double, String>> population = Initializers.full(
+                    random,
+                    primitiveSet,
+                    100,
+                    100,
+                    maxDepth,
+                    String.class
+            ).initialize();
 
             assertTrue(
                     population.stream()

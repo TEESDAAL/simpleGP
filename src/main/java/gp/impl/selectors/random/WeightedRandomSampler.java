@@ -1,6 +1,6 @@
 package gp.impl.selectors.random;
 
-import gp.core.selectors.Sampler;
+import gp.core.selector.Sampler;
 import utils.random.RandomSource;
 
 import java.util.List;
@@ -65,7 +65,7 @@ public record WeightedRandomSampler<T>(
     public T sample() {
         double sum = rand.nextDouble(0.0, 1.0);
 
-        for (ProbabilisticElement<T> probabilisticElement : distribution) {
+        for (final ProbabilisticElement<T> probabilisticElement : distribution) {
             sum -= probabilisticElement.probability();
             // So an element with prob 0 is never selected
             if (sum < 0.0) {

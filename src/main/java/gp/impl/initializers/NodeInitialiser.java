@@ -1,9 +1,6 @@
 package gp.impl.initializers;
 
-import gp.core.initializers.IndividualCreationException;
-import gp.core.initializers.TreeConstructor;
-import gp.core.initializers.TypedNonTerminal;
-import gp.core.initializers.TypedTerminal;
+import gp.core.initializer.*;
 import gp.impl.individual.tree.ImmutableNode;
 import utils.Preconditions;
 import utils.random.RandomSource;
@@ -19,8 +16,7 @@ import java.util.function.IntPredicate;
  * @param <T> The terminal input type
  * @param <R> The return type
  * @param random The random number generator
- * @param terminals Map of terminals by return type
- * @param nonTerminals Map of non-terminals by return type
+ * @param primitiveSet The set of terminals and non-terminals
  * @param shouldTerminate Predicate to determine termination
  * @param populationSize The population size to create
  * @param maxTries Maximum attempts to create an individual
@@ -29,8 +25,7 @@ import java.util.function.IntPredicate;
  */
 public record NodeInitialiser<T, R>(
         RandomSource random,
-        List<TypedTerminal<T, ?>> terminals,
-        List<TypedNonTerminal<?, ?>> nonTerminals,
+        PrimitiveSet<T> primitiveSet,
         IntPredicate shouldTerminate,
         int populationSize,
         int maxTries,
@@ -44,7 +39,7 @@ public record NodeInitialiser<T, R>(
      * is negative, or if maxDepth is negative, or if any parameter is null
      */
     public NodeInitialiser {
-        List.of(random, terminals, nonTerminals, shouldTerminate, returnType)
+        List.of(random, primitiveSet, shouldTerminate, returnType)
                 .forEach(Objects::requireNonNull);
         Preconditions.assertTrue(
                 maxDepth >= 0, "Max depth must be non-negative"
@@ -64,8 +59,7 @@ public record NodeInitialiser<T, R>(
      * @param <T> The terminal type
      * @param <R> The return type
      * @param random The random generator
-     * @param terminals Map of terminals by return type
-     * @param nonTerminals Map of non-terminals by return type
+     * @param primitiveSet The set of terminals and non-terminals
      * @param populationSize The population size
      * @param maxTries Maximum creation attempts
      * @param maxDepth Maximum tree depth
@@ -74,15 +68,14 @@ public record NodeInitialiser<T, R>(
      */
     static <T, R> NodeInitialiser<T, R> full(
         final RandomSource random,
-        final List<TypedTerminal<T, ?>> terminals,
-        final List<TypedNonTerminal<?, ?>> nonTerminals,
+        final PrimitiveSet<T> primitiveSet,
         final int populationSize,
         final int maxTries,
         final int maxDepth,
         final Class<R> returnType
     ) {
         return new NodeInitialiser<>(
-            random, terminals, nonTerminals,
+            random, primitiveSet,
             depth -> depth >= maxDepth,
             populationSize, maxTries, maxDepth,
             returnType
@@ -94,8 +87,7 @@ public record NodeInitialiser<T, R>(
      * @param <T> The terminal type
      * @param <R> The return type
      * @param random The random generator
-     * @param terminals Map of terminals by return type
-     * @param nonTerminals Map of non-terminals by return type
+     * @param primitiveSet The set of terminals and non-terminals
      * @param populationSize The population size
      * @param maxTries Maximum creation attempts
      * @param maxDepth Maximum tree depth
@@ -104,17 +96,16 @@ public record NodeInitialiser<T, R>(
      */
     public static <T, R> NodeInitialiser<T, R> grow(
         final RandomSource random,
-        final List<TypedTerminal<T, ?>> terminals,
-        final List<TypedNonTerminal<?, ?>> nonTerminals,
+        final PrimitiveSet<T> primitiveSet,
         final int populationSize,
         final int maxTries,
         final int maxDepth,
         final Class<R> returnType
     ) {
-        final double probabilityOfSamplingTerminal = terminals.size()
-            / ((double) terminals.size() + nonTerminals.size());
+        final double probabilityOfSamplingTerminal = primitiveSet.numTerminals()
+            / ((double) primitiveSet.numTerminals() + primitiveSet.numNonTerminals());
         return new NodeInitialiser<>(
-            random, terminals, nonTerminals,
+            random, primitiveSet,
             depth -> depth >= maxDepth
                 || random.nextDouble()
                 < probabilityOfSamplingTerminal,
@@ -122,8 +113,6 @@ public record NodeInitialiser<T, R>(
             returnType
         );
     }
-
-
 
     @Override
     public boolean shouldTerminate(final int depth) {
@@ -151,8 +140,8 @@ public record NodeInitialiser<T, R>(
                 "Failed to create an individual after " + maxTries + " attempts."
                         + "\n Check that this is possible with the given"
                         + " terminals & non-terminals"
-                        + "\n NON-TERMINALS: " + nonTerminals
-                        + "\n TERMINALS: " + terminals
+                        + "\n NON-TERMINALS: " + primitiveSet.nonTerminals()
+                        + "\n TERMINALS: " + primitiveSet.terminals()
         );
     }
 

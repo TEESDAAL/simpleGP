@@ -4,12 +4,12 @@ import gp.Population;
 import gp.core.breeder.Breeder;
 import gp.core.breeder.SimpleSelectionMechanism;
 import gp.core.fitness.Fitness;
-import gp.core.individual.EvaluatedIndividual;
+import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
 import gp.impl.selectors.Elitism;
 import utils.Preconditions;
 import utils.operators.Operator;
-import gp.core.selectors.Sampler;
+import gp.core.selector.Sampler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +33,9 @@ public record NaiveBreeder<
 >(
         Sampler<Operator<I, List<I>>> distribution,
         int newPopulationSize,
-        SimpleSelectionMechanism<EvaluatedIndividual<T, R, I, F>> selectionMechanism,
+        SimpleSelectionMechanism<AssessedIndividual<T, R, I, F>> selectionMechanism,
         Elitism<T, R, I, F> elitism
-) implements Breeder<EvaluatedIndividual<T, R, I, F>, I> {
+) implements Breeder<AssessedIndividual<T, R, I, F>, I> {
     /**
      * Compact constructor to validate parameters.
      *
@@ -57,9 +57,9 @@ public record NaiveBreeder<
 
     @Override
     public Population<I> breed(
-            final Population<EvaluatedIndividual<T, R, I, F>> population
+            final Population<AssessedIndividual<T, R, I, F>> population
     ) {
-        Sampler<EvaluatedIndividual<T, R, I, F>> sampler = selectionMechanism
+        final Sampler<AssessedIndividual<T, R, I, F>> sampler = selectionMechanism
                 .selectorFrom(population.individuals());
 
         List<I> nextGeneration = new ArrayList<>(this.newPopulationSize);
@@ -67,10 +67,10 @@ public record NaiveBreeder<
         addElites(nextGeneration, population);
 
         while (nextGeneration.size() < this.newPopulationSize) {
-            Operator<I, List<I>> operator = this.distribution.sample();
+            final Operator<I, List<I>> operator = this.distribution.sample();
             nextGeneration.addAll(operator.sampleFrom(
                 sampler,
-                    EvaluatedIndividual::individual
+                    AssessedIndividual::individual
             ));
         }
 
@@ -85,12 +85,12 @@ public record NaiveBreeder<
 
     private void addElites(
             List<I> nextGeneration,
-            Population<EvaluatedIndividual<T, R, I, F>> population
+            Population<AssessedIndividual<T, R, I, F>> population
     ) {
         nextGeneration.addAll(
                 this.elitism.selectorFrom(population.individuals()).sample()
                         .stream()
-                        .map(EvaluatedIndividual::individual)
+                        .map(AssessedIndividual::individual)
                         .toList()
         );
     }

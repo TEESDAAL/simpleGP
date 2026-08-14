@@ -1,6 +1,6 @@
 package utils.operators;
 
-import gp.core.selectors.Sampler;
+import gp.core.selector.Sampler;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,7 @@ public interface Operator<I, O> {
      */
     default O produce(I[] parents) {
         return produce(Arrays.asList(parents));
-    };
+    }
     /**
      * Returns the number of parents this operator requires.
      * @return The expected size of the parents list.
@@ -132,9 +132,8 @@ public interface Operator<I, O> {
  * A class for handling the conversion of an singleton operator to
  *  a singleton cached operator.
  */
-final class CacherCache {
-    private CacherCache() {
-    }
+enum CacherCache {
+    ;
     /**
      * The cache to maintain singletons for general operators.
      */

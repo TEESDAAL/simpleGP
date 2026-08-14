@@ -1,8 +1,9 @@
 package gp.impl.individual.tree;
 
+import utils.ArrayUtils;
 import utils.operators.Operator;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -17,13 +18,15 @@ public final class ImmutableNonTerminal<Terminals, Input, Output> extends NonTer
     ImmutableNonTerminal<Terminals, Input, Output>,
     MutableNonTerminal<Terminals, Input, Output>
     > {
-    final int maximumArity;
+    private final int maximumArity;
+    private final int size;
+
     /**
-     * @param name        The name of this non-terminal node
-     * @param function    The operator function
-     * @param children    The immutable child nodes
-     * @param inputType   The input type class
-     * @param returnType  The output type class
+     * @param name       The name of this non-terminal node
+     * @param function   The operator function
+     * @param children   The immutable child nodes
+     * @param inputType  The input type class
+     * @param returnType The output type class
      */
     public ImmutableNonTerminal(
         String name,
@@ -34,28 +37,41 @@ public final class ImmutableNonTerminal<Terminals, Input, Output> extends NonTer
     ) {
         super(name, function, children, inputType, returnType);
         this.maximumArity = super.maximumArity();
+        this.size = super.size();
     }
 
-
-
     @Override
-    protected int maximumArity() {
+    public int maximumArity() {
         return maximumArity;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, function, children, inputType, returnType);
+        return Objects.hash(
+            name,
+            function,
+            Arrays.hashCode(children),
+            inputType,
+            returnType
+        );
+    }
+
+    @Override
+    public Output evaluate(Terminals terminals) {
+        return this.manualOutput(ArrayUtils.map(
+            children, inputType,
+            c -> c.evaluate(terminals)
+        ));
     }
 
     @Override
     public String toString() {
-        return "ImmutableNonTerminal[" +
-            "name=" + name + ", " +
-            "function=" + function + ", " +
-            "children=" + children + ", " +
-            "inputType=" + inputType + ", " +
-            "returnType=" + returnType + ']';
+        return "ImmutableNonTerminal["
+            + "name=" + name + ", "
+            + "function=" + function + ", "
+            + "children=" + Arrays.toString(children) + ", "
+            + "inputType=" + inputType + ", "
+            + "returnType=" + returnType + ']';
     }
 
     @Override
@@ -67,9 +83,13 @@ public final class ImmutableNonTerminal<Terminals, Input, Output> extends NonTer
         return this.maximumArity == that.maximumArity
             && name.equals(that.name)
             && function.equals(that.function)
-            && children.equals(that.children)
+            && Arrays.equals(children, that.children)
             && inputType.equals(that.inputType)
             && returnType.equals(that.returnType);
     }
-}
 
+    @Override
+    public int size() {
+        return this.size;
+    }
+}

@@ -105,4 +105,8 @@ public sealed abstract class Terminal<Terminals, Output> implements Node<
     public int depth() {
         return 0;
     }
+    @Override
+    public int numChildren() {
+        return 0;
+    }
 }

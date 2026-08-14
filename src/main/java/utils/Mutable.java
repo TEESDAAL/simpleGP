@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.function.Function;
+
 /**
  * A generic mutable wrapper class for a single value.
  * @param <T> The type of the wrapped value
@@ -36,6 +38,11 @@ public class Mutable<T> {
      */
     public Mutable<T> set(final T newValue) {
         this.value = newValue;
+        return this;
+    }
+
+    public Mutable<T> update(Function<T, T> updater) {
+        this.set(updater.apply(this.value));
         return this;
     }
 }

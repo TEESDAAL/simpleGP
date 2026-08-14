@@ -17,8 +17,9 @@ import java.util.function.Function;
  *
  * @param <Self> the concrete multi-objective fitness type
  */
-public interface MultiObjectiveFitness<Self extends MultiObjectiveFitness<Self>>
-        extends Fitness<Self> {
+public interface MultiObjectiveFitness<
+        Self extends MultiObjectiveFitness<Self>
+> extends Fitness<Self> {
     /**
      * Gets the list of single-objective fitness values.
      *
@@ -118,7 +119,7 @@ public interface MultiObjectiveFitness<Self extends MultiObjectiveFitness<Self>>
     ) {
 
         final List<Pair<I, MOF>> front = new ArrayList<>();
-        for (I currentInd : individuals) {
+        for (final I currentInd : individuals) {
             final MOF currentFitness = extractor.apply(currentInd);
             final boolean dominated = front.stream()
                     .map(Pair::second)
@@ -179,8 +180,8 @@ public interface MultiObjectiveFitness<Self extends MultiObjectiveFitness<Self>>
     ) {
         final Map<Integer, List<I>> ranks = paretoRanks(fitnesses, extractor);
         final Map<I, Integer> rankMap = new HashMap<>();
-        for (Map.Entry<Integer, List<I>> entry : ranks.entrySet()) {
-            for (I individual : entry.getValue()) {
+        for (final Map.Entry<Integer, List<I>> entry : ranks.entrySet()) {
+            for (final I individual : entry.getValue()) {
                 rankMap.put(individual, entry.getKey());
             }
         }

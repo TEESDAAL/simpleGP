@@ -2,12 +2,11 @@ package gp.impl.selectors;
 
 import gp.core.breeder.SelectionMechanism;
 import gp.core.fitness.Fitness;
-import gp.core.individual.EvaluatedIndividual;
+import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
-import gp.core.selectors.Sampler;
+import gp.core.selector.Sampler;
 import utils.Preconditions;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -29,14 +28,14 @@ public record Elitism<
 >(
         int elitismCount,
         Function<
-                List<EvaluatedIndividual<
-                        TerminalHolder, ReturnType, Ind, Fit
-                >>,
+                List<AssessedIndividual<
+                                        TerminalHolder, ReturnType, Ind, Fit
+                                >>,
                 Comparator<Fit>
         > fitnessComparatorFunction
 ) implements SelectionMechanism<
-        EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>,
-        List<EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>>
+        AssessedIndividual<TerminalHolder, ReturnType, Ind, Fit>,
+        List<AssessedIndividual<TerminalHolder, ReturnType, Ind, Fit>>
 > {
     /**
      * Compact constructor to validate parameters.
@@ -67,7 +66,7 @@ public record Elitism<
     Elitism<T, R, I, F> of(
             final int elitismCount,
             final Function<
-                    List<EvaluatedIndividual<T, R, I, F>>,
+                    List<AssessedIndividual<T, R, I, F>>,
                     Comparator<F>
             > fitnessComparatorFunction
     ) {
@@ -84,13 +83,13 @@ public record Elitism<
      * @return a selector that returns the best individual
      */
     @Override
-    public Sampler<List<EvaluatedIndividual<TerminalHolder, ReturnType, Ind, Fit>>> selectorFrom(
-        final List<EvaluatedIndividual<
-            TerminalHolder,
-            ReturnType,
-            Ind,
-            Fit
-        >> items
+    public Sampler<List<AssessedIndividual<TerminalHolder, ReturnType, Ind, Fit>>> selectorFrom(
+        final List<AssessedIndividual<
+                    TerminalHolder,
+                    ReturnType,
+                    Ind,
+                    Fit
+                >> items
     ) {
         final Comparator<Fit> fitnessComparator = fitnessComparatorFunction.apply(
             items
