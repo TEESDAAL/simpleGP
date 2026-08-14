@@ -1,6 +1,8 @@
 package gp.impl.initializers;
 
-import gp.core.initializer.*;
+import gp.core.initializer.IndividualCreationException;
+import gp.core.initializer.PrimitiveSet;
+import gp.core.initializer.TreeConstructor;
 import gp.impl.individual.tree.ImmutableNode;
 import utils.Preconditions;
 import utils.random.RandomSource;

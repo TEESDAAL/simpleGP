@@ -41,6 +41,11 @@ public class Mutable<T> {
         return this;
     }
 
+    /**
+     * Update the value in this mutable using the updater.
+     * @param updater A function mapping the old value to the new value.
+     * @return this
+     */
     public Mutable<T> update(Function<T, T> updater) {
         this.set(updater.apply(this.value));
         return this;

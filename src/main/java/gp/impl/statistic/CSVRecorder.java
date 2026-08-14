@@ -31,14 +31,13 @@ public record CSVRecorder<T>(
      */
     public CSVRecorder {
         Preconditions.assertFalse(
-                columns::isEmpty,
+                columns.isEmpty(),
                 "At least one column must be provided"
         );
 
         if (writeFile.exists()) {
-                Preconditions.assertEquals(
-                    0,
-                    writeFile::length,
+                Preconditions.assertTrue(
+                    writeFile.length() == 0,
                     "File " + writeFile.getPath()
                         + " exists and is not empty"
                 );
@@ -84,7 +83,7 @@ public record CSVRecorder<T>(
             );
         }
         Preconditions.assertTrue(
-                writeFile::canWrite,
+                writeFile.canWrite(),
                 "Cannot write to file " + writeFile.getAbsolutePath()
         );
         this.log().accept(String.join(",", columns.keySet()));

@@ -11,7 +11,6 @@ import utils.random.RandomSource;
 import java.util.function.BiFunction;
 
 public class DefaultAssessor implements IndividualAssessor<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness> {
-
     final RandomSource random;
     BiFunction<Double, Double, Double> targetFunction; 
     final int numSamples;

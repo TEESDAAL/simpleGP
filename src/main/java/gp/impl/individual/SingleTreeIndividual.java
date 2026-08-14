@@ -3,7 +3,6 @@ package gp.impl.individual;
 import gp.core.individual.Individual;
 import gp.impl.individual.tree.ImmutableNode;
 import gp.impl.individual.tree.Node;
-import gp.impl.individual.tree.compiled_representation.CompiledIndividual;
 import utils.operators.Operator;
 
 import java.util.ArrayList;
@@ -15,11 +14,9 @@ import java.util.List;
  * @param <T> The terminal type
  * @param <Out> The output type
  * @param tree The immutable tree representing this individual
- * @param compiledIndividual unused!!!!
  */
 record SingleTreeIndividualImpl<T, Out>(
-    ImmutableNode<T, ?, Out, ?, ?> tree,
-    CompiledIndividual<T, Out> compiledIndividual
+    ImmutableNode<T, ?, Out, ?, ?> tree
 ) implements SingleTreeIndividual<T, Out> {
     @Override
     public String toString() {
@@ -50,7 +47,7 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
     static <Out, T> SingleTreeIndividual<T, Out> of(
             final ImmutableNode<T, ?, Out, ?, ?> individual
     ) {
-        return new SingleTreeIndividualImpl<>(individual, individual.compile());
+        return new SingleTreeIndividualImpl<>(individual);
     }
 
     /**

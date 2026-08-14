@@ -1,6 +1,7 @@
 package gp.impl.selectors.random;
 
 import gp.core.selector.Sampler;
+import utils.Preconditions;
 import utils.random.RandomSource;
 
 import java.util.Collection;
@@ -41,14 +42,21 @@ public record RandomSampler<T>(
         return Optional.of(new RandomSampler<>(data, random));
     }
 
+    /**
+     * Create a random sampler from a non-empty collection.
+     * @param data The collection to sample from.
+     * @param random The source of randomness.
+     * @return A random sampler.
+     * @param <T> The type of the elements in the collection.
+     * @throws IllegalArgumentException If the collection is empty.
+     */
     public static <T> RandomSampler<T> ofNonEmpty(
         final List<T> data, final RandomSource random
     ) {
-        if (data.isEmpty()) {
-            throw new IllegalArgumentException(
-                "Cannot create a sampler from an empty collection"
-            );
-        }
+        Preconditions.assertFalse(
+            data.isEmpty(),
+            "Cannot create a sampler from an empty collection"
+        );
         return new RandomSampler<>(data, random);
     }
 
@@ -78,6 +86,14 @@ public record RandomSampler<T>(
     public static <T> T sampleOrThrow(T[] elements, RandomSource random) {
         return elements[sampleIndex(elements, random)];
     }
+
+    /**
+     * Sample a random element from an array.
+     * @param items The array of items to sample from.
+     * @param random The source of Randomness.
+     * @return An empty option if the array is empty otherwise some of a random element.
+     * @param <T> The type of the elements in the array.
+     */
     public static <T> Optional<T> sample(T[] items, RandomSource random) {
         if (items.length == 0) {
             return Optional.empty();

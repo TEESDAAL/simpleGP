@@ -80,10 +80,8 @@ record Err<T, E>(E error) implements Result<T, E> {
             Collection<MatchArm<T, E, U>> matchArms
     ) {
 		for (final MatchArm<T, E, U> arm : matchArms) {
-			if (arm instanceof ErrArm<T, E, U>(Predicate<E> shouldMap, Function<E, U> mapper)
-                && shouldMap.test(this.error)
-            ) {
-				return mapper.apply(this.error);
+			if (arm instanceof ErrArm<T, E, U> e && e.shouldMap().test(this.error)) {
+				return e.mapper().apply(this.error);
 			}
 		}
 		return defaultArm.apply(this);
@@ -96,8 +94,8 @@ record Err<T, E>(E error) implements Result<T, E> {
         Collection<MatchArm<T, E, U>> matchArms
     ) {
 		for (final MatchArm<T, E, U> arm : matchArms) {
-			if (arm instanceof ErrArm<T, E, U>(Predicate<E> shouldMap, Function<E, U> mapper) && shouldMap.test(this.error)) {
-				return mapper.apply(this.error);
+			if (arm instanceof ErrArm<T, E, U> e && e.shouldMap().test(this.error)) {
+				return e.mapper().apply(this.error);
 			}
 		}
 		return defaultErr.apply(this.error);

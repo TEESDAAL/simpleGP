@@ -125,15 +125,13 @@ public interface Operator<I, O> {
     default Operator<I, O> cached() {
         return CacherCache.cached(this);
     }
-
 }
 
 /**
  * A class for handling the conversion of an singleton operator to
  *  a singleton cached operator.
  */
-enum CacherCache {
-    ;
+enum CacherCache {;
     /**
      * The cache to maintain singletons for general operators.
      */

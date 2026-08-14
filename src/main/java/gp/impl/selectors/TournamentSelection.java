@@ -6,6 +6,7 @@ import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
 import gp.core.selector.Sampler;
 import gp.impl.selectors.random.RandomSampler;
+import utils.Preconditions;
 import utils.random.RandomSource;
 
 import java.util.List;
@@ -22,22 +23,22 @@ import java.util.stream.IntStream;
  * @param tournamentSize The number of individuals in each tournament
  */
 public record TournamentSelection<
-        R, T, I extends Individual<T, R>, F extends Fitness<F>
+    R, T, I extends Individual<T, R>, F extends Fitness<F>
 >(
-        RandomSource random,
-        int tournamentSize
+    RandomSource random,
+    int tournamentSize
 ) implements SimpleSelectionMechanism<AssessedIndividual<T, R, I, F>> {
+
     /**
-     * Compact constructor validating tournament size.
-     *
-     * @param random the random number generator
-     * @param tournamentSize the tournament size
+     * Create a new Tournament selection with positive tournament size.
+     * @param random the source of randomness
+     * @param tournamentSize The desired tournament size, must be positive.
      */
     public TournamentSelection {
-        if (tournamentSize <= 0) {
-            throw new IllegalArgumentException(
-                    "tournament size must be greater than 0.");
-        }
+        Preconditions.assertTrue(
+            tournamentSize > 0,
+            "Tournament size must be greater than 0"
+        );
     }
 
     /**
@@ -51,10 +52,10 @@ public record TournamentSelection<
      * @param <F> the fitness type
      * @return a new tournament selection
      */
-        public static <R, T, I extends Individual<T, R>, F extends Fitness<F>>
-        TournamentSelection<R, T, I, F> of(
-            final RandomSource random,
-            final int tournamentSize
+    public static <R, T, I extends Individual<T, R>, F extends Fitness<F>>
+    TournamentSelection<R, T, I, F> of(
+        final RandomSource random,
+        final int tournamentSize
     ) {
         return new TournamentSelection<>(random, tournamentSize);
     }
@@ -67,20 +68,25 @@ public record TournamentSelection<
      */
     @Override
     public Sampler<AssessedIndividual<T, R, I, F>> selectorFrom(
-            final List<AssessedIndividual<T, R, I, F>> items
+        final List<AssessedIndividual<T, R, I, F>> items
     ) {
         if (items.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Must be able to select an individual.");
+            throw new IllegalArgumentException("Must be able to select an individual.");
         }
         return () -> IntStream.range(0, tournamentSize)
-                .mapToObj(ignored -> RandomSampler.sampleOrThrow(
-                        items, random
-                )).reduce((bestIndividual, currentIndividual) ->
-                        switch (currentIndividual.fitness().compareWith(bestIndividual.fitness())) {
-                            case BETTER -> currentIndividual;
-                            case EQUAL, WORSE -> bestIndividual;
-                        }
-                ).orElseThrow();
+            .mapToObj(ignored -> RandomSampler.sampleOrThrow(
+                items, random
+            )).reduce(this::selectBetter)
+            .orElseThrow();
+    }
+
+    private AssessedIndividual<T, R, I, F> selectBetter(
+        AssessedIndividual<T, R, I, F> bestSoFar,
+        AssessedIndividual<T, R, I, F> challenger
+    ) {
+        return switch (challenger.fitness().compareWith(bestSoFar.fitness())) {
+            case BETTER -> challenger;
+            case EQUAL, WORSE -> bestSoFar;
+        };
     }
 }

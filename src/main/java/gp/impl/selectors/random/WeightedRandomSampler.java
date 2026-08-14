@@ -37,7 +37,7 @@ public record WeightedRandomSampler<T>(
      */
     public static <T> WeightedRandomSampler<T> of(
             final List<ProbabilisticElement<T>> distribution,
-            final long seed
+            final int seed
 ) {
         return new WeightedRandomSampler<>(RandomSource.of(seed), distribution);
     }
@@ -72,7 +72,7 @@ public record WeightedRandomSampler<T>(
                 return probabilisticElement.element();
             }
         }
-        // For this to happen either the sum has to > 1
+        // For this to happen either the sum has to != 1 or distribution is empty
         throw new IllegalStateException("Failed to sample probability distribution");
     }
 }

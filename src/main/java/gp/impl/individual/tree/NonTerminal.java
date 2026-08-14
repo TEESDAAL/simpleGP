@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-// TODO, make evaluate hold an array that it reuses for its outputs
-
 /**
  * Represents a non-terminal node in a genetic programming tree.
  * A non-terminal is an internal node that applies a function to its children.
@@ -18,7 +16,7 @@ import java.util.stream.Stream;
  * @param <Output> The output type
  * @param <Child> The type of child nodes
  */
-public sealed abstract class NonTerminal<
+public abstract sealed class NonTerminal<
         Terminals, Input, Output,
         Child extends Node<Terminals, ?, Input, ?, ?>
 > implements Node<
@@ -146,19 +144,6 @@ public sealed abstract class NonTerminal<
         }
 
         return this.manualOutput(inputs);
-    }
-
-    /**
-     * To prevent extra object creation an array is passed down.
-     *  This array has to be at least as long as the maximum arity
-     *    of all nodes in this subtree.
-     * @param terminals The terminal inputs for evaluation
-     * @param inputs The array to hold the children
-     * @return The output of this node when given the terminals.
-     */
-    @Override
-    public Output performantEvaluate(Terminals terminals, Object[] inputs) {
-       throw new UnsupportedOperationException();
     }
 
     @Override

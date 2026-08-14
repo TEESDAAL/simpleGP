@@ -11,7 +11,7 @@ import java.util.stream.Stream;
  * @param <Terminals> The type of terminal inputs
  * @param <Output> The output type of this terminal
  */
-public sealed abstract class Terminal<Terminals, Output> implements Node<
+public abstract sealed class Terminal<Terminals, Output> implements Node<
         Terminals, Terminals, Output,
         MutableTerminal<Terminals, Output>,
         ImmutableTerminal<Terminals, Output>
@@ -23,9 +23,15 @@ public sealed abstract class Terminal<Terminals, Output> implements Node<
     /** The name of this terminal. */
     protected String name;
 
-    public Terminal(
+    /**
+     * Setup the given terminal.
+     * @param name The name of this terminal
+     * @param extractor The extractor of this terminal.
+     * @param returnType The return type of this terminal.
+     */
+    protected Terminal(
         String name,
-        UnaryOperator<Terminals,Output> extractor,
+        UnaryOperator<Terminals, Output> extractor,
         Class<Output> returnType
     ) {
         this.name = Objects.requireNonNull(name);
@@ -88,13 +94,6 @@ public sealed abstract class Terminal<Terminals, Output> implements Node<
     public Output evaluate(Terminals input) {
         return this.extractor.produce(input);
     }
-
-    @Override
-    public Output performantEvaluate(Terminals terminals, Object[] inputs) {
-        return this.extractor.produce(terminals);
-    }
-
-
 
     @Override
     public Stream<Node<Terminals, ?, ?, ?, ?>> stream() {

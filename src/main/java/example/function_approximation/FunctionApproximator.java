@@ -55,10 +55,9 @@ public record FunctionApproximator<
                 .build();
 
         final var params = ParameterBuilder.<Pair<Double, Double>, Double>of()
-            .initializer(new DefaultInitialiser(rand.get(), primitiveSet))
-            .breeder(new DefaultBreeder(rand.get(), primitiveSet))
+            .initializer(new DefaultInitialiser<>(rand.get(), primitiveSet, Double.class))
+            .breeder(new DefaultBreeder<>(rand.get(), primitiveSet))
             .trainEvaluator(new DefaultAssessor(rand.get(), 100))
-//            .trainEvaluator((IndividualEvaluator<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>) _  -> SingleObjectiveFit.of(1, Goal.MINIMIZE))
             .testEvaluator(new DefaultAssessor(rand.get(), 1))
             .addStatistic(
                 population -> {

@@ -137,7 +137,7 @@ public interface Parallelizeable {
                     .map(p -> p.reduce(mapper));
             }
             return randomStream.gather(Gatherers.windowFixed(this.batchSize())).parallel()
-                    .flatMap(l -> l.stream().map( p -> p.reduce(mapper)));
+                    .flatMap(l -> l.stream().map(p -> p.reduce(mapper)));
         }
 
         return randomStream.map(p -> p.reduce(mapper));

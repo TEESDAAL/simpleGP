@@ -11,9 +11,7 @@ import java.util.stream.IntStream;
 /**
  * A utility class for creating population initializers from a seed population.
  */
-public enum SeededInitializer {
-    ;
-
+public enum SeededInitializer {;
     /**
      * Create population initializer from a seed population,
      *  padded by an individual initializer.

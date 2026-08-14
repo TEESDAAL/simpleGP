@@ -80,7 +80,9 @@ public interface IndividualInitialiser<I> extends Initialiser<I>, Parallelizeabl
             private final Cache<I> createdIndividuals = Cache.empty();
             @Override
             public I createIndividual() {
-               return createdIndividuals.repeatUntilAbsent(inner::createIndividual, numTries);
+               return createdIndividuals.repeatUntilAbsent(
+                   inner::createIndividual, numTries
+               );
             }
 
             @Override

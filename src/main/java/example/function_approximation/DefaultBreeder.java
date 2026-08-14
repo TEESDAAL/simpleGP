@@ -5,8 +5,6 @@ import gp.core.breeder.Breeder;
 import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.individual.AssessedIndividual;
 import gp.core.initializer.PrimitiveSet;
-import gp.impl.selectors.random.ProbabilisticElement;
-import gp.impl.selectors.random.WeightedRandomSampler;
 import gp.impl.breeder.NaiveBreeder;
 import gp.impl.genetic_operators.CrossOver;
 import gp.impl.genetic_operators.Identity;
@@ -14,46 +12,40 @@ import gp.impl.genetic_operators.SubtreeMutation;
 import gp.impl.individual.SingleTreeIndividual;
 import gp.impl.selectors.Elitism;
 import gp.impl.selectors.TournamentSelection;
-import utils.Pair;
-import utils.operators.Operator;
+import gp.impl.selectors.random.DistributionBuilder;
 import utils.random.RandomSource;
 
-import java.util.List;
-
-public class DefaultBreeder implements Breeder<AssessedIndividual<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>, SingleTreeIndividual<Pair<Double, Double>, Double>> {
+public class DefaultBreeder<T, R> implements Breeder<AssessedIndividual<T, R, SingleTreeIndividual<T, R>, SingleObjectiveFitness>, SingleTreeIndividual<T, R>> {
     protected final RandomSource random;
     protected final int populationSize = 1000;
     protected final int tournamentSize = 7;
     protected final int elitismCount = 10;
-    protected final PrimitiveSet<Pair<Double, Double>> primitiveSet;
+    protected final PrimitiveSet<T> primitiveSet;
 
-    protected final Breeder<AssessedIndividual<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>, SingleTreeIndividual<Pair<Double, Double>, Double>> breeder;
-    protected final List<ProbabilisticElement<Operator<
-        SingleTreeIndividual<Pair<Double, Double>, Double>,
-        List<SingleTreeIndividual<Pair<Double, Double>, Double>>
-    >>> operators;
+    protected final Breeder<AssessedIndividual<
+        T, R,
+        SingleTreeIndividual<T, R>,
+        SingleObjectiveFitness
+    >, SingleTreeIndividual<T, R>> breeder;
 
-    public DefaultBreeder(RandomSource random, PrimitiveSet<Pair<Double, Double>> primitiveSet) {
+
+    public DefaultBreeder(RandomSource random, PrimitiveSet<T> primitiveSet) {
         this.random = random;
         this.primitiveSet = primitiveSet;
-        this.operators = ProbabilisticElement.withFallback(
-            new Identity<>(),
-            List.of(
-                ProbabilisticElement.of(0.01, SingleTreeIndividual.operator(new SubtreeMutation<>(
-                    random, primitiveSet, 7, 100
-                ))),
-                ProbabilisticElement.of(0.65, SingleTreeIndividual.operator(new CrossOver<>(
-                    random
-                )))
-            )
-        );
+        final var sampler = DistributionBuilder.startingWith(
+            0.01, SingleTreeIndividual.<T, R>operator(new SubtreeMutation<>(
+                random, primitiveSet, 7, 100
+            )))
+            .addElement(0.65, SingleTreeIndividual.operator(new CrossOver<>(random)))
+            .addDefault(new Identity<>())
+            .toSampler(random);
 
         this.breeder = new NaiveBreeder<
-            Pair<Double, Double>, Double,
-            SingleTreeIndividual<Pair<Double, Double>, Double>,
+            T, R,
+            SingleTreeIndividual<T, R>,
             SingleObjectiveFitness
         >(
-            new WeightedRandomSampler<>(random, operators),
+            sampler,
             populationSize,
             new TournamentSelection<>(random, this.tournamentSize),
             new Elitism<>(elitismCount, _ -> SingleObjectiveFitness::compareTo)
@@ -61,8 +53,8 @@ public class DefaultBreeder implements Breeder<AssessedIndividual<Pair<Double, D
     }
 
     @Override
-    public Population<SingleTreeIndividual<Pair<Double, Double>, Double>> breed(
-            Population<AssessedIndividual<Pair<Double, Double>, Double, SingleTreeIndividual<Pair<Double, Double>, Double>, SingleObjectiveFitness>> population
+    public Population<SingleTreeIndividual<T, R>> breed(
+            Population<AssessedIndividual<T, R, SingleTreeIndividual<T, R>, SingleObjectiveFitness>> population
     ) {
         return this.breeder.breed(population);
     }

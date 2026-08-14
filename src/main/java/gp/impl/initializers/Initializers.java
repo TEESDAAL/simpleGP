@@ -1,11 +1,12 @@
 package gp.impl.initializers;
 
-import gp.core.initializer.*;
+import gp.core.initializer.IndividualInitialiser;
+import gp.core.initializer.Initialiser;
+import gp.core.initializer.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
 import utils.random.RandomSource;
 
-public enum Initializers {
-    ;
+public enum Initializers {;
 
     /**
      * Creates an initializer with grow method (probabilistic termination).

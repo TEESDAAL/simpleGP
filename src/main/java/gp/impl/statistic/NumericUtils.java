@@ -6,9 +6,7 @@ import java.math.RoundingMode;
 /**
  * Numeric helper methods.
  */
-public enum NumericUtils {
-    ;
-
+public enum NumericUtils {;
     /**
      * Rounds a value to the requested number of decimal places.
      *

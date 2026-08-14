@@ -155,8 +155,9 @@ public sealed interface Node<
         );
     }
 
-    Output performantEvaluate(Terminals terminals, Object[] inputs);
-
+    /**
+     * @return the number of children of this node. 0 for Terminals.
+     */
     int numChildren();
 }
 

@@ -42,7 +42,9 @@ public record EphemeralConstant<R>(
      * @return A new EphemeralConstant.
      * @param <R> The constant type.
      */
-    public static <R> EphemeralConstant<R> of(Supplier<R> constantCreator, Class<R> returnType) {
+    public static <R> EphemeralConstant<R> of(
+        Supplier<R> constantCreator, Class<R> returnType
+    ) {
         return EphemeralConstant.of(R::toString, constantCreator, returnType);
     }
 
@@ -64,7 +66,7 @@ public record EphemeralConstant<R>(
 
     /**
      * Create a concrete terminal from `this`,
-     *  expected to produce a different value on every call
+     *  expected to produce a different value on every call.
      * @return a new concrete TypedTerminal
      * @param <T> The input terminal type - effectively anything as it's not used.
      */

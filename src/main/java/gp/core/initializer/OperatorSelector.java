@@ -6,9 +6,7 @@ import java.util.List;
 /**
  * Utility class for selecting valid terminals and non-terminals by return type.
  */
-public enum OperatorSelector {
-    ;
-
+public enum OperatorSelector {;
     /**
      * Gets valid terminals of the given return type.
      * @param <T> The terminal input type
@@ -39,7 +37,6 @@ public enum OperatorSelector {
             final List<TypedNonTerminal<?, ?>> nonTerminals,
             final Class<R> returnType
     ) {
-
         // Collections.unmodifiableList needed to make the type system happy
         //noinspection unchecked
         return Collections.unmodifiableList(nonTerminals.stream()

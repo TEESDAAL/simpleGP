@@ -1,7 +1,5 @@
 package gp.impl.individual.tree;
 
-import gp.impl.individual.tree.compiled_representation.CompiledIndividual;
-
 /**
  * Marker interface for immutable nodes in the genetic programming tree.
  * @param <Terminals> The type of terminal inputs
@@ -11,12 +9,10 @@ import gp.impl.individual.tree.compiled_representation.CompiledIndividual;
  * @param <Mutable> The mutable node type
  */
 public sealed interface ImmutableNode<
-        Terminals, Input, Output,
-        Self extends ImmutableNode<Terminals, Input, Output, Self, Mutable>,
-        Mutable extends MutableNode<Terminals, Input, Output, Mutable, Self>
-        > extends Node<Terminals, Input, Output, Mutable, Self>
-        permits ImmutableTerminal, ImmutableNonTerminal {
-    default CompiledIndividual<Terminals, Output> compile() {
-        return CompiledIndividual.compile(this);
-    }
-}
+    Terminals, Input, Output,
+    Self extends ImmutableNode<Terminals, Input, Output, Self, Mutable>,
+    Mutable extends MutableNode<Terminals, Input, Output, Mutable, Self>
+> extends Node<
+    Terminals, Input, Output,
+    Mutable, Self
+> permits ImmutableTerminal, ImmutableNonTerminal {}

@@ -12,18 +12,23 @@ import utils.operators.UnaryOperator;
  * @param <Terminals> The terminal type
  * @param <Output> The output type
  */
-public final class ImmutableTerminal<Terminals, Output> extends Terminal<Terminals, Output> implements
-    ImmutableNode<
-            Terminals, Terminals, Output,
-            ImmutableTerminal<Terminals, Output>,
-            MutableTerminal<Terminals, Output>
-    > {
+public final class ImmutableTerminal<Terminals, Output>
+    extends Terminal<Terminals, Output> implements ImmutableNode<
+        Terminals, Terminals, Output,
+        ImmutableTerminal<Terminals, Output>,
+        MutableTerminal<Terminals, Output>
+> {
     private ImmutableTerminal(
         String name,
         UnaryOperator<Terminals, Output> extractor,
         Class<Output> returnType
     ) {
         super(name, extractor, returnType);
+    }
+
+    @Override
+    public ImmutableTerminal<Terminals, Output> immutableCopy() {
+        return this;
     }
 
     /** Cache for flyweight pattern. */

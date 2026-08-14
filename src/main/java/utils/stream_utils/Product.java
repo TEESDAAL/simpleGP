@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
-public enum Product {
-    ;
+public enum Product {;
 
     /**
      * Create a stream by taking the product of two lists.
@@ -32,7 +31,10 @@ public enum Product {
      * @param <B> The type of the elements in the second list.
      * @param <R> The type of the results.
      */
-    public static <A, B, R> Stream<R> cycle(List<A> l1, List<B> l2, BiFunction<A, B, R> f) {
+    public static <A, B, R> Stream<R> cycle(
+        List<A> l1, List<B> l2,
+        BiFunction<A, B, R> f
+    ) {
         return Stream.generate(() -> Product.of(l1, l2, f))
                 .flatMap(s -> s);
     }

@@ -6,4 +6,5 @@
 <suppressions>
     <suppress files="src/main/java/example/.*\.java" checks=".*"/>
     <suppress files="src/main/java/gp/impl/individual/multitree.*\.java" checks=".*"/>
+    <suppress files="src/main/java/utils/result/.*\.java" checks=".*"/>
 </suppressions>

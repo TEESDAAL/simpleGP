@@ -9,6 +9,10 @@ import java.util.Objects;
 
 /**
  * An immutable non-terminal node record implementation.
+ *
+ * @param <Terminals> The terminals that the leaves extract from.
+ * @param <Input> The input type to this node.
+ * @param <Output> The output of this node.
  */
 public final class ImmutableNonTerminal<Terminals, Input, Output> extends NonTerminal<
     Terminals, Input, Output,
@@ -38,6 +42,11 @@ public final class ImmutableNonTerminal<Terminals, Input, Output> extends NonTer
         super(name, function, children, inputType, returnType);
         this.maximumArity = super.maximumArity();
         this.size = super.size();
+    }
+
+    @Override
+    public ImmutableNonTerminal<Terminals, Input, Output> immutableCopy() {
+        return this;
     }
 
     @Override
@@ -76,8 +85,7 @@ public final class ImmutableNonTerminal<Terminals, Input, Output> extends NonTer
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (o == null || getClass() != o.getClass()) { return false; }
 
         final ImmutableNonTerminal<?, ?, ?> that = (ImmutableNonTerminal<?, ?, ?>) o;
         return this.maximumArity == that.maximumArity

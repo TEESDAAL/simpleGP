@@ -1,13 +1,15 @@
 package gp.impl.initializers;
 
 import gp.Population;
-import gp.core.initializer.*;
+import gp.core.initializer.IndividualInitialiser;
+import gp.core.initializer.Initialiser;
+import gp.core.initializer.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
 import utils.Cache;
 import utils.random.RandomSource;
 import utils.stream_utils.Product;
 
-import java.util.*;
+import java.util.List;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
@@ -92,9 +94,16 @@ public class RampedHalfAndHalf<Terminal, R> implements Initialiser<
                 .collect(Population.toPopulation());
     }
 
-
+    /**
+     * Attempt to enforce uniqueness of the individuals created by this initializer.
+     * @param numTries The number of times to try creating an individual.
+     * @return A new RampedHalfAndHalf initializer that will
+     *  attempt to enforce uniqueness.
+     */
     public RampedHalfAndHalf<Terminal, R> attemptToEnforceUniqueness(int numTries) {
-        return new RampedHalfAndHalf<>(maxDepth, random, primitiveSet, populationSize, maxTries, returnType) {
+        return new RampedHalfAndHalf<>(
+            maxDepth, random, primitiveSet, populationSize, maxTries, returnType
+        ) {
             @Override
             public Population<SingleTreeIndividual<Terminal, R>> initialize() {
                 final Cache<SingleTreeIndividual<Terminal, R>> cache = Cache.empty();
@@ -103,7 +112,7 @@ public class RampedHalfAndHalf<Terminal, R> implements Initialiser<
                         IntStream.range(2, maxDepth+1).boxed().toList(),
                         List.of(full, grow),
                         (depth, method) -> cache.repeatUntilAbsent(
-                                method.apply(depth)::createIndividual, numTries
+                            method.apply(depth)::createIndividual, numTries
                         )
                 ).limit(populationSize)
                         .collect(Population.toPopulation());

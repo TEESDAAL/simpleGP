@@ -14,7 +14,7 @@ public class SourceOfRandom implements Supplier<RandomSource> {
      *
      * @param seed the initial seed value
      */
-    public SourceOfRandom(long seed) {
+    public SourceOfRandom(int seed) {
         this.randomSource = RandomSource.of(seed);
     }
 
@@ -23,7 +23,7 @@ public class SourceOfRandom implements Supplier<RandomSource> {
      *
      * @param seed the new seed value
      */
-    public void reseed(long seed) {
+    public void reseed(int seed) {
         this.randomSource.seed(seed);
     }
 
@@ -34,8 +34,6 @@ public class SourceOfRandom implements Supplier<RandomSource> {
      */
     @Override
     public RandomSource get() {
-        return RandomSource.of(randomSource.nextLong(
-            Long.MIN_VALUE, Long.MAX_VALUE
-        ));
+        return RandomSource.of(randomSource.nextInt());
     }
 }

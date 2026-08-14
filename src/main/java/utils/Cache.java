@@ -7,10 +7,18 @@ import java.util.function.Supplier;
 public class Cache<T> {
     final Map<T, T> cache = new ConcurrentHashMap<>();
 
+    /**
+     * @return a new empty cache of type T.
+     * @param <T> The type of the element inside the cache.
+     */
     public static <T> Cache<T> empty() {
         return new Cache<>();
     }
 
+    /**
+     * @param element The element to check if it is inside the cache.
+     * @return true if the element is in the cache.
+     */
     public boolean seen(T element) {
         return cache.containsKey(element);
     }
@@ -23,7 +31,7 @@ public class Cache<T> {
      * @return A hopefully unique individual.
      */
     public T repeatUntilAbsent(Supplier<T> getter, int maxTries) {
-        for (int i=1;i<maxTries;i++) {
+        for (int i=1; i < maxTries; i++) {
             final T t = getter.get();
             if (!cache.containsKey(t)) {
                 cache.put(t, t);

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MultiObjectiveTests {
     @Test
     public void testParetoRankings() {
-        List<MultiObjectiveFit> fitnesses = Stream.of(
+        final List<MultiObjectiveFit> fitnesses = Stream.of(
                 Stream.of(1.0, 2.0),
                 Stream.of(2.0, 1.0),
                 Stream.of(1.5, 1.5),
@@ -26,7 +26,7 @@ public class MultiObjectiveTests {
                 f -> (SingleObjectiveFitness) SingleObjectiveFit.of(f, Goal.MINIMIZE)).toList()
                 ).map(MultiObjectiveFit::of)
                 .toList();
-        Map<Integer, List<MultiObjectiveFit>> ranks = MultiObjectiveFitness.paretoRanks(fitnesses, i -> i);
+        final Map<Integer, List<MultiObjectiveFit>> ranks = MultiObjectiveFitness.paretoRanks(fitnesses, i -> i);
 
         assertEquals(
                 List.of(fitnesses.getLast()),
@@ -36,11 +36,11 @@ public class MultiObjectiveTests {
 
     @Test
     public void testMOFFitnessSorting() {
-        List<MultiObjectiveFit> fitnesses = createRandomFitnesses();
+        final List<MultiObjectiveFit> fitnesses = createRandomFitnesses();
 
-        for (MultiObjectiveFit fit1 : fitnesses) {
+        for (final MultiObjectiveFit fit1 : fitnesses) {
             assertEquals(Comparison.EQUAL, fit1.compareWith(fit1));
-            for (MultiObjectiveFit fit2 : fitnesses) {
+            for (final MultiObjectiveFit fit2 : fitnesses) {
                 assertEquals(
                         fit1.compareWith(fit2),
                         fit2.compareWith(fit1).flip()
@@ -57,12 +57,12 @@ public class MultiObjectiveTests {
 
     @Test
     public void fuzzTestParetoRankings() {
-        List<MultiObjectiveFit> fitnesses = createRandomFitnesses();
-        Map<Integer, List<MultiObjectiveFit>> ranks = MultiObjectiveFitness.paretoRanks(fitnesses, i -> i);
+        final List<MultiObjectiveFit> fitnesses = createRandomFitnesses();
+        final Map<Integer, List<MultiObjectiveFit>> ranks = MultiObjectiveFitness.paretoRanks(fitnesses, i -> i);
 
-        for (List<MultiObjectiveFit> rank : ranks.values()) {
-            for (MultiObjectiveFit multiObjectiveFit : rank) {
-                for (MultiObjectiveFit other : rank) {
+        for (final List<MultiObjectiveFit> rank : ranks.values()) {
+            for (final MultiObjectiveFit multiObjectiveFit : rank) {
+                for (final MultiObjectiveFit other : rank) {
                     assertEquals(Comparison.EQUAL, multiObjectiveFit.compareWith(other));
                 }
             }
@@ -70,7 +70,7 @@ public class MultiObjectiveTests {
     }
 
     static List<MultiObjectiveFit> createRandomFitnesses() {
-        Random random = new Random();
+        final Random random = new Random();
         return IntStream.range(0, 1000)
                 .mapToObj(i -> IntStream
                         .range(0, 2)

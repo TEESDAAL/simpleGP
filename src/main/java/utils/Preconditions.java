@@ -1,17 +1,13 @@
 package utils;
 
 import java.util.Objects;
-import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * A simple assertion utility class.
  */
-public enum Preconditions {
-    ;
-
+public enum Preconditions {;
     /**
      * Asserts that a condition is true. If it is not,
      * an IllegalArgumentException is thrown with the given message.
@@ -52,22 +48,8 @@ public enum Preconditions {
     }
 
     /**
-     * Asserts that a condition is true using a BooleanSupplier. If it is not,
-     * an IllegalArgumentException is thrown with the given message.
-     *
-     * @param supplier the BooleanSupplier that provides the condition to check
-     * @param message  the message to include in the error if the assertion fails
-     * @throws IllegalArgumentException if the condition is false
-     */
-    public static void assertTrue(BooleanSupplier supplier, String message)
-        throws IllegalArgumentException {
-        assertTrue(supplier.getAsBoolean(), message);
-    }
-
-
-    /**
      * Asserts that a condition is false.
-     * If it is not, an IllegalArgumentExceptionis thrown with the given message.
+     * If it is not, an IllegalArgumentException is thrown with the given message.
      *
      * @param condition the condition to check
      * @param message   the message to include in the error if the assertion fails
@@ -80,20 +62,6 @@ public enum Preconditions {
         }
     }
 
-    /**
-     * Lazily asserts that a condition is false using a BooleanSupplier.
-     * If it is not, an IllegalArgumentException is thrown with the given message.
-     *
-     * @param supplier the BooleanSupplier that provides the condition to check
-     * @param message  the message to include in the error if the assertion fails
-     * @throws IllegalArgumentException if the condition is true
-     */
-    public static void assertFalse(BooleanSupplier supplier, String message)
-        throws IllegalArgumentException {
-        if (supplier.getAsBoolean()) {
-            throw new IllegalArgumentException(message);
-        }
-    }
 
     /**
      * Asserts that a condition is false, while passing through the value.
@@ -118,24 +86,6 @@ public enum Preconditions {
         }
 
         return value;
-    }
-
-    /**
-     * Lazily asserts that two values are equal.
-     * If they are not, an IllegalArgumentException is thrown with the given message.
-     *
-     * @param expected the expected value
-     * @param actual   the supplier of the actual value
-     * @param message  the message to include in the error if the assertion fails
-     * @param <T>      the type of the values being compared
-     * @throws IllegalArgumentException if the values are not equal
-     */
-    public static <T> void assertEquals(
-        final T expected,
-        final Supplier<T> actual,
-        final String message
-    ) throws IllegalArgumentException {
-        assertEquals(expected, actual.get(), message);
     }
 
     /**
@@ -167,7 +117,7 @@ public enum Preconditions {
     }
 
     /**
-     * Require all given objects to be non-null
+     * Require all given objects to be non-null.
      * @param objects A set of objects which shouldn't be null.
      */
     public static void allNonNull(Object... objects) {
