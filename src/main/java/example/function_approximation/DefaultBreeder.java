@@ -19,7 +19,7 @@ public class DefaultBreeder<T, R> implements Breeder<AssessedIndividual<T, R, Si
     protected final RandomSource random;
     protected final int populationSize = 1000;
     protected final int tournamentSize = 7;
-    protected final int elitismCount = 10;
+    protected final int elitismCount = 0;
     protected final PrimitiveSet<T> primitiveSet;
 
     protected final Breeder<AssessedIndividual<
@@ -36,19 +36,17 @@ public class DefaultBreeder<T, R> implements Breeder<AssessedIndividual<T, R, Si
             0.01, SingleTreeIndividual.<T, R>operator(new SubtreeMutation<>(
                 random, primitiveSet, 7, 100
             )))
-            .addElement(0.65, SingleTreeIndividual.operator(new CrossOver<>(random)))
+            .addElement(0.65, SingleTreeIndividual.operator(new CrossOver<>(
+                random, 7, 1
+            )))
             .addDefault(new Identity<>())
             .toSampler(random);
 
-        this.breeder = new NaiveBreeder<
-            T, R,
-            SingleTreeIndividual<T, R>,
-            SingleObjectiveFitness
-        >(
+        this.breeder = new NaiveBreeder<>(
             sampler,
             populationSize,
-            new TournamentSelection<>(random, this.tournamentSize),
-            new Elitism<>(elitismCount, _ -> SingleObjectiveFitness::compareTo)
+            new TournamentSelection<>(random, this.tournamentSize, SingleObjectiveFitness.directlyCompare()),
+            new Elitism<>(elitismCount, SingleObjectiveFitness.directlyCompare())
         );
     }
 

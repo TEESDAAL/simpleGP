@@ -1,12 +1,13 @@
 package example.function_approximation.parameters;
 
-import gp.core.initializer.TypedNonTerminal;
-import utils.operators.BinaryOperator;
-import utils.operators.Operator;
-import utils.operators.UnaryOperator;
+import gp.impl.individual.typed_tree.NamedNodeFunction;
+import utils.typed_functions.TypedBiFunction;
+import utils.typed_functions.TypedFunction;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public enum DoubleNonTerminals {
     NEG("neg", a -> -a),
@@ -20,26 +21,30 @@ public enum DoubleNonTerminals {
     PLUS("+", Double::sum),
     SUB("-", (a, b) -> a - b);
 
-    private final String symbol;
-    private final Operator<Double, Double> op;
+    private final NamedNodeFunction<Double, ?> op;
 
-    TypedNonTerminal<Double, Double> into() {
-        return new TypedNonTerminal<>(this.symbol, op, Double.class, Double.class);
-    }
-
-    public static List<TypedNonTerminal<Double, Double>> all() {
+    public static List<NamedNodeFunction<Double, ?>> all() {
         return Arrays.stream(DoubleNonTerminals.values())
-                .map(DoubleNonTerminals::into)
-                .toList();
+            .<NamedNodeFunction<Double, ?>>map(t -> t.op)
+            .toList();
     }
 
-    DoubleNonTerminals(String symbol, BinaryOperator<Double, Double> o) {
-        this.symbol = symbol;
-        this.op = o;
+    DoubleNonTerminals(String symbol, BiFunction<Double, Double, Double> f) {
+        this.op = new NamedNodeFunction<>(
+            symbol,
+            TypedBiFunction.of(
+                f, Double.class, Double.class, Double.class
+            )
+        );
     }
-    DoubleNonTerminals(String symbol, UnaryOperator<Double, Double> o) {
-        this.symbol = symbol;
-        this.op = o;
+
+    DoubleNonTerminals(String symbol, Function<Double, Double> f) {
+        this.op = new NamedNodeFunction<>(
+            symbol,
+            TypedFunction.of(
+                f, Double.class, Double.class
+            )
+        );
     }
 
 }

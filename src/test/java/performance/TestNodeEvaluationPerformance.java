@@ -1,32 +1,28 @@
 package performance;
 
 import example.function_approximation.DefaultInitialiser;
-import gp.Population;
 import gp.core.initializer.PrimitiveSet;
 import gp.core.initializer.PrimitiveSetBuilder;
-import gp.impl.initializers.Initializers;
 import org.junit.jupiter.api.Test;
 import utils.Pair;
 import utils.Repeat;
-import utils.RepeatTest;
-import utils.operators.Operator;
 import utils.random.RandomSource;
 
-import java.util.Random;
-
 public class TestNodeEvaluationPerformance {
-    PrimitiveSet<Double> primitiveSet = PrimitiveSetBuilder.<Double>empty()
-        .addUncachedTerminal("x", x -> x, Double.class)
-        .addUncachedTerminal("square", x -> x*x, Double.class)
-        .addNonTerminal("max", Operator.bin(Math::max), Double.class, Double.class)
-        .addNonTerminal("min", Operator.bin(Math::min), Double.class, Double.class)
-        .addNonTerminal("neg", Operator.unary(x -> -x), Double.class, Double.class)
-        .addNonTerminal("toStr", Operator.unary(Object::toString), Object.class, String.class)
+    PrimitiveSet<Pair<Double, Double>> primitiveSet = PrimitiveSetBuilder.<Pair<Double, Double>>empty()
+        .addUncachedTerminal("x", Pair::first, Double.class)
+        .addUncachedTerminal("y", Pair::second, Double.class)
+        .addNonTerminal("max", Math::max, Double.class, Double.class, Double.class)
+        .addNonTerminal("min", Math::min, Double.class, Double.class, Double.class)
+        .addNonTerminal("neg", x -> -x, Double.class, Double.class)
+        .addNonTerminal("toStr", Object::toString, Object.class, String.class)
         .build();
     @Test
     public void checkNodeEvaluationTimes() {
         final RandomSource rand = RandomSource.of(12);
-        final var pop = new DefaultInitialiser(rand, primitiveSet).initialize();
+        final var pop = new DefaultInitialiser<>(
+            rand, primitiveSet, String.class
+        ).initialize();
         System.out.println("WARMUP");
         Repeat.of(
             100,

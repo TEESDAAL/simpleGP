@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,6 +35,17 @@ public record Population<I>(List<I> individuals) implements Serializable {
     }
 
     /**
+     * Creates a new population from the provided individuals.
+     * @param <I> The type of individuals
+     * @param individuals The list of individuals
+     * @return A new population containing the provided individuals
+     */
+    @SafeVarargs
+    public static <I> Population<I> of(I... individuals) {
+        return new Population<>(List.of(individuals));
+    }
+
+    /**
      * Converts the population to a stream of individuals.
      * @return A stream of individuals in the population
      */
@@ -59,7 +71,7 @@ public record Population<I>(List<I> individuals) implements Serializable {
      * @return A new population containing individuals from both populations
      */
     public Population<I> combine(final Population<I> other) {
-        List<I> newIndividuals = new ArrayList<>(individuals);
+        final List<I> newIndividuals = new ArrayList<>(individuals);
         newIndividuals.addAll(other.individuals);
         return new Population<>(newIndividuals);
     }
@@ -89,7 +101,7 @@ public record Population<I>(List<I> individuals) implements Serializable {
      * @return The index of the individual if present
      */
     public Optional<Integer> indexOf(I individual) {
-        int index = this.individuals.indexOf(individual);
+        final int index = this.individuals.indexOf(individual);
         if (index == -1) {
             return Optional.empty();
         }
@@ -130,5 +142,29 @@ public record Population<I>(List<I> individuals) implements Serializable {
      */
     public void forEach(Consumer<I> consumer) {
         individuals.forEach(consumer);
+    }
+
+    /**
+     * Create a new population by applying the mapper to this.
+     * @param mapper The mapper applied to each individual in this population
+     * @return The new Population<R>
+     * @param <R> The type of new individuals in this population.
+     */
+    public <R> Population<R> map(Function<? super I, ? extends R> mapper) {
+        return this.stream().map(mapper).collect(Population.toPopulation());
+    }
+
+    /**
+     * @return The first individual in this population
+     */
+    public I first() {
+        return this.individuals.getFirst();
+    }
+
+    /**
+     * @return The last individual in this population
+     */
+    public I last() {
+        return this.individuals.getLast();
     }
 }

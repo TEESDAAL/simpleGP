@@ -18,19 +18,19 @@ public class MultiObjectiveTests {
     @Test
     public void testParetoRankings() {
         final List<MultiObjectiveFit> fitnesses = Stream.of(
-                Stream.of(1.0, 2.0),
-                Stream.of(2.0, 1.0),
-                Stream.of(1.5, 1.5),
-                Stream.of(3.0, 3.0)
+            Stream.of(1.0, 2.0), // rank 1
+            Stream.of(3.0, 3.0), // rank 2
+            Stream.of(2.0, 1.0), // rank 1
+            Stream.of(1.5, 1.5)  // rank 1
         ).map(fs -> fs.map(
-                f -> (SingleObjectiveFitness) SingleObjectiveFit.of(f, Goal.MINIMIZE)).toList()
-                ).map(MultiObjectiveFit::of)
-                .toList();
+            f -> (SingleObjectiveFitness) SingleObjectiveFit.of(f, Goal.MINIMIZE)).toList()
+        ).map(MultiObjectiveFit::of)
+            .toList();
         final Map<Integer, List<MultiObjectiveFit>> ranks = MultiObjectiveFitness.paretoRanks(fitnesses, i -> i);
 
         assertEquals(
-                List.of(fitnesses.getLast()),
-                ranks.get(1)
+            List.of(fitnesses.get(1)),
+            ranks.get(1)
         );
     }
 
@@ -39,16 +39,16 @@ public class MultiObjectiveTests {
         final List<MultiObjectiveFit> fitnesses = createRandomFitnesses();
 
         for (final MultiObjectiveFit fit1 : fitnesses) {
-            assertEquals(Comparison.EQUAL, fit1.compareWith(fit1));
+            assertEquals(Comparison.EQUAL, fit1.paretoComparison(fit1));
             for (final MultiObjectiveFit fit2 : fitnesses) {
                 assertEquals(
-                        fit1.compareWith(fit2),
-                        fit2.compareWith(fit1).flip()
+                    fit1.paretoComparison(fit2),
+                    fit2.paretoComparison(fit1).flip()
                 );
                 assertEquals(
-                        Math.signum(fit1.compareWith(fit2).ord()),
-                        Math.signum(fit2.compareWith(fit1).ord()) * -1,
-                        .0001
+                    Math.signum(fit1.paretoComparison(fit2).ord()),
+                    Math.signum(fit2.paretoComparison(fit1).ord()) * -1,
+                    .0001
                 );
 
             }
@@ -63,7 +63,7 @@ public class MultiObjectiveTests {
         for (final List<MultiObjectiveFit> rank : ranks.values()) {
             for (final MultiObjectiveFit multiObjectiveFit : rank) {
                 for (final MultiObjectiveFit other : rank) {
-                    assertEquals(Comparison.EQUAL, multiObjectiveFit.compareWith(other));
+                    assertEquals(Comparison.EQUAL, multiObjectiveFit.paretoComparison(other));
                 }
             }
         }
@@ -72,14 +72,14 @@ public class MultiObjectiveTests {
     static List<MultiObjectiveFit> createRandomFitnesses() {
         final Random random = new Random();
         return IntStream.range(0, 1000)
-                .mapToObj(i -> IntStream
-                        .range(0, 2)
-                        .mapToObj(ignored -> random.nextInt(-100, 100))
-                ).map(fs -> fs.map(f -> SingleObjectiveFit.of(Double.valueOf(f), Goal.MINIMIZE))
-                        .map(SingleObjectiveFitness.class::cast)
-                        .toList())
-                .map(MultiObjectiveFit::new)
-                .toList();
+            .mapToObj(_ -> IntStream
+                .range(0, 2)
+                .mapToObj(ignored -> random.nextInt(-100, 100))
+            ).map(fs -> fs.map(f -> SingleObjectiveFit.of(Double.valueOf(f), Goal.MINIMIZE))
+                .map(SingleObjectiveFitness.class::cast)
+                .toList())
+            .map(MultiObjectiveFit::new)
+            .toList();
     }
 }
 

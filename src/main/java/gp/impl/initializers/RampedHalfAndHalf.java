@@ -5,7 +5,7 @@ import gp.core.initializer.IndividualInitialiser;
 import gp.core.initializer.Initialiser;
 import gp.core.initializer.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
-import utils.Cache;
+import utils.IndSet;
 import utils.random.RandomSource;
 import utils.stream_utils.Product;
 
@@ -106,7 +106,7 @@ public class RampedHalfAndHalf<Terminal, R> implements Initialiser<
         ) {
             @Override
             public Population<SingleTreeIndividual<Terminal, R>> initialize() {
-                final Cache<SingleTreeIndividual<Terminal, R>> cache = Cache.empty();
+                final IndSet<SingleTreeIndividual<Terminal, R>> cache = IndSet.empty();
 
                 return Product.cycle(
                         IntStream.range(2, maxDepth+1).boxed().toList(),

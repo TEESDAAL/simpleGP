@@ -1,10 +1,11 @@
 package gp.initializers;
 
 import gp.Population;
-import gp.core.initializer.*;
+import gp.core.initializer.IndividualCreationException;
+import gp.core.initializer.PrimitiveSet;
+import gp.core.initializer.PrimitiveSetBuilder;
 import gp.impl.individual.SingleTreeIndividual;
 import gp.impl.initializers.Initializers;
-import utils.operators.Operator;
 import org.junit.jupiter.api.Test;
 import utils.random.RandomSource;
 
@@ -16,14 +17,14 @@ public class InitialiserTest {
     public static final int ITERATIONS = 2_000;
     int seed = 12;
     RandomSource random = RandomSource.of(seed);
-    PrimitiveSet<Double> primitiveSet = PrimitiveSetBuilder.<Double>empty()
-            .addUncachedTerminal("x", x -> x, Double.class)
-            .addUncachedTerminal("square", x -> x*x, Double.class)
-            .addNonTerminal("max", Operator.bin(Math::max), Double.class, Double.class)
-            .addNonTerminal("min", Operator.bin(Math::min), Double.class, Double.class)
-            .addNonTerminal("neg", Operator.unary(x -> -x), Double.class, Double.class)
-            .addNonTerminal("toStr", Operator.unary(Object::toString), Object.class, String.class)
-            .build();
+    public static final PrimitiveSet<Double> primitiveSet = PrimitiveSetBuilder.<Double>empty()
+        .addUncachedTerminal("x", x -> x, Double.class)
+        .addUncachedTerminal("square", x -> x*x, Double.class)
+        .addNonTerminal("max", Math::max, Double.class, Double.class, Double.class)
+        .addNonTerminal("min", Math::min, Double.class, Double.class, Double.class)
+        .addNonTerminal("neg", x -> -x, Double.class, Double.class)
+        .addNonTerminal("toStr", Object::toString, Object.class, String.class)
+        .build();
 
     @Test
     public void testPopulationSizeCorrect() {

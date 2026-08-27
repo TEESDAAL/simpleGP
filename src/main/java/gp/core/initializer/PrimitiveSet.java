@@ -1,9 +1,12 @@
 package gp.core.initializer;
 
+import gp.impl.individual.typed_tree.NamedNodeFunction;
+
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 public interface PrimitiveSet<T> {
@@ -19,7 +22,7 @@ public interface PrimitiveSet<T> {
     static <T> PrimitiveSet<T> of(
         List<TypedTerminal<T, ?>> terminals,
         List<EphemeralConstant<?>> ephemeralConstants,
-        List<TypedNonTerminal<?, ?>> nonTerminals
+        List<NamedNodeFunction<?, ?>> nonTerminals
     ) {
         return new PrimitiveSetImpl<>(terminals, ephemeralConstants, nonTerminals);
     }
@@ -36,7 +39,7 @@ public interface PrimitiveSet<T> {
     /**
      * @return the list of nonTerminals.
      */
-    List<TypedNonTerminal<?, ?>> nonTerminals();
+    List<NamedNodeFunction<?, ?>> nonTerminals();
 
     /**
      * Return an array of all the terminals that return a value
@@ -56,7 +59,7 @@ public interface PrimitiveSet<T> {
      * @return An array of valid non-terminals.
      * @param <R> The desired return type.
      */
-    <R> TypedNonTerminal<?, R>[] validNonTerminals(Class<R> returnType);
+    <R> NamedNodeFunction<R, ?>[] validNonTerminals(Class<R> returnType);
 
     /**
      * @return the number of terminals in this set.
@@ -76,18 +79,26 @@ public interface PrimitiveSet<T> {
 @SuppressWarnings({"rawtypes", "unchecked"})
 final class PrimitiveSetImpl<T> implements PrimitiveSet<T> {
     private final TypedTerminal<T, ?>[] terminals;
-    private final TypedNonTerminal<?, ?>[] nonTerminals;
+    private final NamedNodeFunction<?, ?>[] nonTerminals;
     private final EphemeralConstant<?>[] ephemeralConstants;
 
-    private final Map<Class<?>, TypedNonTerminal[]> nonterminalMap = new HashMap<>();
+    private final Map<Class<?>, NamedNodeFunction[]> nonterminalMap =
+        new ConcurrentHashMap<>();
 
     PrimitiveSetImpl(
         List<TypedTerminal<T, ?>> terminals,
         List<EphemeralConstant<?>> ephemeralConstants,
-        List<TypedNonTerminal<?, ?>> nonTerminals
+        List<NamedNodeFunction<?, ?>> nonTerminals
     ) {
+        assert terminals.stream().noneMatch(Objects::isNull)
+            : "terminals cannot be null";
+        assert ephemeralConstants.stream().noneMatch(Objects::isNull)
+            : "ephemeral constants cannot be null";
+        assert nonTerminals.stream().noneMatch(Objects::isNull)
+            : "non-terminals cannot be null";
+
         this.terminals = terminals.toArray(TypedTerminal[]::new);
-        this.nonTerminals = nonTerminals.toArray(TypedNonTerminal<?, ?>[]::new);
+        this.nonTerminals = nonTerminals.toArray(NamedNodeFunction<?, ?>[]::new);
         this.ephemeralConstants = ephemeralConstants.toArray(EphemeralConstant[]::new);
     }
 
@@ -104,15 +115,15 @@ final class PrimitiveSetImpl<T> implements PrimitiveSet<T> {
     }
 
     @Override
-    public <R> TypedNonTerminal<?, R>[] validNonTerminals(
+    public <R> NamedNodeFunction<R, ?>[] validNonTerminals(
         final Class<R> returnType
     ) {
         return nonterminalMap.computeIfAbsent(
-            returnType,
+            Objects.requireNonNull(returnType, "Given return type cannot be null"),
             t -> Arrays.stream(nonTerminals)
-                .filter(term -> t.isAssignableFrom(term.returnType()))
-                .map(term -> (TypedNonTerminal<?, R>) term)
-                .toArray(TypedNonTerminal[]::new)
+                .filter(term -> t.isAssignableFrom(term.function().returnType()))
+                .map(term -> (NamedNodeFunction<R, ?>) term)
+                .toArray(NamedNodeFunction[]::new)
         );
     }
 
@@ -122,7 +133,7 @@ final class PrimitiveSetImpl<T> implements PrimitiveSet<T> {
     }
 
     @Override
-    public List<TypedNonTerminal<?, ?>> nonTerminals() {
+    public List<NamedNodeFunction<?, ?>> nonTerminals() {
         return List.of(nonTerminals);
     }
 

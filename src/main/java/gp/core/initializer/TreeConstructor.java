@@ -1,11 +1,13 @@
 package gp.core.initializer;
 
 import gp.core.breeder.SimpleSelectionMechanism;
+import gp.impl.individual.typed_tree.ImmutableNode;
+import gp.impl.individual.typed_tree.Node;
+import gp.impl.individual.typed_tree.NodeCreator;
 import gp.impl.selectors.random.RandomSampler;
-import gp.impl.individual.tree.ImmutableNode;
-import gp.impl.individual.tree.Node;
 import utils.random.RandomSource;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -14,7 +16,7 @@ import java.util.Optional;
  * @param <R> The return/output type
  */
 public interface TreeConstructor<T, R>
-    extends IndividualInitialiser<ImmutableNode<T, ?, R, ?, ?>> {
+    extends IndividualInitialiser<ImmutableNode<T, R, ?, ?>> {
     /**
      * Gets the random number generator.
      *
@@ -24,7 +26,7 @@ public interface TreeConstructor<T, R>
 
     /**
      * @return The selection mechanism for terminals.
-     *  By default picks a terminal uniformly.
+     *  By default, picks a terminal uniformly.
      * @param <A> The return type of the terminals.
      */
     default <A> SimpleSelectionMechanism<TypedTerminal<T, A>> terminalSelector() {
@@ -55,7 +57,7 @@ public interface TreeConstructor<T, R>
      * successful
      */
     default <ReturnType> Optional<
-        ImmutableNode<T, ?, ReturnType, ?, ?>
+        ImmutableNode<T, ReturnType, ?, ?>
     > recursivelyConstructIndividual(
         final int currentDepth,
         final Class<ReturnType> returnType
@@ -69,49 +71,23 @@ public interface TreeConstructor<T, R>
             ));
         }
 
+        final TreeConstructor<T, R> constructor = this;
         return RandomSampler.sample(
-                this.primitiveSet().validNonTerminals(returnType),
-                this.random()
-        ).flatMap(nonTerm -> buildNonTerminal(
-                nonTerm, currentDepth
-        ));
-    }
-
-    /**
-     * Create a non-terminal node.
-     * @param typedNonTerminal The typed non-terminal to create a node for.
-     * @param currentDepth The current depth in the tree.
-     * @return An optional containing the constructed node if successful.
-     * @param <I> The input type for the non-terminal.
-     * @param <ReturnType> The return type of the non-terminal.
-     */
-    default <I, ReturnType> Optional<
-        ImmutableNode<T, ?, ReturnType, ?, ?>
-    > buildNonTerminal(
-        TypedNonTerminal<I, ReturnType> typedNonTerminal,
-        int currentDepth
-    ) {
-        @SuppressWarnings("unchecked")
-        final ImmutableNode<T, ?, I, ?, ?>[] children = (ImmutableNode<T, ?, I, ?, ?>[])
-            new ImmutableNode[typedNonTerminal.nonTerminal().arity()];
-        for (int i = 0; i < typedNonTerminal.nonTerminal().arity(); i++) {
-            final var child = recursivelyConstructIndividual(
-                    currentDepth + 1,
-                    typedNonTerminal.inputType()
-            );
-            if (child.isEmpty()) {
-                return Optional.empty();
+            this.primitiveSet().validNonTerminals(returnType),
+            this.random()
+        ).flatMap(n -> n.function().toNode(
+            n.name(),
+            new NodeCreator<>() {
+                @Override
+                public <NewR> Optional<ImmutableNode<T, NewR, ?, ?>> get(
+                    Class<NewR> returnType
+                ) {
+                    return constructor.recursivelyConstructIndividual(
+                        currentDepth + 1,
+                        Objects.requireNonNull(returnType)
+                    );
+                }
             }
-            children[i] = child.get();
-        }
-
-        return Optional.of(Node.nonTerm(
-                typedNonTerminal.name(),
-                typedNonTerminal.nonTerminal(),
-                children,
-                typedNonTerminal.inputType(),
-                typedNonTerminal.returnType()
         ));
-
     }
 }

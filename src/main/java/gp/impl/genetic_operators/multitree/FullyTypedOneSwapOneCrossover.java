@@ -30,13 +30,13 @@ public class FullyTypedOneSwapOneCrossover<
      * Create a FullyTypedOneSwapOneCrossover.
      * @param rand The source of randomness, used to choose the indices i,j.
      */
-    public FullyTypedOneSwapOneCrossover(final RandomSource rand) {
+    public FullyTypedOneSwapOneCrossover(RandomSource rand, int maxDepth, int maxTries) {
         this.rand = rand;
-        this.crossOver = new CrossOver<>(rand);
+        this.crossOver = new CrossOver<>(rand, maxDepth, maxTries);
     }
 
     @Override
-    public List<I> produce(final I parent1, final I parent2) {
+    public List<I> produce(I parent1, I parent2) {
         final Trees trees = trees(parent1, parent2);
         return OneSwapOneCrossover.swapAndCrossOver(
             rand, crossOver, trees.parent1(), trees.parent2()
@@ -47,7 +47,7 @@ public class FullyTypedOneSwapOneCrossover<
     }
 
     private MultiTree<T, R, Tail, ?> listToMultiTree(
-        final List<SingleTreeIndividual<?, ?>> trees
+        List<SingleTreeIndividual<?, ?>> trees
     ) {
         MultiTree<?, ?, ?, ?> multiTree = MultiTree.of(trees.getLast());
 
@@ -59,8 +59,8 @@ public class FullyTypedOneSwapOneCrossover<
     }
 
     private static <T, R, Tail extends Next> Trees trees(
-        final MultiTree<T, R, Tail, ?> tree1,
-        final MultiTree<T, R, Tail, ?> tree2
+        MultiTree<T, R, Tail, ?> tree1,
+        MultiTree<T, R, Tail, ?> tree2
     ) {
         final Trees trees = Trees.mutable();
         getAllTrees(tree1, tree2, trees);
@@ -70,9 +70,9 @@ public class FullyTypedOneSwapOneCrossover<
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static <T, R, Tail extends Next> void getAllTrees(
-        final MultiTree<T, R, Tail, ?> tree1,
-        final MultiTree<T, R, Tail, ?> tree2,
-        final Trees trees
+        MultiTree<T, R, Tail, ?> tree1,
+        MultiTree<T, R, Tail, ?> tree2,
+        Trees trees
     ) {
         trees.parent1().add(tree1.tree());
         trees.parent2().add(tree2.tree());
@@ -80,8 +80,8 @@ public class FullyTypedOneSwapOneCrossover<
             return;
         }
 
-        if (tree1.next() instanceof final MultiTree t1
-            && tree2.next() instanceof final MultiTree t2) {
+        if (tree1.next() instanceof MultiTree t1
+            && tree2.next() instanceof MultiTree t2) {
             getAllTrees(t1, t2, trees);
             return;
         }

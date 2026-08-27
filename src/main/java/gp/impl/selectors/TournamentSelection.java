@@ -1,6 +1,8 @@
 package gp.impl.selectors;
 
+import gp.Population;
 import gp.core.breeder.SimpleSelectionMechanism;
+import gp.core.fitness.Comparer;
 import gp.core.fitness.Fitness;
 import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
@@ -10,6 +12,7 @@ import utils.Preconditions;
 import utils.random.RandomSource;
 
 import java.util.List;
+import java.util.function.BinaryOperator;
 import java.util.stream.IntStream;
 
 /**
@@ -26,7 +29,8 @@ public record TournamentSelection<
     R, T, I extends Individual<T, R>, F extends Fitness<F>
 >(
     RandomSource random,
-    int tournamentSize
+    int tournamentSize,
+    Fitness<F> fitnessComparator
 ) implements SimpleSelectionMechanism<AssessedIndividual<T, R, I, F>> {
 
     /**
@@ -55,36 +59,50 @@ public record TournamentSelection<
     public static <R, T, I extends Individual<T, R>, F extends Fitness<F>>
     TournamentSelection<R, T, I, F> of(
         final RandomSource random,
-        final int tournamentSize
+        final int tournamentSize,
+        Fitness<F> fitnessComparator
     ) {
-        return new TournamentSelection<>(random, tournamentSize);
+        return new TournamentSelection<>(random, tournamentSize, fitnessComparator);
     }
 
     /**
      * Creates a sampler from the provided collection.
      *
-     * @param items the items to select from
+     * @param individuals the individuals to select from
      * @return a sampler that performs tournament selection
      */
     @Override
     public Sampler<AssessedIndividual<T, R, I, F>> selectorFrom(
-        final List<AssessedIndividual<T, R, I, F>> items
+        final List<AssessedIndividual<T, R, I, F>> individuals
     ) {
-        if (items.isEmpty()) {
+        final Comparer<F> localComparer = fitnessComparator.fromPopulation(
+            Population.of(individuals).map(AssessedIndividual::fitness)
+        );
+        if (individuals.isEmpty()) {
             throw new IllegalArgumentException("Must be able to select an individual.");
         }
         return () -> IntStream.range(0, tournamentSize)
             .mapToObj(ignored -> RandomSampler.sampleOrThrow(
-                items, random
-            )).reduce(this::selectBetter)
+                individuals, random
+            )).reduce(this.selectBetter(localComparer))
             .orElseThrow();
+    }
+
+    private BinaryOperator<AssessedIndividual<T, R, I, F>> selectBetter(
+        Comparer<F> comparer
+    ) {
+        return (i1, i2) -> selectBetter(i1, i2, comparer);
     }
 
     private AssessedIndividual<T, R, I, F> selectBetter(
         AssessedIndividual<T, R, I, F> bestSoFar,
-        AssessedIndividual<T, R, I, F> challenger
+        AssessedIndividual<T, R, I, F> challenger,
+        Comparer<F> fitnessComparator
     ) {
-        return switch (challenger.fitness().compareWith(bestSoFar.fitness())) {
+        return switch (fitnessComparator.compareWith(
+            challenger.fitness(),
+            bestSoFar.fitness()
+        )) {
             case BETTER -> challenger;
             case EQUAL, WORSE -> bestSoFar;
         };

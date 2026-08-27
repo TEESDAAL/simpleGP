@@ -40,6 +40,7 @@ public record Pair<A, B>(A first, B second) {
         return pair -> pair.reduce(mapper);
     }
 
+
     /**
      * Folds the values in this pair to a new value using the provided function.
      *

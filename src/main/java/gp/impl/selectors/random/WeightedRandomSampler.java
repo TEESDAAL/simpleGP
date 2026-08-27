@@ -1,6 +1,7 @@
 package gp.impl.selectors.random;
 
 import gp.core.selector.Sampler;
+import utils.ArrayUtils;
 import utils.random.RandomSource;
 
 import java.util.List;
@@ -23,7 +24,10 @@ public record WeightedRandomSampler<T>(
     public WeightedRandomSampler {
         assert distribution.stream()
                 .mapToDouble(ProbabilisticElement::probability)
-                .sum() == 1.0;
+                .sum() == 1.0
+            : "Probability does not sum to one, instead: " + distribution.stream()
+                .mapToDouble(ProbabilisticElement::probability)
+                .sum();
 
         distribution = List.copyOf(distribution);
     }
@@ -55,6 +59,27 @@ public record WeightedRandomSampler<T>(
         RandomSource random
     ) {
         return new WeightedRandomSampler<>(random, distribution);
+    }
+
+    /**
+     * Creates a weighted random sampler from a distribution and seed.
+     * @param <T> The element type
+     * @param defaultElement The default fall-back element of the distribution
+     * @param remaining The probability distribution of the remaining elements.
+     * @param random The source of randomness
+     * @return A new sampler
+     */
+    @SafeVarargs
+    public static <T> WeightedRandomSampler<T> of(
+        RandomSource random,
+        T defaultElement,
+        ProbabilisticElement<T>... remaining
+    ) {
+        final DistributionBuilder<T> distribution = DistributionBuilder.withDefault(
+            defaultElement
+        );
+        ArrayUtils.forEach(remaining, distribution::addElement);
+        return new WeightedRandomSampler<>(random, distribution.toList());
     }
 
 

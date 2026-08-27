@@ -38,6 +38,16 @@ public final class DistributionBuilder<E> {
         return DistributionBuilder.<E>empty()
             .addElement(probability, element);
     }
+    /**
+     * Create a distribution builder starting with a given default element.
+     * @param element The default element of the distribution.
+     * @return A distribution builder starting with the given element.
+     * @param <E> The type of the elements in the distribution.
+     */
+    public static <E> DistributionBuilder<E> withDefault(E element) {
+        return DistributionBuilder.<E>empty()
+            .addDefault(element);
+    }
 
     /**
      * Add a probabilistic element to the distribution.
@@ -46,11 +56,15 @@ public final class DistributionBuilder<E> {
      * @throws IllegalArgumentException If the distribution would sum to > 1.0.
      */
     public DistributionBuilder<E> addElement(ProbabilisticElement<E> element) {
-        if (this.accumulatedProb + element.probability() > 1.0) {
-            throw new IllegalArgumentException(
-                "After adding element " + element + "the distribution would sum to > 1.0"
-            );
-        }
+        Preconditions.assertTrue(
+            element.probability() >= 0,
+            "Cannot provide a negative probability"
+        );
+        Preconditions.assertTrue(
+            this.accumulatedProb + element.probability() <= 1.0,
+            "Adding element would put the total probability above 1.0"
+        );
+
         this.accumulatedProb += element.probability();
         this.distribution.add(element);
         return this;
@@ -64,8 +78,7 @@ public final class DistributionBuilder<E> {
      * @throws IllegalArgumentException If the distribution would sum to > 1.0.
      */
     public DistributionBuilder<E> addElement(double probability, E element) {
-        this.distribution.add(ProbabilisticElement.of(probability, element));
-        return this;
+        return this.addElement(ProbabilisticElement.of(probability, element));
     }
 
     /**
@@ -108,7 +121,7 @@ public final class DistributionBuilder<E> {
             this.distribution.stream(),
             Stream.of(ProbabilisticElement.of(
                 1.0 - accumulatedProb, this.defaultElement
-            ))
+            )).filter(e -> e.element() != null)
         ).toList();
     }
 }

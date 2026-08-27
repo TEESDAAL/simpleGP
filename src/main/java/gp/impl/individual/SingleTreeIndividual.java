@@ -1,8 +1,8 @@
 package gp.impl.individual;
 
 import gp.core.individual.Individual;
-import gp.impl.individual.tree.ImmutableNode;
-import gp.impl.individual.tree.Node;
+import gp.impl.individual.typed_tree.ImmutableNode;
+import gp.impl.individual.typed_tree.Node;
 import utils.operators.Operator;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
  * @param tree The immutable tree representing this individual
  */
 record SingleTreeIndividualImpl<T, Out>(
-    ImmutableNode<T, ?, Out, ?, ?> tree
+    ImmutableNode<T, Out, ?, ?> tree
 ) implements SingleTreeIndividual<T, Out> {
     @Override
     public String toString() {
@@ -45,7 +45,7 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
      * @return A new single tree individual
      */
     static <Out, T> SingleTreeIndividual<T, Out> of(
-            final ImmutableNode<T, ?, Out, ?, ?> individual
+            final ImmutableNode<T, Out, ?, ?> individual
     ) {
         return new SingleTreeIndividualImpl<>(individual);
     }
@@ -54,7 +54,7 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
      * Get the Node this individual wraps.
      * @return The inner node.
      */
-    ImmutableNode<T, ?, Out, ?, ?> tree();
+    ImmutableNode<T, Out, ?, ?> tree();
 
     @Override
     default Out evaluate(final T terminals) {
@@ -69,14 +69,13 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
      * @param nodeOperator The operator that works on nodes
      * @return An operator that works on single tree individuals
      */
-    static <T, Out>
-    Operator<
+    static <T, Out> Operator<
         SingleTreeIndividual<T, Out>,
         List<SingleTreeIndividual<T, Out>>
     > operator(
         Operator<
-            Node<T, ?, Out, ?, ?>,
-            List<ImmutableNode<T, ?, Out, ?, ?>>
+            Node<T, Out, ?, ?, ?>,
+            List<ImmutableNode<T, Out, ?, ?>>
         > nodeOperator
     ) {
         return new Operator<>() {
@@ -84,7 +83,7 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
             public List<SingleTreeIndividual<T, Out>> produce(
                     final List<SingleTreeIndividual<T, Out>> parents
             ) {
-                final List<Node<T, ?, Out, ?, ?>> trees
+                final List<Node<T, Out, ?, ?, ?>> trees
                     = new ArrayList<>(parents.size());
                 for (final SingleTreeIndividual<T, Out> parent : parents) {
                     trees.add(parent.tree());

@@ -9,7 +9,7 @@ import utils.random.RandomSource;
 
 public class DefaultInitialiser<T, R> implements Initialiser<SingleTreeIndividual<T, R>> {
     final Initialiser<SingleTreeIndividual<T, R>> initialiser;
-    final int maxDepth = 7;
+    public static final int maxDepth = 7;
     int startingPopulationSize = 1000;
     protected final PrimitiveSet<T> primitiveSet;
 
@@ -21,7 +21,7 @@ public class DefaultInitialiser<T, R> implements Initialiser<SingleTreeIndividua
             startingPopulationSize,
             100,
             returnType
-        );
+        ).attemptToEnforceUniqueness(100);
         this.primitiveSet = primitiveSet;
     }
 

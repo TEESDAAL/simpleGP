@@ -5,12 +5,12 @@ import example.function_approximation.parameters.initial.ParameterBuilder;
 import gp.GPPipeLine;
 import gp.Population;
 import gp.TerminationCriterion;
-import gp.core.breeder.Breeder;
 import gp.core.assessor.Assessor;
+import gp.core.breeder.Breeder;
+import gp.core.fitness.SingleObjectiveFitness;
+import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
 import gp.core.initializer.Initialiser;
-import gp.core.individual.AssessedIndividual;
-import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.initializer.PrimitiveSet;
 import gp.core.initializer.PrimitiveSetBuilder;
 import gp.core.statistic.SideEffect;
@@ -62,7 +62,7 @@ public record FunctionApproximator<
             .addStatistic(
                 population -> {
                     final List<Double> fitness = population.stream().map(e -> e.fitness().score()).toList();
-                    return "BEST: " + fitness.stream().mapToDouble(d->d).min().orElse(0) + "SIZE: " + population.stream().mapToInt(i->i.individual().tree().depth()).average().orElse(0.0);
+                    return "BEST: " + fitness.stream().mapToDouble(d->d).min().orElse(0) + " SIZE: " + population.stream().mapToInt(i->i.individual().tree().depth()).average().orElse(0.0);
 //                    return "MEAN: "+ NumericUtils.round(CommonFunctions.MEAN(fitness), 3)+", MEDIAN: "+NumericUtils.round(CommonFunctions.MEDIAN(fitness), 3);
                 })
             .build();

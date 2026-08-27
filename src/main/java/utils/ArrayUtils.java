@@ -1,9 +1,12 @@
 package utils;
 
+import utils.random.RandomSource;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public enum ArrayUtils {;
@@ -117,5 +120,43 @@ public enum ArrayUtils {;
         System.arraycopy(left, 0, array, 0, left.length);
         System.arraycopy(right, 0, array, left.length, right.length);
         return array;
+    }
+
+    public static <T> void forEach(T[] elements, Consumer<T> consumer) {
+        for (final T t : elements) {
+            consumer.accept(t);
+        }
+    }
+
+    public static <T> void shuffle(T[] elements, RandomSource random) {
+        /* https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
+        -- To shuffle an array a of n elements (indices 0..n − 1):
+        for i from n − 1 down to 1 do
+            j ← random integer such that 0 ≤ j ≤ i
+            exchange a[j] and a[i]
+         */
+        for (int i=elements.length -1; i>=1; i--) {
+            final int j = random.nextInt(0, i);
+            ArrayUtils.swap(elements, i, j);
+        }
+    }
+
+    private static <T> void swap(T[] elements, int i, int j) {
+        final T temp = elements[i];
+        elements[i] = elements[j];
+        elements[j] = temp;
+    }
+
+    public static void shuffle(int[] elements, RandomSource random) {
+        for (int i=elements.length -1; i>=1; i--) {
+            final int j = random.nextInt(0, i);
+            ArrayUtils.swap(elements, i, j);
+        }
+    }
+
+    private static void swap(int[] elements, int i, int j) {
+        final int temp = elements[i];
+        elements[i] = elements[j];
+        elements[j] = temp;
     }
 }

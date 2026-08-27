@@ -1,11 +1,18 @@
 package gp.core.fitness;
 
+import gp.impl.fitness.SingleObjectiveFit;
+
 /**
  * Interface representing single-objective fitness,
  * which includes a score and an optimization goal.
  */
-public interface SingleObjectiveFitness extends Fitness<SingleObjectiveFitness>,
-        Comparable<SingleObjectiveFitness> {
+public interface SingleObjectiveFitness
+    extends DirectlyComparableFitness<SingleObjectiveFitness> {
+
+    static SingleObjectiveFitness of(double score, Goal goal) {
+        return SingleObjectiveFit.of(score, goal);
+    }
+
     /**
      * Gets the fitness score.
      * @return The fitness score
@@ -19,21 +26,16 @@ public interface SingleObjectiveFitness extends Fitness<SingleObjectiveFitness>,
     Goal goal();
 
     @Override
-    default Comparison compareWith(
-            final SingleObjectiveFitness other
+    default Comparison compare(
+        final SingleObjectiveFitness other
     ) {
-        final Comparison result = Comparison.of(this.score(), other.score());
-
         return switch (this.goal()) {
-            case MAXIMIZE -> result;
-            case MINIMIZE -> result.flip();
+            case MAXIMIZE -> Comparison.compareMax(this.score(), other.score());
+            case MINIMIZE -> Comparison.compareMin(this.score(), other.score());
         };
     }
 
-    @Override
-    default int compareTo(SingleObjectiveFitness o) {
-        return compareWith(o).ord();
+    static Fitness<SingleObjectiveFitness> directlyCompare() {
+        return _ -> SingleObjectiveFitness::compare;
     }
-
-
 }

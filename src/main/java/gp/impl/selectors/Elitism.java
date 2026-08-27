@@ -1,5 +1,6 @@
 package gp.impl.selectors;
 
+import gp.Population;
 import gp.core.breeder.SelectionMechanism;
 import gp.core.fitness.Fitness;
 import gp.core.individual.AssessedIndividual;
@@ -9,7 +10,6 @@ import utils.Preconditions;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Elitism selector that always selects the best individual.
@@ -25,14 +25,9 @@ public record Elitism<
     TerminalHolder, ReturnType,
     Ind extends Individual<TerminalHolder, ReturnType>,
     Fit extends Fitness<Fit>
-    >(
+>(
     int elitismCount,
-    Function<
-        List<AssessedIndividual<
-            TerminalHolder, ReturnType, Ind, Fit
-        >>,
-        Comparator<Fit>
-        > fitnessComparatorFunction
+    Fitness<Fit> fitnessComparatorFunction
 ) implements SelectionMechanism<
     AssessedIndividual<TerminalHolder, ReturnType, Ind, Fit>,
     List<AssessedIndividual<TerminalHolder, ReturnType, Ind, Fit>>
@@ -45,8 +40,8 @@ public record Elitism<
      */
     public Elitism {
         Preconditions.assertTrue(
-            elitismCount > 0,
-            "elitismCount must be > 0"
+            elitismCount >= 0,
+            "elitismCount must be >= 0"
         );
     }
 
@@ -65,10 +60,7 @@ public record Elitism<
     public static <T, R, I extends Individual<T, R>, F extends Fitness<F>>
     Elitism<T, R, I, F> of(
         final int elitismCount,
-        final Function<
-            List<AssessedIndividual<T, R, I, F>>,
-            Comparator<F>
-            > fitnessComparatorFunction
+        final Fitness<F> fitnessComparatorFunction
     ) {
         return new Elitism<>(
             elitismCount,
@@ -93,11 +85,12 @@ public record Elitism<
             Fit
         >> items
     ) {
-        final Comparator<Fit> fitnessComparator = fitnessComparatorFunction.apply(items);
+        final Comparator<Fit> fitnessComparator = fitnessComparatorFunction
+            .fromPopulation(Population.of(items).map(AssessedIndividual::fitness));
 
         return () -> items.stream()
             .sorted((e1, e2) -> fitnessComparator.compare(
-                e2.fitness(), e1.fitness()
+                e1.fitness(), e2.fitness()
             )).limit(elitismCount)
             .toList();
     }

@@ -33,8 +33,8 @@ public class DefaultAssessor implements IndividualAssessor<Pair<Double, Double>,
         double currentX;
         double currentY;
         for (int y = 0; y < 100; y++) {
-            currentX = random.nextDouble(-Math.PI, Math.PI);
-            currentY = random.nextDouble(-Math.PI, Math.PI);
+            currentX = 100 - y;
+            currentY = y;
             expectedResult = Math.cos(currentY) * Math.exp(Math.sin(currentX));
 
             result = Math.abs(expectedResult - individual.evaluate(Pair.of(currentX, currentY)));

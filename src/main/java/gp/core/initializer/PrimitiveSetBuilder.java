@@ -1,11 +1,13 @@
 package gp.core.initializer;
 
-import utils.operators.Operator;
-import utils.operators.UnaryOperator;
+
+import gp.impl.individual.typed_tree.NamedNodeFunction;
+import utils.TriFunction;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -15,7 +17,7 @@ import java.util.function.Supplier;
  */
 public final class PrimitiveSetBuilder<T> {
     private final List<TypedTerminal<T, ?>> terminals = new ArrayList<>();
-    private final List<TypedNonTerminal<?, ?>> nonTerminals = new ArrayList<>();
+    private final List<NamedNodeFunction<?, ?>> nonTerminals = new ArrayList<>();
     private final List<EphemeralConstant<?>> ephemeralConstants = new ArrayList<>();
 
     private PrimitiveSetBuilder() {}
@@ -54,7 +56,7 @@ public final class PrimitiveSetBuilder<T> {
      * @param <R> The return type of this terminal.
      */
     public <R> PrimitiveSetBuilder<T> addTerminal(
-        String name, UnaryOperator<T, R> terminal, Class<R> returnType
+        String name, Function<T, R> terminal, Class<R> returnType
     ) {
         return this.addTerminal(TypedTerminal.of(name, terminal, returnType));
     }
@@ -70,7 +72,7 @@ public final class PrimitiveSetBuilder<T> {
      * @param <R> The return type of this terminal.
      */
     public <R> PrimitiveSetBuilder<T> addUncachedTerminal(
-        String name, UnaryOperator<T, R> terminal, Class<R> returnType
+        String name, Function<T, R> terminal, Class<R> returnType
     ) {
         return this.addTerminal(TypedTerminal.nonCached(name, terminal, returnType));
     }
@@ -160,11 +162,11 @@ public final class PrimitiveSetBuilder<T> {
 
     /**
      * Adds a non-terminal to the primitive set. Must be unique
-     * @param nonTerminal The TypedNonTerminal to add.
+     * @param nonTerminal The NodeFunction to add.
      * @throws IllegalArgumentException if nonTerminal is already in the primitive set.
      * @return this
      */
-    public PrimitiveSetBuilder<T> addNonTerminal(TypedNonTerminal<?, ?> nonTerminal) {
+    public PrimitiveSetBuilder<T> addNonTerminal(NamedNodeFunction<?, ?> nonTerminal) {
         if (this.nonTerminals.contains(nonTerminal)) {
             throw new IllegalArgumentException("This non-terminal already exists");
         }
@@ -172,25 +174,46 @@ public final class PrimitiveSetBuilder<T> {
         return this;
     }
 
-    /**
-     * Adds a non-terminal to the primitive set. Must be unique.
-     * @param name The name of the non-terminal.
-     * @param nonTerminal The function to perform the extraction on
-     * @param inputType The type of the input of this non-terminal.
-     * @param returnType The return type of the non-terminal
-     * @return this
-     * @param <In> The input type of the terminal.
-     * @param <Out> The output type of the terminal.
-     */
-    public <In, Out> PrimitiveSetBuilder<T> addNonTerminal(
-            String name, Operator<In, Out> nonTerminal,
-            Class<In> inputType,
-            Class<Out> returnType
+
+    public <A, R> PrimitiveSetBuilder<T> addNonTerminal(
+        String name,
+        Function<A, R> nonTerminal,
+        Class<A> inputType,
+        Class<R> returnType
     ) {
-        return this.addNonTerminal(TypedNonTerminal.of(
+        return this.addNonTerminal(NamedNodeFunction.of(
             name, nonTerminal, inputType, returnType
         ));
     }
+
+    public <A, B, R> PrimitiveSetBuilder<T> addNonTerminal(
+        String name,
+        BiFunction<A, B, R> nonTerminal,
+        Class<A> leftType,
+        Class<B> rightType,
+        Class<R> returnType
+    ) {
+        this.addNonTerminal(NamedNodeFunction.of(
+            name, nonTerminal, leftType, rightType, returnType
+        ));
+        return this;
+    }
+
+    public <A, B, C, R> PrimitiveSetBuilder<T> addNonTerminal(
+        String name,
+        TriFunction<A, B, C, R> nonTerminal,
+        Class<A> leftType,
+        Class<B> middleType,
+        Class<C> rightType,
+        Class<R> returnType
+    ) {
+        this.addNonTerminal(NamedNodeFunction.of(
+            name, nonTerminal, leftType, middleType, rightType, returnType
+        ));
+        return this;
+    }
+
+
 
     /**
      * Add all the non-terminals in a batch to the primitive set.
@@ -200,7 +223,7 @@ public final class PrimitiveSetBuilder<T> {
      * @return this
      */
     public PrimitiveSetBuilder<T> addAllNonTerminals(
-        Collection<TypedNonTerminal<?, ?>> nonTerminals
+        Collection<NamedNodeFunction<?, ?>> nonTerminals
     ) {
         nonTerminals.forEach(this::addNonTerminal);
         return this;
@@ -212,7 +235,9 @@ public final class PrimitiveSetBuilder<T> {
      */
     public PrimitiveSet<T> build() {
         return PrimitiveSet.of(
-                terminals, ephemeralConstants, nonTerminals
+            terminals,
+            ephemeralConstants,
+            nonTerminals
         );
     }
 }

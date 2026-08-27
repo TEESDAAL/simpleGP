@@ -14,6 +14,8 @@ import java.util.function.Function;
 
 /**
  * A fitness composed of multiple single-objective fitness values.
+ * Doesn't implement DirectlyComparableFitness because we should rank
+ *  them based on pareto-rank which depends on the whole population
  *
  * @param <Self> the concrete multi-objective fitness type
  */
@@ -44,14 +46,13 @@ public interface MultiObjectiveFitness<
      * @param other the other fitness
      * @return the comparison result
      */
-    @Override
-    default Comparison compareWith(Self other) {
+    default Comparison paretoComparison(Self other) {
         assert this.fitnesses().size() == other.fitnesses().size();
 
         final List<Comparison> comparisons = StreamZipper.zip(
-                this.fitnesses().stream(),
-                other.fitnesses().stream(),
-                SingleObjectiveFitness::compareWith
+            this.fitnesses().stream(),
+            other.fitnesses().stream(),
+            SingleObjectiveFitness::compare
         ).distinct().toList();
 
         final boolean anyBetter = comparisons.contains(Comparison.BETTER);
@@ -74,7 +75,7 @@ public interface MultiObjectiveFitness<
      * @return true if this dominates the other
      */
     default boolean dominates(Self other) {
-        return switch (this.compareWith(other)) {
+        return switch (this.paretoComparison(other)) {
             case BETTER -> true;
             case WORSE, EQUAL -> false;
         };
@@ -87,7 +88,7 @@ public interface MultiObjectiveFitness<
      * @return true if this is dominated by the other
      */
     default boolean isDominatedBy(Self other) {
-        return switch (this.compareWith(other)) {
+        return switch (this.paretoComparison(other)) {
             case WORSE -> true;
             case BETTER, EQUAL -> false;
         };
@@ -101,7 +102,7 @@ public interface MultiObjectiveFitness<
      * @return true if neither fitness dominates the other
      */
     default boolean paretoEqual(Self other) {
-        return this.compareWith(other) == Comparison.EQUAL;
+        return this.paretoComparison(other) == Comparison.EQUAL;
     }
 
     /**
@@ -145,8 +146,7 @@ public interface MultiObjectiveFitness<
      * @return a map from rank to list of individuals with that rank,
      *     where rank 0 is the Pareto front
      */
-    static <I, MOF extends MultiObjectiveFitness<MOF>> Map<Integer, List<I>>
-    paretoRanks(
+    static <I, MOF extends MultiObjectiveFitness<MOF>> Map<Integer, List<I>> paretoRanks(
             final Collection<I> fitnesses,
             final Function<I, MOF> extractor
     ) {

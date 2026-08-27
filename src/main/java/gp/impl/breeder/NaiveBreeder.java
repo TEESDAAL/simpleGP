@@ -70,10 +70,9 @@ public record NaiveBreeder<
             final Operator<I, List<I>> operator = this.distribution.sample();
             nextGeneration.addAll(operator.sampleFrom(
                 sampler,
-                    AssessedIndividual::individual
+                AssessedIndividual::individual
             ));
         }
-
         if (nextGeneration.size() > this.newPopulationSize) {
             nextGeneration = nextGeneration.subList(0, this.newPopulationSize);
         }

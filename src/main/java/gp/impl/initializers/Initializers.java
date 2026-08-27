@@ -1,7 +1,6 @@
 package gp.impl.initializers;
 
 import gp.core.initializer.IndividualInitialiser;
-import gp.core.initializer.Initialiser;
 import gp.core.initializer.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
 import utils.random.RandomSource;
@@ -74,7 +73,7 @@ public enum Initializers {;
      * @param returnType The return type class
      * @return A new initializer using the full method
      */
-    public static <T, R> Initialiser<SingleTreeIndividual<T, R>> rampedHalfAndHalf(
+    public static <T, R> RampedHalfAndHalf<T, R> rampedHalfAndHalf(
             final int maxDepth,
             final RandomSource random,
             final PrimitiveSet<T> primitiveSet,

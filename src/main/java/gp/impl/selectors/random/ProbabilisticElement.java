@@ -12,7 +12,7 @@ import java.util.List;
  * @param element The element value
  * @param <E> The type of element
  */
-public record ProbabilisticElement<E>(Double probability, E element) {
+public record ProbabilisticElement<E>(double probability, E element) {
     /**
      * Compact constructor validating the probability.
      * @throws IllegalArgumentException if probability is not finite or

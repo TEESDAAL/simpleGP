@@ -137,6 +137,24 @@ public record RandomSampler<T>(
     }
 
     /**
+     * Gets a random index from a non-empty collection.
+     * @param data The collection
+     * @param random The random number generator
+     * @throws IllegalArgumentException if the list is non-empty.
+     * @return An optional containing a random index if data is not
+     *     empty
+     */
+    public static int sampleIndexOrThrow(
+        final List<?> data, final RandomSource random
+    ) throws IllegalArgumentException {
+        if (data.isEmpty()) {
+            throw new IllegalArgumentException("Cannot sample from empty list.");
+        }
+
+        return random.nextInt(0, data.size());
+    }
+
+    /**
      * Samples an optional element from the collection.
      * @see #sampleOrThrow If you know the collection is non-empty
      * @param <T> The element type

@@ -3,7 +3,7 @@ package gp.impl.genetic_operators.multitree;
 import gp.impl.genetic_operators.CrossOver;
 import gp.impl.individual.multitree.MultiTreeIndividual;
 import gp.impl.individual.SingleTreeIndividual;
-import gp.impl.individual.tree.ImmutableNode;
+import gp.impl.individual.typed_tree.ImmutableNode;
 import utils.Pair;
 import utils.Preconditions;
 import utils.operators.BinaryOperator;
@@ -21,18 +21,22 @@ public class OneSwapOneCrossover<I extends MultiTreeIndividual<I>>
     implements BinaryOperator<I, List<I>> {
     private final RandomSource rand;
 
+    /*
+     * The method which applies cross-over to the two trees,
+     * we use a raw type here as we have to trust two trees
+     * we are given have the same generics (type erasure :( )
+     */
     @SuppressWarnings("rawtypes")
-    /// The method which applies cross-over to the two trees,
-    /// we use a raw type here as we have to trust two trees we are given
     private final CrossOver crossOver;
 
     /**
      * Create a OneSwapOneCrossover operator.
      * @param rand The source of randomness, used to choose the indices i,j.
      */
-    public OneSwapOneCrossover(RandomSource rand) {
+    public OneSwapOneCrossover(RandomSource rand, int maxDepth, int maxTries) {
         this.rand = rand;
-        this.crossOver = new CrossOver<>(rand);
+
+        this.crossOver = new CrossOver<>(rand, maxDepth, maxTries);
     }
 
     @Override

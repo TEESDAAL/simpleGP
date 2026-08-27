@@ -1,7 +1,7 @@
 package gp.core.initializer;
 
 import gp.Population;
-import utils.Cache;
+import utils.IndSet;
 import utils.Parallelizeable;
 
 import java.util.function.Function;
@@ -77,7 +77,7 @@ public interface IndividualInitialiser<I> extends Initialiser<I>, Parallelizeabl
     default IndividualInitialiser<I> attemptToEnforceUniqueness(int numTries) {
         final IndividualInitialiser<I> inner = this;
         return new IndividualInitialiser<>() {
-            private final Cache<I> createdIndividuals = Cache.empty();
+            private final IndSet<I> createdIndividuals = IndSet.empty();
             @Override
             public I createIndividual() {
                return createdIndividuals.repeatUntilAbsent(

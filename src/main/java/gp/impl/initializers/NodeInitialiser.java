@@ -3,7 +3,8 @@ package gp.impl.initializers;
 import gp.core.initializer.IndividualCreationException;
 import gp.core.initializer.PrimitiveSet;
 import gp.core.initializer.TreeConstructor;
-import gp.impl.individual.tree.ImmutableNode;
+import gp.impl.individual.typed_tree.ImmutableNode;
+import utils.Pair;
 import utils.Preconditions;
 import utils.random.RandomSource;
 
@@ -41,8 +42,15 @@ public record NodeInitialiser<T, R>(
      * is negative, or if maxDepth is negative, or if any parameter is null
      */
     public NodeInitialiser {
-        List.of(random, primitiveSet, shouldTerminate, returnType)
-                .forEach(Objects::requireNonNull);
+        List.of(
+            Pair.of("RandomSource", random),
+            Pair.of("PrimitiveSet", primitiveSet),
+            Pair.of("Termination Function", shouldTerminate),
+            Pair.of("Return Type", returnType)
+        ).forEach(p -> p.reduce(
+            (n, v) -> Objects.requireNonNull(n, v+" cannot be null"))
+        );
+
         Preconditions.assertTrue(
                 maxDepth >= 0, "Max depth must be non-negative"
         );
@@ -128,12 +136,11 @@ public record NodeInitialiser<T, R>(
      *     maxTries attempts
      */
     @Override
-    public ImmutableNode<T, ?, R, ?, ?> createIndividual()
+    public ImmutableNode<T, R, ?, ?> createIndividual()
             throws IndividualCreationException {
         for (int i = 0; i < maxTries; i++) {
-            final Optional<ImmutableNode<T, ?, R, ?, ?>> possibleTree
-                    = this.recursivelyConstructIndividual(0, returnType
-            );
+            final Optional<ImmutableNode<T, R, ?, ?>> possibleTree
+                    = this.recursivelyConstructIndividual(0, returnType);
             if (possibleTree.isPresent()) {
                 return possibleTree.get();
             }

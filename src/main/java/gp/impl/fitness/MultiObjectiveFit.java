@@ -1,5 +1,7 @@
 package gp.impl.fitness;
 
+import gp.Population;
+import gp.core.fitness.Comparer;
 import gp.core.fitness.MultiObjectiveFitness;
 import gp.core.fitness.SingleObjectiveFitness;
 
@@ -14,15 +16,25 @@ import java.util.List;
 public record MultiObjectiveFit(
         List<SingleObjectiveFitness> fitnesses
 ) implements MultiObjectiveFitness<MultiObjectiveFit> {
-        /**
-        * Factory method to create a MultiObjectiveFit
-        *      from a list of SingleObjectiveFitnesses.
-        * @param fitnesses The list of single-objective fitness values
-        * @return A MultiObjectiveFit instance
-        */
-        public static MultiObjectiveFit of(List<SingleObjectiveFitness> fitnesses) {
-            return new MultiObjectiveFit(
-                    Collections.unmodifiableList(fitnesses)
-            );
-        }
+    /**
+    * Factory method to create a MultiObjectiveFit
+    *      from a list of SingleObjectiveFitnesses.
+    * @param fitnesses The list of single-objective fitness values
+    * @return A MultiObjectiveFit instance
+    */
+    public static MultiObjectiveFit of(List<SingleObjectiveFitness> fitnesses) {
+        return new MultiObjectiveFit(
+                Collections.unmodifiableList(fitnesses)
+        );
+    }
+
+    @Override
+    public Comparer<MultiObjectiveFit> fromPopulation(
+        Population<MultiObjectiveFit> fitnesses
+    ) {
+        return Comparer.of(MultiObjectiveFitness.ordering(
+            fitnesses.individuals(),
+            f -> f
+        ));
+    }
 }

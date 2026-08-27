@@ -22,21 +22,23 @@ public class TestConsistency {
             .addAllNonTerminals(Collections.unmodifiableList(DoubleNonTerminals.all()))
             .build();
 
+    Class<Double> returnType = Double.class;
+
     @Test
     public void testConsistency() {
         Population<AssessedIndividual<
                     Pair<Double, Double>, Double,
                     SingleTreeIndividual<Pair<Double, Double>, Double>,
                     SingleObjectiveFitness
-                >>  prevpop = null;
+        >>  prevpop = null;
 
         for (int i = 0; i < 10; i++) {
             System.out.println("Run "+i);
             final SourceOfRandom rand = new SourceOfRandom(42);
             System.out.println(rand.get().nextInt());
             final var params = ParameterBuilder.<Pair<Double, Double>, Double>of()
-                .initializer(new DefaultInitialiser(rand.get(), primitiveSet))
-                .breeder(new DefaultBreeder(rand.get(), primitiveSet))
+                .initializer(new DefaultInitialiser<>(rand.get(), primitiveSet, returnType))
+                .breeder(new DefaultBreeder<>(rand.get(), primitiveSet))
                 .testEvaluator(new DefaultAssessor(rand.get(), 10))
                 .trainEvaluator(new DefaultAssessor(rand.get(), 600))
                 .build();
@@ -69,8 +71,8 @@ public class TestConsistency {
             final SourceOfRandom rand = new SourceOfRandom(i);
             System.out.println(rand.get().nextInt());
             final var params = ParameterBuilder.<Pair<Double, Double>, Double>of()
-                .initializer(new DefaultInitialiser(rand.get(), primitiveSet))
-                .breeder(new DefaultBreeder(rand.get(), primitiveSet))
+                .initializer(new DefaultInitialiser<>(rand.get(), primitiveSet, returnType))
+                .breeder(new DefaultBreeder<>(rand.get(), primitiveSet))
                 .testEvaluator(new DefaultAssessor(rand.get(), 10))
                 .trainEvaluator(new DefaultAssessor(rand.get(), 600))
                 .build();

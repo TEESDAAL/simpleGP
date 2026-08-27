@@ -1,6 +1,8 @@
 package gp.core.initializer;
 
-import utils.operators.UnaryOperator;
+import utils.Cache;
+
+import java.util.function.Function;
 
 
 /**
@@ -12,7 +14,7 @@ import utils.operators.UnaryOperator;
  * @param returnType The return type class
  */
 public record TypedTerminal<T, R>(
-        String name, UnaryOperator<T, R> terminal, Class<R> returnType
+    String name, Function<T, R> terminal, Class<R> returnType
 ) {
     /**
      * Creates a new typed terminal.
@@ -25,10 +27,10 @@ public record TypedTerminal<T, R>(
      */
     public static <T, R> TypedTerminal<T, R> of(
             String name,
-            final UnaryOperator<T, R> terminal,
-            final Class<R> returnType
+            Function<T, R> terminal,
+            Class<R> returnType
     ) {
-        return new TypedTerminal<>(name, terminal.cached(), returnType);
+        return new TypedTerminal<>(name, Cache.cacheFunction(terminal), returnType);
     }
 
     /**
@@ -43,7 +45,7 @@ public record TypedTerminal<T, R>(
      */
     public static <T, R> TypedTerminal<T, R> nonCached(
             String name,
-            final UnaryOperator<T, R> terminal,
+            final Function<T, R> terminal,
             final Class<R> returnType
     ) {
         return new TypedTerminal<>(name, terminal, returnType);
