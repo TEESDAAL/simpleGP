@@ -1,5 +1,8 @@
 package utils.random;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * A source of random values over bounded ranges.
  */
@@ -92,4 +95,16 @@ public interface RandomSource {
      * @return a float sampled from [lowerBound, upperBound)
      */
     float nextFloat(float lowerBound, float upperBound);
+
+    /**
+     * Shuffle elements in place, if `this.nextInt(a, b)` is uniformly distributed
+     * all possible permutations are be equally likely.
+     * @param elements The list of elements to shuffle
+     */
+    default void shuffleInPlace(List<?> elements) {
+        for (int i=elements.size() -1; i>=1; i--) {
+            final int j = this.nextInt(0, i);
+            Collections.swap(elements, i, j);
+        }
+    }
 }
