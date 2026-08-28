@@ -5,15 +5,16 @@ import utils.typed_functions.TypedTriFunction;
 
 import java.util.List;
 
-public final class MutableTrinaryNode<A, B, C, Terminals, R>
+public final class MutableTrinaryNode<Terminals, A, B, C, R>
     implements TrinaryNode<
-        A, B, C, Terminals, R,
-        MutableTrinaryNode<A, B, C, Terminals, R>,
+        Terminals,
+        A, B, C, R,
+        MutableTrinaryNode<Terminals, A, B, C, R>,
         MutableNode<Terminals, ?, ?, ?>
 >, MutableNonTerminal<
     Terminals, R,
-    MutableTrinaryNode<A, B, C, Terminals, R>,
-    ImmutableTrinaryNode<A, B, C, Terminals, R>
+    MutableTrinaryNode<Terminals, A, B, C, R>,
+    ImmutableTrinaryNode<Terminals, A, B, C, R>
 > {
     String name;
     MutableNode<Terminals, A, ?, ?> left;
@@ -36,7 +37,7 @@ public final class MutableTrinaryNode<A, B, C, Terminals, R>
     }
 
     @Override
-    public MutableTrinaryNode<A, B, C, Terminals, R> self() {
+    public MutableTrinaryNode<Terminals, A, B, C, R> self() {
         return this;
     }
 
@@ -45,7 +46,7 @@ public final class MutableTrinaryNode<A, B, C, Terminals, R>
         return this.name;
     }
 
-    public MutableTrinaryNode<A, B, C, Terminals, R> setName(Updater<String> updater) {
+    public MutableTrinaryNode<Terminals, A, B, C, R> setName(Updater<String> updater) {
         this.name = updater.newValue(this.name);
         return this;
     }
@@ -55,7 +56,7 @@ public final class MutableTrinaryNode<A, B, C, Terminals, R>
         return this.left;
     }
 
-    public MutableTrinaryNode<A, B, C, Terminals, R> setLeft(
+    public MutableTrinaryNode<Terminals, A, B, C, R> setLeft(
         Updater<MutableNode<Terminals, A, ?, ?>> updater
     ) {
         this.left = updater.newValue(this.left);
@@ -67,7 +68,7 @@ public final class MutableTrinaryNode<A, B, C, Terminals, R>
         return this.middle;
     }
 
-    public MutableTrinaryNode<A, B, C, Terminals, R> setMiddle(
+    public MutableTrinaryNode<Terminals, A, B, C, R> setMiddle(
         Updater<MutableNode<Terminals, B, ?, ?>> updater
     ) {
         this.middle = updater.newValue(this.middle);
@@ -79,7 +80,7 @@ public final class MutableTrinaryNode<A, B, C, Terminals, R>
         return this.right;
     }
 
-    public MutableTrinaryNode<A, B, C, Terminals, R> setRight(
+    public MutableTrinaryNode<Terminals, A, B, C, R> setRight(
         Updater<MutableNode<Terminals, C, ?, ?>> updater
     ) {
         this.right = updater.newValue(this.right);
@@ -91,7 +92,7 @@ public final class MutableTrinaryNode<A, B, C, Terminals, R>
         return combiner;
     }
 
-    public MutableTrinaryNode<A, B, C, Terminals, R> setCombiner(
+    public MutableTrinaryNode<Terminals, A, B, C, R> setCombiner(
         Updater<TypedTriFunction<A, B, C, R>> updater
     ) {
         this.combiner = updater.newValue(this.combiner);
@@ -105,7 +106,7 @@ public final class MutableTrinaryNode<A, B, C, Terminals, R>
     }
 
     @Override
-    public MutableTrinaryNode<A, B, C, Terminals, R> replaceChild(
+    public MutableTrinaryNode<Terminals, A, B, C, R> replaceChild(
         int index, Updater<MutableNode<Terminals, ?, ?, ?>> node
     ) {
         return switch (index) {

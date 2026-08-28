@@ -15,9 +15,8 @@ public sealed interface NonTerminal<
     Self,
     Immutable,
     Mutable
-> permits BinaryNode, ImmutableNonTerminal,
-    MutableNonTerminal, QuaternaryNode,
-    TrinaryNode, UnaryNode {
+> permits ImmutableNonTerminal,
+    MutableNonTerminal, UnaryNode, BinaryNode, TrinaryNode, QuaternaryNode {
     /**
      * @return The list of input types to this node.
      */

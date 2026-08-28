@@ -4,29 +4,29 @@ import utils.typed_functions.TypedTriFunction;
 
 import java.util.List;
 
-public record ImmutableTrinaryNode<A, B, C, Terminals, R>(
+public record ImmutableTrinaryNode<Terminals, A, B, C, R>(
     String name,
     TypedTriFunction<A,B,C,R> combiner,
     ImmutableNode<Terminals, A, ?, ?> left,
     ImmutableNode<Terminals, B, ?, ?> middle,
     ImmutableNode<Terminals, C, ?, ?> right
 ) implements TrinaryNode<
-    A, B, C, Terminals, R,
-    ImmutableTrinaryNode<A, B, C, Terminals, R>,
+    Terminals, A, B, C, R,
+    ImmutableTrinaryNode<Terminals, A, B, C, R>,
     ImmutableNode<Terminals, ?, ?, ?>
 >, ImmutableNonTerminal<
     Terminals, R,
-    ImmutableTrinaryNode<A, B, C, Terminals, R>,
-    MutableTrinaryNode<A, B, C, Terminals, R>
+    ImmutableTrinaryNode<Terminals, A, B, C, R>,
+    MutableTrinaryNode<Terminals, A, B, C, R>
 > {
 
     @Override
-    public ImmutableTrinaryNode<A, B, C, Terminals, R> self() {
+    public ImmutableTrinaryNode<Terminals, A, B, C, R> self() {
         return this;
     }
 
     @Override
-    public ImmutableTrinaryNode<A, B, C, Terminals, R> immutableCopy() {
+    public ImmutableTrinaryNode<Terminals, A, B, C, R> immutableCopy() {
         return this;
     }
 

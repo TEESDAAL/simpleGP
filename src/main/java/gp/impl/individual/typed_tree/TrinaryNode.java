@@ -5,16 +5,26 @@ import utils.typed_functions.TypedTriFunction;
 import java.util.List;
 
 public sealed interface TrinaryNode<
-    A, B, C,
-    Terminals, R,
-    Self extends TrinaryNode<A, B, C, Terminals, R, Self, Child>,
+    Terminals,
+    A, B, C, R,
+    Self extends TrinaryNode<Terminals, A, B, C, R, Self, Child>,
     Child extends Node<Terminals, ?, ?, ?, ?>
 > extends NonTerminal<
     Terminals, R,
     Self, Child,
-    ImmutableTrinaryNode<A, B, C, Terminals, R>,
-    MutableTrinaryNode<A, B, C, Terminals, R>
+    ImmutableTrinaryNode<Terminals, A, B, C, R>,
+    MutableTrinaryNode<Terminals, A, B, C, R>
 > permits ImmutableTrinaryNode, MutableTrinaryNode {
+    static <Terminals,A,B,C,R> ImmutableTrinaryNode<Terminals,A,B,C,R> of(
+        String name,
+        TypedTriFunction<A,B,C,R> typedTriFunction,
+        ImmutableNode<Terminals,A,?,?> left,
+        ImmutableNode<Terminals,B,?,?> middle,
+        ImmutableNode<Terminals,C,?,?> right
+    ) {
+        return new ImmutableTrinaryNode<>(name, typedTriFunction, left, middle, right);
+    }
+
     /**
      * @return The node representing the left-hand tree. The first argument to combiner.
      */
@@ -56,7 +66,7 @@ public sealed interface TrinaryNode<
         );
     }
 
-    default MutableTrinaryNode<A, B, C, Terminals, R> mutableCopy() {
+    default MutableTrinaryNode<Terminals, A, B, C, R> mutableCopy() {
         return new MutableTrinaryNode<>(
             this.name(),
             this.combiner(),
@@ -66,7 +76,7 @@ public sealed interface TrinaryNode<
         );
     }
 
-    default ImmutableTrinaryNode<A, B, C, Terminals, R> immutableCopy() {
+    default ImmutableTrinaryNode<Terminals, A, B, C, R> immutableCopy() {
         return new ImmutableTrinaryNode<>(
             this.name(),
             this.combiner(),
