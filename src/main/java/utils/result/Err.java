@@ -1,6 +1,6 @@
 package utils.result;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -77,28 +77,26 @@ record Err<T, E>(E error) implements Result<T, E> {
     @Override
     public <U> U match(
 			Function<Result<T, E>, U> defaultArm,
-            Collection<MatchArm<T, E, U>> matchArms
+            List<MatchArm<T, E, U>> matchArms
     ) {
-		for (final MatchArm<T, E, U> arm : matchArms) {
-			if (arm instanceof ErrArm<T, E, U> e && e.shouldMap().test(this.error)) {
-				return e.mapper().apply(this.error);
-			}
-		}
-		return defaultArm.apply(this);
+        return MatchArm.errArms(matchArms)
+            .filter(e -> e.matches(this.error))
+            .map(e -> e.map(this.error))
+            .findFirst()
+            .orElseGet(() -> defaultArm.apply(this));
 	}
 
 	@Override
     public <U> U match(
         Function<T, U> defaultOk,
         Function<E, U> defaultErr,
-        Collection<MatchArm<T, E, U>> matchArms
+        List<MatchArm<T, E, U>> matchArms
     ) {
-		for (final MatchArm<T, E, U> arm : matchArms) {
-			if (arm instanceof ErrArm<T, E, U> e && e.shouldMap().test(this.error)) {
-				return e.mapper().apply(this.error);
-			}
-		}
-		return defaultErr.apply(this.error);
+		return MatchArm.errArms(matchArms)
+            .filter(e -> e.matches(this.error))
+            .map(e -> e.map(this.error))
+            .findFirst()
+            .orElseGet(() -> defaultErr.apply(this.error));
 	}
 
     @Override
