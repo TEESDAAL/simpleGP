@@ -2,20 +2,62 @@ package util.random;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A source of random values over bounded ranges.
  */
 public interface RandomSource {
+
+    static RandomSource of(final Random random) {
+        return new RandomSource() {
+            @Override
+            public int nextInt(final int lowerBound, final int upperBound) {
+                return random.nextInt(lowerBound, upperBound);
+            }
+
+            /**
+             * Returns a double in the range [lowerBound, upperBound).
+             *
+             * @param lowerBound the lower bound inclusive
+             * @param upperBound the upper bound exclusive
+             * @return a sampled double
+             */
+            @Override
+            public double nextDouble(
+                    final double lowerBound,
+                    final double upperBound
+            ) {
+                return random.nextDouble(lowerBound, upperBound);
+            }
+
+            @Override
+            public long nextLong(final long lowerBound, final long upperBound) {
+                return random.nextLong(lowerBound, upperBound);
+            }
+
+            @Override
+            public float nextFloat(final float lowerBound, final float upperBound) {
+                return random.nextFloat(lowerBound, upperBound);
+            }
+
+            @Override
+            public void seed(int seed) {
+                random.setSeed(seed);
+            }
+        };
+    }
+
     /**
      * Creates a random source seeded with the provided value.
      *
      * @param seed the seed value
      * @return a seeded random source
      */
-    static RandomSource of(int seed) {
-        return new MersenneTwisterFast(seed);
+    static RandomSource of(final int seed) {
+        return of(new Random(seed));
     }
+
 
     /**
      * Reseeds the source.
