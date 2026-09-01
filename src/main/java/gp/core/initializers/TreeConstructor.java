@@ -1,12 +1,10 @@
 package gp.core.initializers;
 
-import gp.impl.selectors.random.RandomSampler;
 import gp.impl.individual.tree.ImmutableNode;
 import gp.impl.individual.tree.Node;
+import gp.impl.selectors.random.RandomSampler;
 import utils.random.RandomSource;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,9 +87,9 @@ public interface TreeConstructor<T, R>
         final TypedNonTerminal<I, ReturnType> typedNonTerminal =
             (TypedNonTerminal<I, ReturnType>) potentialNonTerminal.get();
 
-        final List<ImmutableNode<T, ?, I, ?, ?>> children = new ArrayList<>(
-            typedNonTerminal.nonTerminal().arity()
-        );
+        final ImmutableNode<T, ?, I, ?, ?>[] children = new ImmutableNode[
+                typedNonTerminal.nonTerminal().arity()
+        ];
 
         for (int i = 0; i < typedNonTerminal.nonTerminal().arity(); i++) {
             final var child = recursivelyConstructIndividual(
@@ -101,13 +99,13 @@ public interface TreeConstructor<T, R>
             if (child.isEmpty()) {
                 return Optional.empty();
             }
-            children.add(child.get());
+            children[i] = child.get();
         }
 
         return Optional.of(Node.nonTerm(
             typedNonTerminal.name(),
             typedNonTerminal.nonTerminal(),
-            Collections.unmodifiableList(children),
+            children,
             typedNonTerminal.inputType(),
             typedNonTerminal.returnType()
         ));

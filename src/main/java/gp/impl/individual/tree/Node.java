@@ -3,7 +3,7 @@ package gp.impl.individual.tree;
 import utils.operators.Operator;
 import utils.operators.UnaryOperator;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -147,7 +147,7 @@ class LispString implements TreeExtractor<String> {
 
     @Override
     public String nonTerminal(final NonTerminal<?, ?, ?, ?> node) {
-        return node.name() + node.children().stream()
+        return node.name() + Arrays.stream(node.children())
             .map(n -> n.extract(this))
             .collect(Collectors.joining(", ", "(", ")"));
     }

@@ -117,7 +117,7 @@ public record SubtreeMutation<T, Out>(
 
         mutationPoint.replaceChild(
             RandomSampler.sampleIndex(
-                mutationPoint.children(), random
+                List.of(mutationPoint.children()), random
             ).orElseThrow(),
             subTree
         );
