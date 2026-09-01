@@ -6,8 +6,9 @@ import gp.impl.fitness.SingleObjectiveFit;
  * Interface representing single-objective fitness,
  * which includes a score and an optimization goal.
  */
-public interface SingleObjectiveFitness
-    extends DirectlyComparableFitness<SingleObjectiveFitness> {
+public interface SingleObjectiveFitness extends DirectlyComparableFitness<
+    SingleObjectiveFitness
+> {
 
     static SingleObjectiveFitness of(double score, Goal goal) {
         return SingleObjectiveFit.of(score, goal);
@@ -35,7 +36,7 @@ public interface SingleObjectiveFitness
         };
     }
 
-    static Fitness<SingleObjectiveFitness> directlyCompare() {
+    static Fitness<SingleObjectiveFitness> directComparison() {
         return _ -> SingleObjectiveFitness::compare;
     }
 }

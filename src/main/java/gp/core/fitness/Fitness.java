@@ -11,8 +11,9 @@ public interface Fitness<Self extends Fitness<Self>> {
     Comparer<Self> fromPopulation(Population<Self> other);
 }
 
-interface DirectlyComparableFitness<Self extends DirectlyComparableFitness<Self>>
-    extends Fitness<Self>, Comparer<Self>, Comparable<Self> {
+interface DirectlyComparableFitness<
+    Self extends DirectlyComparableFitness<Self>
+> extends Fitness<Self>, Comparer<Self>, Comparable<Self> {
 
     Comparison compare(Self other);
 

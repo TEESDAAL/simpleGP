@@ -45,8 +45,8 @@ public class DefaultBreeder<T, R> implements Breeder<AssessedIndividual<T, R, Si
         this.breeder = new NaiveBreeder<>(
             sampler,
             populationSize,
-            new TournamentSelection<>(random, this.tournamentSize, SingleObjectiveFitness.directlyCompare()),
-            new Elitism<>(elitismCount, SingleObjectiveFitness.directlyCompare())
+            new TournamentSelection<>(random, this.tournamentSize, SingleObjectiveFitness.directComparison()),
+            new Elitism<>(elitismCount, SingleObjectiveFitness.directComparison())
         );
     }
 

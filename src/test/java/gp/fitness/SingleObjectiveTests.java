@@ -49,11 +49,11 @@ public class SingleObjectiveTests {
             pop.stream().sorted(Comparator.comparingDouble(SingleObjectiveFitness::score).reversed())
                 .toList(),
             pop.stream().sorted(
-                SingleObjectiveFitness.directlyCompare().fromPopulation(pop)
+                SingleObjectiveFitness.directComparison().fromPopulation(pop)
             ).toList()
         );
 
-        final var localSorter = SingleObjectiveFitness.directlyCompare().fromPopulation(pop);
+        final var localSorter = SingleObjectiveFitness.directComparison().fromPopulation(pop);
 
         assertEquals(
             pop.stream().sorted(Comparator.comparingDouble(SingleObjectiveFitness::score).reversed())
@@ -71,7 +71,7 @@ public class SingleObjectiveTests {
             SingleObjectiveFitness
             >of(
             3,
-            SingleObjectiveFitness.directlyCompare()
+            SingleObjectiveFitness.directComparison()
         );
         final Population<SingleTreeIndividual<Double, String>> inds = Initializers.grow(
             RandomSource.of(12), primitiveSet,

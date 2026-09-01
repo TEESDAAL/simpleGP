@@ -16,21 +16,21 @@ import java.util.List;
  *
  * @param <ReturnType>              The return type
  * @param <TerminalHolder>          The terminal type
- * @param <Ind>                     The individual type
- * @param <Fit>                     The fitness type
+ * @param <I>                     The individual type
+ * @param <F>                     The fitness type
  * @param elitismCount              The number of elite individuals to select
  * @param fitnessComparatorFunction A function that produces a fitness comparator
  */
 public record Elitism<
     TerminalHolder, ReturnType,
-    Ind extends Individual<TerminalHolder, ReturnType>,
-    Fit extends Fitness<Fit>
+    I extends Individual<TerminalHolder, ReturnType>,
+    F extends Fitness<F>
 >(
     int elitismCount,
-    Fitness<Fit> fitnessComparatorFunction
+    Fitness<F> fitnessComparatorFunction
 ) implements SelectionMechanism<
-    AssessedIndividual<TerminalHolder, ReturnType, Ind, Fit>,
-    List<AssessedIndividual<TerminalHolder, ReturnType, Ind, Fit>>
+    AssessedIndividual<TerminalHolder, ReturnType, I, F>,
+    List<AssessedIndividual<TerminalHolder, ReturnType, I, F>>
     > {
     /**
      * Compact constructor to validate parameters.
@@ -76,16 +76,16 @@ public record Elitism<
      */
     @Override
     public Sampler<List<
-        AssessedIndividual<TerminalHolder, ReturnType, Ind, Fit>
+        AssessedIndividual<TerminalHolder, ReturnType, I, F>
     >> selectorFrom(
         final List<AssessedIndividual<
             TerminalHolder,
             ReturnType,
-            Ind,
-            Fit
+            I,
+            F
         >> items
     ) {
-        final Comparator<Fit> fitnessComparator = fitnessComparatorFunction
+        final Comparator<F> fitnessComparator = fitnessComparatorFunction
             .fromPopulation(Population.of(items).map(AssessedIndividual::fitness));
 
         return () -> items.stream()

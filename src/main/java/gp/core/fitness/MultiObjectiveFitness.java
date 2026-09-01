@@ -30,6 +30,13 @@ public interface MultiObjectiveFitness<
     List<SingleObjectiveFitness> fitnesses();
 
     /**
+     * @return the number of objectives in this multiObjectiveFitness.
+     */
+    default int numObjectives() {
+        return fitnesses().size();
+    }
+
+    /**
      * Gets the single-objective fitness value at the specified index.
      *
      * @param index the index of the fitness value to retrieve
