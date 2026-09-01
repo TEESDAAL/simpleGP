@@ -6,11 +6,11 @@ import gp.core.fitness.Goal;
 import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.individual.AssessedIndividual;
 import gp.impl.individual.SingleTreeIndividual;
-import gp.impl.initializers.Initializers;
-import gp.impl.selectors.Elitism;
+import gp.impl.initializer.Initializers;
+import gp.impl.selector.Elitism;
 import org.junit.jupiter.api.Test;
-import utils.random.RandomSource;
-import utils.stream_utils.StreamZipper;
+import util.random.RandomSource;
+import util.stream_util.StreamZipper;
 
 import java.util.Comparator;
 

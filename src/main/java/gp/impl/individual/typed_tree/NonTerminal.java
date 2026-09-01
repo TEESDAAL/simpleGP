@@ -5,18 +5,19 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public sealed interface NonTerminal<
-    Terminals, R,
-    Self extends NonTerminal<Terminals, R, Self, Child, Immutable, Mutable>,
-    Child extends Node<Terminals, ?, ?, ?, ?>,
-    Immutable extends ImmutableNonTerminal<Terminals, R, Immutable, Mutable>,
-    Mutable extends MutableNonTerminal<Terminals, R, Mutable, Immutable>
-    > extends Node<
-    Terminals, R,
-    Self,
-    Immutable,
-    Mutable
-> permits ImmutableNonTerminal,
-    MutableNonTerminal, UnaryNode, BinaryNode, TrinaryNode, QuaternaryNode {
+        Terminals, R,
+        Self extends NonTerminal<Terminals, R, Self, Child, Immutable, Mutable>,
+        Child extends Node<Terminals, ?, ?, ?, ?>,
+        Immutable extends ImmutableNonTerminal<Terminals, R, Immutable, Mutable>,
+        Mutable extends MutableNonTerminal<Terminals, R, Mutable, Immutable>
+> extends Node<
+        Terminals, R,
+        Self,
+        Immutable,
+        Mutable
+> permits ImmutableNonTerminal, MutableNonTerminal, UnaryNode,
+        BinaryNode, TrinaryNode, QuaternaryNode
+{
     /**
      * @return The list of input types to this node.
      */
@@ -41,7 +42,7 @@ public sealed interface NonTerminal<
     }
 
     @Override
-    default Stream<Node<Terminals, ?, ?, ?,?>> stream() {
+    default Stream<Node<Terminals, ?, ?, ?, ?>> stream() {
         return Stream.concat(Stream.of(this), children().stream().flatMap(Node::stream));
     }
 

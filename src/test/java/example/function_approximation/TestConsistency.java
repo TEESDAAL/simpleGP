@@ -10,8 +10,8 @@ import gp.core.initializer.PrimitiveSetBuilder;
 import gp.impl.individual.SingleTreeIndividual;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import utils.Pair;
-import utils.random.SourceOfRandom;
+import util.Pair;
+import util.random.SourceOfRandom;
 
 import java.util.Collections;
 

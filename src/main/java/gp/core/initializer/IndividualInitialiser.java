@@ -1,18 +1,20 @@
 package gp.core.initializer;
 
 import gp.Population;
-import utils.IndSet;
-import utils.Parallelizeable;
+import util.IndividualSet;
+import util.Parallelizeable;
 
 import java.util.function.Function;
 
 /**
  * Initializer for creating populations of individuals.
+ *
  * @param <I> The individual type
  */
 public interface IndividualInitialiser<I> extends Initialiser<I>, Parallelizeable {
     /**
      * Initializes a population of individuals.
+     *
      * @return A population containing the created individuals
      */
     @Override
@@ -25,6 +27,7 @@ public interface IndividualInitialiser<I> extends Initialiser<I>, Parallelizeabl
 
     /**
      * Creates a single individual.
+     *
      * @return The created individual
      */
     I createIndividual();
@@ -40,7 +43,7 @@ public interface IndividualInitialiser<I> extends Initialiser<I>, Parallelizeabl
      * Wraps initialized individuals with a mapping function.
      *
      * @param function the mapping function
-     * @param <U> the wrapped type
+     * @param <U>      the wrapped type
      * @return a wrapped initializer
      */
     default <U> IndividualInitialiser<U> wrap(Function<I, U> function) {
@@ -67,22 +70,24 @@ public interface IndividualInitialiser<I> extends Initialiser<I>, Parallelizeabl
     /**
      * Create an initializer that tries to obtain a unique population.
      * It does this by repolling this until a unique individual is generated,
-     *  or until numTries is exceeded.
+     * or until numTries is exceeded.
      * Note: This method determines uniqueness based on .hashCode and .equals
-     *  therefore these must be implemented correctly on I.
+     * therefore these must be implemented correctly on I.
+     *
      * @param numTries The number of times to recreate an individual
-     *   before accepting a duplicate
+     *                 before accepting a duplicate
      * @return The new initializer that tries to produce a unique population
      */
     default IndividualInitialiser<I> attemptToEnforceUniqueness(int numTries) {
         final IndividualInitialiser<I> inner = this;
         return new IndividualInitialiser<>() {
-            private final IndSet<I> createdIndividuals = IndSet.empty();
+            private final IndividualSet<I> createdIndividuals = IndividualSet.empty();
+
             @Override
             public I createIndividual() {
-               return createdIndividuals.repeatUntilAbsent(
-                   inner::createIndividual, numTries
-               );
+                return createdIndividuals.repeatUntilAbsent(
+                        inner::createIndividual, numTries
+                );
             }
 
             @Override

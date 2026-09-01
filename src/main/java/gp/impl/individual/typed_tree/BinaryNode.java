@@ -1,31 +1,31 @@
 package gp.impl.individual.typed_tree;
 
-import utils.typed_functions.TypedBiFunction;
+import util.typed_function.TypedBiFunction;
 
 import java.util.List;
 
 public sealed interface BinaryNode<
-    A, B,
-    Terminals, R,
-    Self extends BinaryNode<A, B, Terminals, R, Self, Child>,
-    Child extends Node<Terminals, ?, ?, ?, ?>
+        A, B,
+        Terminals, R,
+        Self extends BinaryNode<A, B, Terminals, R, Self, Child>,
+        Child extends Node<Terminals, ?, ?, ?, ?>
 > extends NonTerminal<
-    Terminals, R,
-    Self, Child,
-    ImmutableBinaryNode<A, B, Terminals, R>,
-    MutableBinaryNode<A, B, Terminals, R>
+        Terminals, R,
+        Self, Child,
+        ImmutableBinaryNode<A, B, Terminals, R>,
+        MutableBinaryNode<A, B, Terminals, R>
 > permits MutableBinaryNode, ImmutableBinaryNode {
     static <Terminals, R, B, A> ImmutableBinaryNode<A, B, Terminals, R> of(
-        String name,
-        TypedBiFunction<A,B,R> typedBiFunction,
-        ImmutableNode<Terminals,A,?,?> left,
-        ImmutableNode<Terminals,B,?,?> right
+            String name,
+            TypedBiFunction<A, B, R> typedBiFunction,
+            ImmutableNode<Terminals, A, ?, ?> left,
+            ImmutableNode<Terminals, B, ?, ?> right
     ) {
         return new ImmutableBinaryNode<>(
-            name,
-            typedBiFunction,
-            left,
-            right
+                name,
+                typedBiFunction,
+                left,
+                right
         );
     }
 
@@ -33,9 +33,10 @@ public sealed interface BinaryNode<
      * @return The node representing the left-hand tree. The first argument to combiner.
      */
     Node<Terminals, A, ?, ?, ?> left();
+
     /**
      * @return The node representing the right-hand tree.
-     *  The second/last argument to combiner.
+     * The second/last argument to combiner.
      */
     Node<Terminals, B, ?, ?, ?> right();
 
@@ -46,8 +47,8 @@ public sealed interface BinaryNode<
 
     default R evaluate(Terminals terminals) {
         return this.combiner().apply(
-            left().evaluate(terminals),
-            right().evaluate(terminals)
+                left().evaluate(terminals),
+                right().evaluate(terminals)
         );
     }
 
@@ -56,26 +57,26 @@ public sealed interface BinaryNode<
     default R fromList(List<?> inputs) {
         assert inputs.size() == 2;
         return this.combiner().apply(
-            (A) inputs.getFirst(),
-            (B) inputs.get(1)
+                (A) inputs.getFirst(),
+                (B) inputs.get(1)
         );
     }
 
     default MutableBinaryNode<A, B, Terminals, R> mutableCopy() {
         return new MutableBinaryNode<>(
-            this.name(),
-            this.left().mutableCopy(),
-            this.right().mutableCopy(),
-            this.combiner()
+                this.name(),
+                this.left().mutableCopy(),
+                this.right().mutableCopy(),
+                this.combiner()
         );
     }
 
     default ImmutableBinaryNode<A, B, Terminals, R> immutableCopy() {
         return new ImmutableBinaryNode<>(
-            this.name(),
-            this.combiner(),
-            this.left().immutableCopy(),
-            this.right().immutableCopy()
+                this.name(),
+                this.combiner(),
+                this.left().immutableCopy(),
+                this.right().immutableCopy()
         );
     }
 }

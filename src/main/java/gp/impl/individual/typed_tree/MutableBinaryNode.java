@@ -1,19 +1,18 @@
 package gp.impl.individual.typed_tree;
 
-import utils.typed_functions.TypedBiFunction;
-import utils.Updater;
+import util.typed_function.TypedBiFunction;
+import util.Updater;
 
 import java.util.List;
 
-public final class MutableBinaryNode<A, B, Terminals, R> implements
-    BinaryNode<
+public final class MutableBinaryNode<A, B, Terminals, R> implements BinaryNode<
         A, B, Terminals, R,
         MutableBinaryNode<A, B, Terminals, R>,
         MutableNode<Terminals, ?, ?, ?>
 >, MutableNonTerminal<
-    Terminals, R,
-    MutableBinaryNode<A, B, Terminals, R>,
-    ImmutableBinaryNode<A, B, Terminals, R>
+        Terminals, R,
+        MutableBinaryNode<A, B, Terminals, R>,
+        ImmutableBinaryNode<A, B, Terminals, R>
 > {
     String name;
     MutableNode<Terminals, A, ?, ?> left;
@@ -21,10 +20,10 @@ public final class MutableBinaryNode<A, B, Terminals, R> implements
     TypedBiFunction<A, B, R> combiner;
 
     public MutableBinaryNode(
-        String name,
-        MutableNode<Terminals, A, ?, ?> left,
-        MutableNode<Terminals, B, ?, ?> right,
-        TypedBiFunction<A, B, R> combiner
+            String name,
+            MutableNode<Terminals, A, ?, ?> left,
+            MutableNode<Terminals, B, ?, ?> right,
+            TypedBiFunction<A, B, R> combiner
     ) {
         this.name = name;
         this.left = left;
@@ -50,7 +49,7 @@ public final class MutableBinaryNode<A, B, Terminals, R> implements
 
 
     public MutableBinaryNode<A, B, Terminals, R> setLeft(
-        Updater<MutableNode<Terminals, A, ?, ?>> updater
+            Updater<MutableNode<Terminals, A, ?, ?>> updater
     ) {
         this.left = updater.newValue(this.left);
         return this;
@@ -58,7 +57,7 @@ public final class MutableBinaryNode<A, B, Terminals, R> implements
 
 
     public MutableBinaryNode<A, B, Terminals, R> setRight(
-        Updater<MutableNode<Terminals, B, ?, ?>> updater
+            Updater<MutableNode<Terminals, B, ?, ?>> updater
     ) {
         this.right = updater.newValue(this.right);
         return this;
@@ -80,7 +79,7 @@ public final class MutableBinaryNode<A, B, Terminals, R> implements
     }
 
     public MutableBinaryNode<A, B, Terminals, R> setCombiner(
-        Updater<TypedBiFunction<A, B, R>> updater
+            Updater<TypedBiFunction<A, B, R>> updater
     ) {
         this.combiner = updater.newValue(this.combiner);
         return this;
@@ -93,21 +92,21 @@ public final class MutableBinaryNode<A, B, Terminals, R> implements
 
     @Override
     public MutableBinaryNode<A, B, Terminals, R> replaceChild(
-        int index, Updater<MutableNode<Terminals, ?, ?, ?>> node
+            int index, Updater<MutableNode<Terminals, ?, ?, ?>> node
     ) {
         return switch (index) {
             case 0 -> this.setLeft(
-                left -> MutableNode.<Terminals, A>returnTypeCompatible(
-                    node.newValue(left), this.combiner.leftType()
-                )
+                    left -> MutableNode.<Terminals, A>returnTypeCompatible(
+                            node.newValue(left), this.combiner.leftType()
+                    )
             );
             case 1 -> this.setRight(
-                right -> MutableNode.<Terminals, B>returnTypeCompatible(
-                    node.newValue(right), this.combiner.rightType()
-                )
+                    right -> MutableNode.<Terminals, B>returnTypeCompatible(
+                            node.newValue(right), this.combiner.rightType()
+                    )
             );
             default -> throw new IllegalArgumentException(
-                "Binary node only supports setting children of index 1, 0"
+                    "Binary node only supports setting children of index 1, 0"
             );
         };
     }

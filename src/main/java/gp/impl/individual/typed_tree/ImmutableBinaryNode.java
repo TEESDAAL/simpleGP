@@ -1,22 +1,22 @@
 package gp.impl.individual.typed_tree;
 
-import utils.typed_functions.TypedBiFunction;
+import util.typed_function.TypedBiFunction;
 
 import java.util.List;
 
 public record ImmutableBinaryNode<A, B, Terminals, R>(
-    String name,
-    TypedBiFunction<A, B, R> combiner,
-    ImmutableNode<Terminals, A, ?, ?> left,
-    ImmutableNode<Terminals, B, ?, ?> right
+        String name,
+        TypedBiFunction<A, B, R> combiner,
+        ImmutableNode<Terminals, A, ?, ?> left,
+        ImmutableNode<Terminals, B, ?, ?> right
 ) implements BinaryNode<
-    A, B, Terminals, R,
-    ImmutableBinaryNode<A, B, Terminals, R>,
-    ImmutableNode<Terminals, ?, ?, ?>
->, ImmutableNonTerminal<
-    Terminals, R,
-    ImmutableBinaryNode<A, B, Terminals, R>,
-    MutableBinaryNode<A, B, Terminals, R>
+        A, B, Terminals, R,
+        ImmutableBinaryNode<A, B, Terminals, R>,
+        ImmutableNode<Terminals, ?, ?, ?>
+        >, ImmutableNonTerminal<
+        Terminals, R,
+        ImmutableBinaryNode<A, B, Terminals, R>,
+        MutableBinaryNode<A, B, Terminals, R>
 > {
     @Override
     public ImmutableBinaryNode<A, B, Terminals, R> self() {
@@ -27,7 +27,6 @@ public record ImmutableBinaryNode<A, B, Terminals, R>(
     public ImmutableBinaryNode<A, B, Terminals, R> immutableCopy() {
         return this;
     }
-
 
     @Override
     public List<ImmutableNode<Terminals, ?, ?, ?>> children() {

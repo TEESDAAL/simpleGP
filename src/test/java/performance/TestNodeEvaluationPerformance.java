@@ -4,9 +4,9 @@ import example.function_approximation.DefaultInitialiser;
 import gp.core.initializer.PrimitiveSet;
 import gp.core.initializer.PrimitiveSetBuilder;
 import org.junit.jupiter.api.Test;
-import utils.Pair;
-import utils.Repeat;
-import utils.random.RandomSource;
+import util.Pair;
+import util.Repeat;
+import util.random.RandomSource;
 
 public class TestNodeEvaluationPerformance {
     PrimitiveSet<Pair<Double, Double>> primitiveSet = PrimitiveSetBuilder.<Pair<Double, Double>>empty()

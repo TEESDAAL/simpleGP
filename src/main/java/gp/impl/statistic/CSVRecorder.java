@@ -2,8 +2,8 @@ package gp.impl.statistic;
 
 import gp.Population;
 import gp.core.statistic.Statistic;
-import utils.result.Result;
-import utils.Preconditions;
+import util.result.Result;
+import util.Preconditions;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +16,8 @@ import java.util.function.Function;
  * Records population values as CSV.
  *
  * @param writeFile the file to write to
- * @param columns the columns to record
- * @param <T> the population item type
+ * @param columns   the columns to record
+ * @param <T>       the population item type
  */
 public record CSVRecorder<T>(
         File writeFile,
@@ -27,7 +27,7 @@ public record CSVRecorder<T>(
      * Creates a new CSVRecorder with the given file and columns.
      *
      * @param writeFile the file to write the CSV data to
-     * @param columns the columns to record in the CSV file
+     * @param columns   the columns to record in the CSV file
      */
     public CSVRecorder {
         Preconditions.assertFalse(
@@ -36,11 +36,11 @@ public record CSVRecorder<T>(
         );
 
         if (writeFile.exists()) {
-                Preconditions.assertTrue(
+            Preconditions.assertTrue(
                     writeFile.length() == 0,
                     "File " + writeFile.getPath()
-                        + " exists and is not empty"
-                );
+                            + " exists and is not empty"
+            );
         }
 
         try {
@@ -54,8 +54,8 @@ public record CSVRecorder<T>(
      * Creates a new CSV recorder.
      *
      * @param writeFile the file to write the CSV data to
-     * @param columns the columns to record in the CSV file
-     * @param <T> the population item type
+     * @param columns   the columns to record in the CSV file
+     * @param <T>       the population item type
      * @return the result of creating the recorder
      */
     public static <T> Result<CSVRecorder<T>, Throwable> of(
@@ -69,7 +69,7 @@ public record CSVRecorder<T>(
      * Creates the CSV file if it doesn't exist and writes the header.
      *
      * @param writeFile the file to set up
-     * @param columns the columns to write in the header
+     * @param columns   the columns to write in the header
      * @throws IOException if file creation fails
      */
     void setupFile(

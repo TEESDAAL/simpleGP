@@ -1,13 +1,14 @@
 package gp.core.assessor;
 
 import gp.Population;
-import utils.Parallelizeable;
+import util.Parallelizeable;
 import gp.core.fitness.Fitness;
 import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
 
 /**
  * An evaluator interface, which evaluates individuals one at a time.
+ *
  * @param <R> The return type
  * @param <T> The terminal type
  * @param <I> The individual type
@@ -21,6 +22,7 @@ public interface IndividualAssessor<
 > extends Assessor<T, R, I, F>, Parallelizeable {
     /**
      * Evaluates a single individual.
+     *
      * @param individual The individual to evaluate
      * @return The evaluated individual with fitness
      */
@@ -28,7 +30,7 @@ public interface IndividualAssessor<
 
     @Override
     default Population<AssessedIndividual<T, R, I, F>> assess(
-            final Population<I> population
+            Population<I> population
     ) {
         return Population.of(
                 this.parallelize(

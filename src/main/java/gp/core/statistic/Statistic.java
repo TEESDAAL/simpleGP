@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 /**
  * Interface for collecting statistics from populations.
+ *
  * @param <I> The individual type in the population
  * @param <R> The statistic result type
  */
@@ -45,10 +46,10 @@ public interface Statistic<I, R> extends SideEffect<Population<I>> {
      * Creates a statistic from a converter and combiner.
      *
      * @param converter converts individuals to intermediate values
-     * @param combiner combines the intermediate values into a result
-     * @param <I> the individual type
-     * @param <T> the intermediate type
-     * @param <R> the statistic result type
+     * @param combiner  combines the intermediate values into a result
+     * @param <I>       the individual type
+     * @param <T>       the intermediate type
+     * @param <R>       the statistic result type
      * @return the created statistic
      */
     static <I, T, R> Statistic<I, R> of(
@@ -56,7 +57,7 @@ public interface Statistic<I, R> extends SideEffect<Population<I>> {
             Function<List<T>, R> combiner
     ) {
         return population -> combiner.apply(
-            population.stream().map(converter).toList()
+                population.stream().map(converter).toList()
         );
     }
 }

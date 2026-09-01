@@ -6,26 +6,29 @@ import java.util.function.Function;
 
 /**
  * Interface for initializing populations.
+ *
  * @param <I> The individual type
  */
 public interface Initialiser<I> {
     /**
      * Initializes a population.
+     *
      * @return The initialized population
      */
     Population<I> initialize();
 
     /**
      * Create a new initializer by simply wrapping the
-     *  produced individuals in a new type.
+     * produced individuals in a new type.
+     *
      * @param wrapper The wrapper to convert the produced individuals.
+     * @param <U>     The produced type of the new initializer.
      * @return the wrapped population.
-     * @param <U> The produced type of the new initializer.
      */
     default <U> Initialiser<U> wrap(Function<I, U> wrapper) {
         return () -> this.initialize().stream()
-            .map(wrapper)
-            .collect(Population.toPopulation());
+                .map(wrapper)
+                .collect(Population.toPopulation());
     }
 }
 

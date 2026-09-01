@@ -1,26 +1,26 @@
 package gp.impl.individual.typed_tree;
 
-import utils.Updater;
+import util.Updater;
 
 import java.util.function.Function;
 
 public class MutableTerminal<Terminals, R>
-    implements Terminal<
+        implements Terminal<
         Terminals, R,
         MutableTerminal<Terminals, R>
 >, MutableNode<
-    Terminals, R,
-    MutableTerminal<Terminals, R>,
-    ImmutableTerminal<Terminals, R>
+        Terminals, R,
+        MutableTerminal<Terminals, R>,
+        ImmutableTerminal<Terminals, R>
 > {
     String name;
     Function<Terminals, R> extractor;
     Class<R> returnType;
 
     public MutableTerminal(
-        String name,
-        Function<Terminals, R> extractor,
-        Class<R> returnType
+            String name,
+            Function<Terminals, R> extractor,
+            Class<R> returnType
     ) {
         this.name = name;
         this.extractor = extractor;
@@ -43,10 +43,20 @@ public class MutableTerminal<Terminals, R>
     }
 
     public MutableTerminal<Terminals, R> setExtractor(
-        Updater<Function<Terminals, R>> updater
+            Updater<Function<Terminals, R>> updater
     ) {
         this.extractor = updater.newValue(this.extractor);
         return this;
+    }
+
+
+    @Override
+    public ImmutableTerminal<Terminals, R> immutableCopy() {
+        return new ImmutableTerminal<>(
+                this.name(),
+                this.extractor(),
+                this.returnType()
+        );
     }
 
     @Override

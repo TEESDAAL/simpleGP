@@ -16,7 +16,7 @@ import java.io.Serializable;
  * Persists populations to disk.
  *
  * @param outFile the target file
- * @param <I> the item type
+ * @param <I>     the item type
  */
 public record Checkpointer<I extends Serializable>(File outFile)
         implements SideEffect<Population<I>> {
@@ -46,21 +46,22 @@ public record Checkpointer<I extends Serializable>(File outFile)
      * Loads a population from disk.
      *
      * @param outFile the file to read
-     * @param <I> the item type
+     * @param <I>     the item type
      * @return the loaded population
-     * @throws IOException if the file cannot be read
+     * @throws IOException            if the file cannot be read
      * @throws ClassNotFoundException if the serialized type is missing
      */
     public static <I extends Serializable> Population<I> load(
             final File outFile
     ) throws IOException, ClassNotFoundException {
         final FileInputStream fileInputStream = new FileInputStream(outFile);
-        final ObjectInputStream objectInputStream =
-                new ObjectInputStream(fileInputStream);
+        final ObjectInputStream objectInputStream = new ObjectInputStream(
+                fileInputStream
+        );
+
         @SuppressWarnings("unchecked")
         final Population<I> p2 = (Population<I>) objectInputStream.readObject();
 
-        //noinspection DataFlowIssue, this just checks if the cast is truely valid.
         assert p2.stream().allMatch(i -> i instanceof I);
         objectInputStream.close();
         return p2;
@@ -70,7 +71,7 @@ public record Checkpointer<I extends Serializable>(File outFile)
      * Creates an initializer that loads a population from disk.
      *
      * @param outFile the file to load
-     * @param <I> the item type
+     * @param <I>     the item type
      * @return an initializer that loads from the file
      */
     public static <I extends Serializable> Initialiser<I> initialiseFrom(

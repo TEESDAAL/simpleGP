@@ -6,9 +6,9 @@ import gp.core.breeder.SimpleSelectionMechanism;
 import gp.core.fitness.Fitness;
 import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
-import gp.impl.selectors.Elitism;
-import utils.Preconditions;
-import utils.operators.Operator;
+import gp.impl.selector.Elitism;
+import util.Preconditions;
+import util.operator.Operator;
 import gp.core.selector.Sampler;
 
 import java.util.ArrayList;
@@ -18,15 +18,16 @@ import java.util.List;
 /**
  * A breeder that samples operators from a distribution and applies
  * them to individuals selected from the population.
- * @param distribution A distribution over operators to sample from.
- * @param newPopulationSize The desired size of the next generation.
+ *
+ * @param distribution       A distribution over operators to sample from.
+ * @param newPopulationSize  The desired size of the next generation.
  * @param selectionMechanism The method to select individuals from the
  *                           population for breeding.
- * @param elitism How elitism is applied to the population.
- * @param <T> The terminal type of the individuals.
- * @param <R> The final return type of the individuals.
- * @param <I> The type of individuals being bred.
- * @param <F> The fitness type used to evaluate individuals.
+ * @param elitism            How elitism is applied to the population.
+ * @param <T>                The terminal type of the individuals.
+ * @param <R>                The return type of the individuals.
+ * @param <I>                The type of individuals being bred.
+ * @param <F>                The fitness type used to evaluate individuals.
  */
 public record NaiveBreeder<
         T, R, I extends Individual<T, R>, F extends Fitness<F>
@@ -40,8 +41,8 @@ public record NaiveBreeder<
      * Compact constructor to validate parameters.
      *
      * @throws IllegalArgumentException if newPopulationSize is not positive
-     *  if elitesToPreserve is negative
-     *  or if elitesToPreserve exceeds newPopulationSize.
+     *                                  if elitesToPreserve is negative
+     *                                  or if elitesToPreserve exceeds newPopulationSize.
      */
     public NaiveBreeder {
         Preconditions.assertTrue(
@@ -57,7 +58,7 @@ public record NaiveBreeder<
 
     @Override
     public Population<I> breed(
-            final Population<AssessedIndividual<T, R, I, F>> population
+            Population<AssessedIndividual<T, R, I, F>> population
     ) {
         final Sampler<AssessedIndividual<T, R, I, F>> sampler = selectionMechanism
                 .selectorFrom(population.individuals());
@@ -69,10 +70,11 @@ public record NaiveBreeder<
         while (nextGeneration.size() < this.newPopulationSize) {
             final Operator<I, List<I>> operator = this.distribution.sample();
             nextGeneration.addAll(operator.sampleFrom(
-                sampler,
-                AssessedIndividual::individual
+                    sampler,
+                    AssessedIndividual::individual
             ));
         }
+
         if (nextGeneration.size() > this.newPopulationSize) {
             nextGeneration = nextGeneration.subList(0, this.newPopulationSize);
         }

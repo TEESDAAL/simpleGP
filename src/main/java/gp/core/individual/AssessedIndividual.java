@@ -19,18 +19,16 @@ public interface AssessedIndividual<
      * Creates an evaluated individual wrapper.
      *
      * @param individual the wrapped individual
-     * @param fitness the evaluated fitness
-     * @param <T> the terminal type
-     * @param <R> the return type
-     * @param <I> the individual type
-     * @param <F> the fitness type
+     * @param fitness    the evaluated fitness
+     * @param <T>        the terminal type
+     * @param <R>        the return type
+     * @param <I>        the individual type
+     * @param <F>        the fitness type
      * @return an evaluated individual
      */
-    static <T, R, I extends Individual<T, R>, F extends Fitness<F>>
-    AssessedIndividual<T, R, I, F> of(
-            final I individual,
-            final F fitness
-    ) {
+    static <T, R, I extends Individual<T, R>, F extends Fitness<F>> AssessedIndividual<
+            T, R, I, F
+    > of(I individual, F fitness) {
         return new AssessedIndividualImpl<>(individual, fitness);
     }
 
@@ -54,7 +52,7 @@ public interface AssessedIndividual<
      * @param terminals the terminal input
      * @return the evaluation result
      */
-    default R evaluate(final T terminals) {
+    default R evaluate(T terminals) {
         return this.individual().evaluate(terminals);
     }
 }
@@ -63,20 +61,20 @@ public interface AssessedIndividual<
 /**
  * Record representing an individual with its evaluated fitness.
  *
- * @param <T> the terminal type
- * @param <R> the return type
- * @param <I> the individual type
- * @param <F> the fitness type
+ * @param <T>        the terminal type
+ * @param <R>        the return type
+ * @param <I>        the individual type
+ * @param <F>        the fitness type
  * @param individual the individual
- * @param fitness the evaluated fitness
+ * @param fitness    the evaluated fitness
  */
 record AssessedIndividualImpl<
-    T, R,
-    I extends Individual<T, R>,
-    F extends Fitness<F>
+        T, R,
+        I extends Individual<T, R>,
+        F extends Fitness<F>
 >(I individual, F fitness) implements AssessedIndividual<T, R, I, F> {
     @Override
-    public R evaluate(final T terminals) {
+    public R evaluate(T terminals) {
         return this.individual.evaluate(terminals);
     }
 }

@@ -5,9 +5,9 @@ import gp.core.initializer.IndividualCreationException;
 import gp.core.initializer.PrimitiveSet;
 import gp.core.initializer.PrimitiveSetBuilder;
 import gp.impl.individual.SingleTreeIndividual;
-import gp.impl.initializers.Initializers;
+import gp.impl.initializer.Initializers;
 import org.junit.jupiter.api.Test;
-import utils.random.RandomSource;
+import util.random.RandomSource;
 
 import java.util.stream.IntStream;
 

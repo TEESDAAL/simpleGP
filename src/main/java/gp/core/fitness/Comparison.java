@@ -7,17 +7,25 @@ import java.util.function.Supplier;
  * Enumeration representing the result of a comparison.
  */
 public enum Comparison {
-    /** Indicates the left operand is better. */
+    /**
+     * Indicates the left operand is better.
+     */
     BETTER(1),
-    /** Indicates operands are equal. */
+    /**
+     * Indicates operands are equal.
+     */
     EQUAL(0),
-    /** Indicates the left operand is worse. */
+    /**
+     * Indicates the left operand is worse.
+     */
     WORSE(-1);
 
-    /** Internal ordering value for comparisons. */
+    /**
+     * Internal ordering value for comparisons.
+     */
     private final int ord;
 
-    Comparison(final int ordinalValue) {
+    Comparison(int ordinalValue) {
         this.ord = ordinalValue;
     }
 
@@ -26,6 +34,7 @@ public enum Comparison {
      * 1 if the comparison is greater,
      * -1 if the comparison is less,
      * 0 if the comparison is equal.
+     *
      * @return The ordinal value
      */
     public int ord() {
@@ -33,7 +42,8 @@ public enum Comparison {
     }
 
     /**
-     * Flips the comparison (BETTER becomes WORSE, etc).
+     * Flips the comparison (BETTER -> WORSE, EQUALS -> EQUALS, WORSE -> BETTER)
+     *
      * @return The flipped comparison
      */
     public Comparison flip() {
@@ -47,10 +57,11 @@ public enum Comparison {
     /**
      * Returns this comparison if not EQUAL; otherwise tiebreaks
      * by evaluating the supplier.
+     *
      * @param nextResult The supplier for the next comparison
      * @return This comparison or the result of the supplier
      */
-    public Comparison then(final Supplier<Comparison> nextResult) {
+    public Comparison then(Supplier<Comparison> nextResult) {
         return switch (this) {
             case EQUAL -> nextResult.get();
             case WORSE, BETTER -> this;
@@ -59,16 +70,17 @@ public enum Comparison {
 
     /**
      * Compares two items using their natural ordering.
-     * @param <T> The comparable type
+     *
+     * @param <T>   The comparable type
      * @param item1 The first item
      * @param item2 The second item
      * @return The comparison result
      */
     public static <T extends java.lang.Comparable<T>> Comparison of(
-            final T item1,
-            final T item2
+            T item1,
+            T item2
     ) {
-        int result = item1.compareTo(item2);
+        final int result = item1.compareTo(item2);
         if (result > 0) {
             return BETTER;
         }
@@ -81,18 +93,19 @@ public enum Comparison {
 
     /**
      * Compares two items using a custom comparator.
-     * @param <T> The type
+     *
+     * @param <T>        The type
      * @param comparator The comparator
-     * @param item1 The first item
-     * @param item2 The second item
+     * @param item1      The first item
+     * @param item2      The second item
      * @return The comparison result
      */
     public static <T> Comparison of(
-            final Comparator<T> comparator,
-            final T item1,
-            final T item2
+            Comparator<T> comparator,
+            T item1,
+            T item2
     ) {
-        int result = comparator.compare(item1, item2);
+        final int result = comparator.compare(item1, item2);
         if (result > 0) {
             return BETTER;
         }
@@ -106,14 +119,13 @@ public enum Comparison {
     /**
      * Returns this comparison if not EQUAL; otherwise compares
      * the maximum of two numbers.
+     *
      * @param <N> The numeric type
-     * @param a The first number
-     * @param b The second number
+     * @param a   The first number
+     * @param b   The second number
      * @return This comparison or the max comparison
      */
-    public <N extends Number & Comparable<N>> Comparison thenMax(
-            final N a, final N b
-    ) {
+    public <N extends Number & Comparable<N>> Comparison thenMax(N a, N b) {
         if (this != EQUAL) {
             return this;
         }
@@ -123,14 +135,13 @@ public enum Comparison {
     /**
      * Returns this comparison if not EQUAL; otherwise compares
      * the minimum of two numbers.
+     *
      * @param <N> The numeric type
-     * @param a The first number
-     * @param b The second number
+     * @param a   The first number
+     * @param b   The second number
      * @return This comparison or the min comparison
      */
-    public <N extends Number & Comparable<N>> Comparison thenMin(
-            final N a, final N b
-    ) {
+    public <N extends Number & Comparable<N>> Comparison thenMin(N a, N b) {
         if (this != EQUAL) {
             return this;
         }
@@ -139,28 +150,27 @@ public enum Comparison {
 
     /**
      * Compares the maximum of two numbers.
+     *
      * @param <N> The numeric type
-     * @param a The first number
-     * @param b The second number
+     * @param a   The first number
+     * @param b   The second number
      * @return The comparison result
      */
-    public static <N extends Number & Comparable<N>> Comparison compareMax(
-            final N a,
-            final N b
-    ) {
+    public static <N extends Number & Comparable<N>> Comparison compareMax(N a, N b) {
         return Comparison.of(a.doubleValue(), b.doubleValue());
     }
 
     /**
      * Compares the minimum of two numbers.
+     *
      * @param <N> The numeric type
-     * @param a The first number
-     * @param b The second number
+     * @param a   The first number
+     * @param b   The second number
      * @return The comparison result
      */
     public static <N extends Number & Comparable<N>> Comparison compareMin(
-            final N a,
-            final N b
+            N a,
+            N b
     ) {
         return compareMax(a, b).flip();
     }
@@ -169,7 +179,7 @@ public enum Comparison {
      * Matches this comparison against a handler.
      *
      * @param match the handler to invoke
-     * @param <R> the result type
+     * @param <R>   the result type
      * @return the handled result
      */
     <R> R match(ComparisonMatch<R> match) {

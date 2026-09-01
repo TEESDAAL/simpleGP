@@ -7,13 +7,15 @@ import java.util.function.Function;
 /**
  * Functional interface for performing side effects on populations.
  * Side effects typically involve logging but do not modify the population.
+ *
  * @param <T> The type to perform the side effect on
  */
 public interface SideEffect<T> extends Function<T, T> {
 
     /**
      * Creates a side effect from a consumer.
-     * @param <T> The type to perform the side effect on
+     *
+     * @param <T>    The type to perform the side effect on
      * @param effect The consumer to apply
      * @return A side effect
      */
@@ -26,7 +28,8 @@ public interface SideEffect<T> extends Function<T, T> {
 
     /**
      * Combines multiple side effects into one.
-     * @param <T> The type to perform the side effects on
+     *
+     * @param <T>         The type to perform the side effects on
      * @param sideEffects The side effects to combine
      * @return A single side effect that applies all the given side effects in order
      */
@@ -42,6 +45,7 @@ public interface SideEffect<T> extends Function<T, T> {
     /**
      * Perform some side-effect on the population,
      * usually logging to the terminal or a file.
+     *
      * @param population The population to evaluate
      * @return the population, should be unmodified.
      */

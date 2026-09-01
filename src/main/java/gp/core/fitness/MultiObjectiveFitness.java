@@ -1,7 +1,7 @@
 package gp.core.fitness;
 
-import utils.Pair;
-import utils.stream_utils.StreamZipper;
+import util.Pair;
+import util.stream_util.StreamZipper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,8 +122,8 @@ public interface MultiObjectiveFitness<
      * @return a list of individuals on the Pareto front
      */
     static <I, MOF extends MultiObjectiveFitness<MOF>> List<I> paretoFront(
-            final List<I> individuals,
-            final Function<I, MOF> extractor
+        List<I> individuals,
+        Function<I, MOF> extractor
     ) {
 
         final List<Pair<I, MOF>> front = new ArrayList<>();

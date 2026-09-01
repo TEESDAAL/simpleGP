@@ -4,8 +4,8 @@ import gp.Population;
 import gp.core.initializer.Initialiser;
 import gp.core.initializer.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
-import gp.impl.initializers.Initializers;
-import utils.random.RandomSource;
+import gp.impl.initializer.Initializers;
+import util.random.RandomSource;
 
 public class DefaultInitialiser<T, R> implements Initialiser<SingleTreeIndividual<T, R>> {
     final Initialiser<SingleTreeIndividual<T, R>> initialiser;

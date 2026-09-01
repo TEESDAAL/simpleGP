@@ -6,11 +6,13 @@ import java.util.List;
 
 /**
  * A selector builder that creates selectors from collections of items.
+ *
  * @param <E> The type of items to select from
  */
 public interface SimpleSelectionMechanism<E> extends SelectionMechanism<E, E> {
     /**
      * Primes the selector with items.
+     *
      * @param items The items to select from
      * @return A primed selector
      */

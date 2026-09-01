@@ -12,7 +12,8 @@ import java.util.stream.Collector;
 
 interface CollectToDouble<E> extends Collector<E, Collection<E>, Double>,
         Function<Collection<E>, Double>,
-        ToDoubleFunction<Collection<E>> {
+        ToDoubleFunction<Collection<E>>
+{
     @Override
     default Supplier<Collection<E>> supplier() {
         return ArrayList::new;

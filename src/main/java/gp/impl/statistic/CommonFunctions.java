@@ -1,7 +1,7 @@
 package gp.impl.statistic;
 
 import gp.core.statistic.Statistic;
-import utils.Preconditions;
+import util.Preconditions;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,28 +12,36 @@ import java.util.function.Function;
  * Common collection-to-double aggregations.
  */
 public enum CommonFunctions implements CollectToDouble<Double> {
-    /** Mean aggregation. */
+    /**
+     * Mean aggregation.
+     */
     MEAN {
         @Override
         public double applyAsDouble(Collection<Double> numbers) {
             return mean(numbers);
         }
     },
-    /** Standard deviation aggregation. */
+    /**
+     * Standard deviation aggregation.
+     */
     STD {
         @Override
         public double applyAsDouble(Collection<Double> numbers) {
             return std(numbers);
         }
     },
-    /** Median aggregation. */
+    /**
+     * Median aggregation.
+     */
     MEDIAN {
         @Override
         public double applyAsDouble(Collection<Double> numbers) {
             return median(numbers);
         }
     },
-    /** Mode aggregation. */
+    /**
+     * Mode aggregation.
+     */
     MODE {
         @Override
         public double applyAsDouble(Collection<Double> numbers) {
@@ -99,7 +107,7 @@ public enum CommonFunctions implements CollectToDouble<Double> {
      * Computes the most common number in the collection.
      *
      * @param numbers the numbers to count
-     * @param <N> the number type
+     * @param <N>     the number type
      * @return the mode value
      */
     public static <N extends Number> N mode(Collection<N> numbers) {
@@ -128,7 +136,7 @@ public enum CommonFunctions implements CollectToDouble<Double> {
      * Converts the aggregation into a statistic over a population.
      *
      * @param converter the value extractor
-     * @param <I> the population item type
+     * @param <I>       the population item type
      * @return a statistic that applies this aggregation
      */
     public <I> Statistic<I, Double> toStatistic(Function<I, Double> converter) {

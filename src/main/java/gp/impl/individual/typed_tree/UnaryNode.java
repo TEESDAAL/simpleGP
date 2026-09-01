@@ -1,28 +1,28 @@
 package gp.impl.individual.typed_tree;
 
-import utils.typed_functions.TypedFunction;
+import util.typed_function.TypedFunction;
 
 import java.util.List;
 
 public sealed interface UnaryNode<
-    A, Terminals, R,
-    Self extends UnaryNode<A, Terminals, R, Self, Child>,
-    Child extends Node<Terminals, ?, ?, ?, ?>
+        Terminals, A, R,
+        Self extends UnaryNode<Terminals, A, R, Self, Child>,
+        Child extends Node<Terminals, ?, ?, ?, ?>
 > extends NonTerminal<
-    Terminals, R,
-    Self, Child,
-    ImmutableUnaryNode<A, Terminals, R>,
-    MutableUnaryNode<A, Terminals, R>
+        Terminals, R,
+        Self, Child,
+        ImmutableUnaryNode<Terminals, A, R>,
+        MutableUnaryNode<Terminals, A, R>
 > permits MutableUnaryNode, ImmutableUnaryNode {
-    static <Terminals, R, A> ImmutableUnaryNode<A, Terminals, R> of(
-        String name,
-        TypedFunction<A,R> typedFunction,
-        ImmutableNode<Terminals,A,?,?> input
+    static <Terminals, A, R> ImmutableUnaryNode<Terminals, A, R> of(
+            String name,
+            TypedFunction<A, R> typedFunction,
+            ImmutableNode<Terminals, A, ?, ?> input
     ) {
         return new ImmutableUnaryNode<>(
-            name,
-            typedFunction,
-            input
+                name,
+                typedFunction,
+                input
         );
     }
 
@@ -39,7 +39,7 @@ public sealed interface UnaryNode<
 
     default R evaluate(Terminals terminals) {
         return this.combiner().apply(
-            input().evaluate(terminals)
+                input().evaluate(terminals)
         );
     }
 
@@ -50,19 +50,11 @@ public sealed interface UnaryNode<
         return this.combiner().apply((A) inputs.getFirst());
     }
 
-    default MutableUnaryNode<A, Terminals, R> mutableCopy() {
+    default MutableUnaryNode<Terminals, A, R> mutableCopy() {
         return new MutableUnaryNode<>(
-            this.name(),
-            this.input().mutableCopy(),
-            this.combiner()
-        );
-    }
-
-    default ImmutableUnaryNode<A, Terminals, R> immutableCopy() {
-        return new ImmutableUnaryNode<>(
-            this.name(),
-            this.combiner(),
-            this.input().immutableCopy()
+                this.name(),
+                this.input().mutableCopy(),
+                this.combiner()
         );
     }
 }

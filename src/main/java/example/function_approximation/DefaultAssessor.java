@@ -3,10 +3,10 @@ package example.function_approximation;
 import gp.core.assessor.IndividualAssessor;
 import gp.core.fitness.Goal;
 import gp.core.fitness.SingleObjectiveFitness;
-import gp.impl.fitness.SingleObjectiveFit;
+import gp.impl.fitness.DefaultSingleObjectiveFitness;
 import gp.impl.individual.SingleTreeIndividual;
-import utils.Pair;
-import utils.random.RandomSource;
+import util.Pair;
+import util.random.RandomSource;
 
 import java.util.function.BiFunction;
 
@@ -40,7 +40,7 @@ public class DefaultAssessor implements IndividualAssessor<Pair<Double, Double>,
             result = Math.abs(expectedResult - individual.evaluate(Pair.of(currentX, currentY)));
             sum += result;
         }
-        return new SingleObjectiveFit(sum, Goal.MINIMIZE);
+        return new DefaultSingleObjectiveFitness(sum, Goal.MINIMIZE);
     }
 
     @Override

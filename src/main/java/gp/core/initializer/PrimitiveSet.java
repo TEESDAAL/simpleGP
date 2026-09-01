@@ -12,17 +12,18 @@ import java.util.stream.Stream;
 public interface PrimitiveSet<T> {
     /**
      * Create a primitive set from a list of
-     *  terminals, ephemeralConstants, and NonTerminals.
-     * @param terminals The Terminals
+     * terminals, ephemeralConstants, and NonTerminals.
+     *
+     * @param terminals          The Terminals
      * @param ephemeralConstants The ephemeralConstants
-     * @param nonTerminals The nonTerminals.
+     * @param nonTerminals       The nonTerminals.
+     * @param <T>                The terminal type.
      * @return A primitive set bundling terminals, ephemeralConstants, and NonTerminals.
-     * @param <T> The terminal type.
      */
     static <T> PrimitiveSet<T> of(
-        List<TypedTerminal<T, ?>> terminals,
-        List<EphemeralConstant<?>> ephemeralConstants,
-        List<NamedNodeFunction<?, ?>> nonTerminals
+            List<TypedTerminal<T, ?>> terminals,
+            List<EphemeralConstant<?>> ephemeralConstants,
+            List<NamedNodeFunction<?, ?>> nonTerminals
     ) {
         return new PrimitiveSetImpl<>(terminals, ephemeralConstants, nonTerminals);
     }
@@ -30,7 +31,7 @@ public interface PrimitiveSet<T> {
     /**
      * Returns the full terminal set including instantiated ephemeral constants.
      * Note: This means that if you have any ephemeral constants `this.terminals()`
-     *  may give different results when calling it.
+     * may give different results when calling it.
      *
      * @return The full terminal set.
      */
@@ -43,21 +44,23 @@ public interface PrimitiveSet<T> {
 
     /**
      * Return an array of all the terminals that return a value
-     *  that can be assigned to a given type (are that type or a subtype).
+     * that can be assigned to a given type (are that type or a subtype).
      * Note: This means all terminals will be return if you pass in `Class<Object>`.
+     *
      * @param returnType The return type we want to filter by.
+     * @param <R>        The desired return type.
      * @return An array of valid terminals
-     * @param <R> The desired return type.
      */
     <R> TypedTerminal<T, R>[] terminalsOfType(Class<R> returnType);
 
     /**
      * Return an array of all the non-terminals that return a value
-     *  that can be assigned to a given type (are that type or a subtype).
+     * that can be assigned to a given type (are that type or a subtype).
      * Note: All non-terminals will be return if you pass in `Class<Object>`.
+     *
      * @param returnType The return type we want to filter by.
+     * @param <R>        The desired return type.
      * @return An array of valid non-terminals.
-     * @param <R> The desired return type.
      */
     <R> NamedNodeFunction<R, ?>[] validNonTerminals(Class<R> returnType);
 
@@ -83,19 +86,19 @@ final class PrimitiveSetImpl<T> implements PrimitiveSet<T> {
     private final EphemeralConstant<?>[] ephemeralConstants;
 
     private final Map<Class<?>, NamedNodeFunction[]> nonterminalMap =
-        new ConcurrentHashMap<>();
+            new ConcurrentHashMap<>();
 
     PrimitiveSetImpl(
-        List<TypedTerminal<T, ?>> terminals,
-        List<EphemeralConstant<?>> ephemeralConstants,
-        List<NamedNodeFunction<?, ?>> nonTerminals
+            List<TypedTerminal<T, ?>> terminals,
+            List<EphemeralConstant<?>> ephemeralConstants,
+            List<NamedNodeFunction<?, ?>> nonTerminals
     ) {
         assert terminals.stream().noneMatch(Objects::isNull)
-            : "terminals cannot be null";
+                : "terminals cannot be null";
         assert ephemeralConstants.stream().noneMatch(Objects::isNull)
-            : "ephemeral constants cannot be null";
+                : "ephemeral constants cannot be null";
         assert nonTerminals.stream().noneMatch(Objects::isNull)
-            : "non-terminals cannot be null";
+                : "non-terminals cannot be null";
 
         this.terminals = terminals.toArray(TypedTerminal[]::new);
         this.nonTerminals = nonTerminals.toArray(NamedNodeFunction<?, ?>[]::new);
@@ -105,25 +108,31 @@ final class PrimitiveSetImpl<T> implements PrimitiveSet<T> {
     @Override
     public <R> TypedTerminal<T, R>[] terminalsOfType(Class<R> returnType) {
         return Stream.concat(
-            Arrays.stream(ephemeralConstants)
-                .filter(t -> returnType.isAssignableFrom(t.returnType()))
-                .map(EphemeralConstant::<T>instantiate),
-            Arrays.stream(terminals)
-                .filter(term -> returnType.isAssignableFrom(term.returnType()))
-        ).map(term -> (TypedTerminal<T, R>) term)
-            .toArray(TypedTerminal[]::new);
+                        Arrays.stream(ephemeralConstants)
+                                .filter(t -> returnType
+                                        .isAssignableFrom(t.returnType())
+                                )
+                                .map(EphemeralConstant::<T>instantiate),
+                        Arrays.stream(terminals)
+                                .filter(term -> returnType
+                                        .isAssignableFrom(term.returnType())
+                                )
+                ).map(term -> (TypedTerminal<T, R>) term)
+                .toArray(TypedTerminal[]::new);
     }
 
     @Override
     public <R> NamedNodeFunction<R, ?>[] validNonTerminals(
-        final Class<R> returnType
+            final Class<R> returnType
     ) {
         return nonterminalMap.computeIfAbsent(
-            Objects.requireNonNull(returnType, "Given return type cannot be null"),
-            t -> Arrays.stream(nonTerminals)
-                .filter(term -> t.isAssignableFrom(term.function().returnType()))
-                .map(term -> (NamedNodeFunction<R, ?>) term)
-                .toArray(NamedNodeFunction[]::new)
+                Objects.requireNonNull(returnType, "Given return type cannot be null"),
+                t -> Arrays.stream(nonTerminals)
+                        .filter(term -> t.isAssignableFrom(
+                                term.function().returnType()
+                        ))
+                        .map(term -> (NamedNodeFunction<R, ?>) term)
+                        .toArray(NamedNodeFunction[]::new)
         );
     }
 

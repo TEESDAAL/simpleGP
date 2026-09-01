@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 /**
  * Interface for matching on the result of a comparison.
+ *
  * @param <R> The type of the result for each case
  */
 public interface ComparisonMatch<R> {
@@ -32,16 +33,16 @@ public interface ComparisonMatch<R> {
     /**
      * Creates a new matcher based on the given suppliers for each case.
      *
-     * @param equal the supplier to call when the comparison is equal
+     * @param equal  the supplier to call when the comparison is equal
      * @param better the supplier to call when the comparison is better
-     * @param worse the supplier to call when the comparison is worse
-     * @param <R> the return type
+     * @param worse  the supplier to call when the comparison is worse
+     * @param <R>    the return type
      * @return the result of the appropriate supplier based on the comparison result
      */
     static <R> ComparisonMatch<R> of(
-            final Supplier<R> equal,
-            final Supplier<R> better,
-            final Supplier<R> worse
+            Supplier<R> equal,
+            Supplier<R> better,
+            Supplier<R> worse
     ) {
         return new ComparisonMatch<>() {
             @Override
@@ -65,7 +66,7 @@ public interface ComparisonMatch<R> {
      * Apply some transformation to the return type.
      *
      * @param mapper the transformation to apply to the return type
-     * @param <U> the new return type
+     * @param <U>    the new return type
      * @return the mapped supplier value
      */
     default <U> ComparisonMatch<U> map(Function<R, U> mapper) {

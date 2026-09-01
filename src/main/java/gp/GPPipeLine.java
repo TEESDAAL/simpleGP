@@ -5,16 +5,18 @@ import java.util.function.Supplier;
 
 /**
  * A utility class for performing chained GP reasoning.
+ *
  * @param population The thing that gets changed over the pipeline.
- * @param <T> Type of population.
+ * @param <T>        Type of population.
  */
 public record GPPipeLine<T>(T population) {
 
     /**
      * Create the initial Step in the pipeline.
+     *
      * @param initializer The thing to start the pipeline.
+     * @param <T>         The initial type.
      * @return The first step of the pipeline.
-     * @param <T> The initial type.
      */
     public static <T> GPPipeLine<T> start(final Supplier<T> initializer) {
         return new GPPipeLine<>(initializer.get());
@@ -22,9 +24,10 @@ public record GPPipeLine<T>(T population) {
 
     /**
      * Create the initial Step in the pipeline.
+     *
      * @param value The value at the start the pipeline.
+     * @param <T>   The initial type.
      * @return The first step of the pipeline.
-     * @param <T> The initial type.
      */
     public static <T> GPPipeLine<T> of(final T value) {
         return new GPPipeLine<>(value);
@@ -32,9 +35,10 @@ public record GPPipeLine<T>(T population) {
 
     /**
      * Create the next step in the pipeline.
+     *
      * @param step a function to take you from the one step to the next.
+     * @param <U>  The type after the step is applied.
      * @return The new pipeline.
-     * @param <U> The type after the step is applied.
      */
     public <U> GPPipeLine<U> then(final Function<T, U> step) {
         return GPPipeLine.of(step.apply(this.population));
@@ -42,6 +46,7 @@ public record GPPipeLine<T>(T population) {
 
     /**
      * Repeat a pipeline until the termination criteria is satisfied.
+     *
      * @param until When to stop iterating
      * @param block The steps to take
      * @return The result after the iteration
@@ -57,10 +62,11 @@ public record GPPipeLine<T>(T population) {
             result = block.iterate(iterations, result);
         }
         return result;
-}
+    }
 
     /**
      * Finishes the pipeline and returns the final result.
+     *
      * @return The final population value
      */
     public T finish() {

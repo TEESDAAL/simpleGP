@@ -6,14 +6,14 @@ import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.individual.AssessedIndividual;
 import gp.core.initializer.PrimitiveSet;
 import gp.impl.breeder.NaiveBreeder;
-import gp.impl.genetic_operators.CrossOver;
-import gp.impl.genetic_operators.Identity;
-import gp.impl.genetic_operators.SubtreeMutation;
+import gp.impl.genetic_operator.Crossover;
+import gp.impl.genetic_operator.Identity;
+import gp.impl.genetic_operator.SubtreeMutation;
 import gp.impl.individual.SingleTreeIndividual;
-import gp.impl.selectors.Elitism;
-import gp.impl.selectors.TournamentSelection;
-import gp.impl.selectors.random.DistributionBuilder;
-import utils.random.RandomSource;
+import gp.impl.selector.Elitism;
+import gp.impl.selector.TournamentSelection;
+import gp.impl.selector.random.DistributionBuilder;
+import util.random.RandomSource;
 
 public class DefaultBreeder<T, R> implements Breeder<AssessedIndividual<T, R, SingleTreeIndividual<T, R>, SingleObjectiveFitness>, SingleTreeIndividual<T, R>> {
     protected final RandomSource random;
@@ -36,7 +36,7 @@ public class DefaultBreeder<T, R> implements Breeder<AssessedIndividual<T, R, Si
             0.01, SingleTreeIndividual.<T, R>operator(new SubtreeMutation<>(
                 random, primitiveSet, 7, 100
             )))
-            .addElement(0.65, SingleTreeIndividual.operator(new CrossOver<>(
+            .addElement(0.65, SingleTreeIndividual.operator(new Crossover<>(
                 random, 7, 1
             )))
             .addDefault(new Identity<>())

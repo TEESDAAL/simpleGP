@@ -1,6 +1,6 @@
 package gp.impl.statistic;
 
-import utils.typed_functions.TypedBiFunction;
+import util.typed_function.TypedBiFunction;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -37,10 +37,11 @@ public enum NumericUtils implements TypedBiFunction<Double, Double, Double> {
     public Class<Double> rightType() {
         return Double.class;
     }
+
     /**
      * Rounds a value to the requested number of decimal places.
      *
-     * @param value the value to round
+     * @param value  the value to round
      * @param places the number of decimal places
      * @return the rounded value
      */

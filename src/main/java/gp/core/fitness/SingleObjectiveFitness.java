@@ -1,17 +1,17 @@
 package gp.core.fitness;
 
-import gp.impl.fitness.SingleObjectiveFit;
+import gp.impl.fitness.DefaultSingleObjectiveFitness;
 
 /**
  * Interface representing single-objective fitness,
  * which includes a score and an optimization goal.
  */
 public interface SingleObjectiveFitness extends DirectlyComparableFitness<
-    SingleObjectiveFitness
+        SingleObjectiveFitness
 > {
 
     static SingleObjectiveFitness of(double score, Goal goal) {
-        return SingleObjectiveFit.of(score, goal);
+        return DefaultSingleObjectiveFitness.of(score, goal);
     }
 
     /**
@@ -28,7 +28,7 @@ public interface SingleObjectiveFitness extends DirectlyComparableFitness<
 
     @Override
     default Comparison compare(
-        final SingleObjectiveFitness other
+            SingleObjectiveFitness other
     ) {
         return switch (this.goal()) {
             case MAXIMIZE -> Comparison.compareMax(this.score(), other.score());

@@ -1,6 +1,6 @@
 package gp.impl.statistic;
 
-import utils.Pair;
+import util.Pair;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,28 +9,36 @@ import java.util.List;
  * Common evaluation functions for paired values.
  */
 public enum EvaluationFunctions implements CollectToDouble<Pair<Double, Double>> {
-    /** Sum absolute error. */
+    /**
+     * Sum absolute error.
+     */
     SAE {
         @Override
         public double applyAsDouble(Collection<Pair<Double, Double>> pairs) {
             return sumAbsoluteError(pairs);
         }
     },
-    /** Mean absolute error. */
+    /**
+     * Mean absolute error.
+     */
     MAE {
         @Override
         public double applyAsDouble(Collection<Pair<Double, Double>> pairs) {
             return meanAbsoluteError(pairs);
         }
     },
-    /** Mean squared error. */
+    /**
+     * Mean squared error.
+     */
     MSE {
         @Override
         public double applyAsDouble(Collection<Pair<Double, Double>> pairs) {
             return meanSquaredError(pairs);
         }
     },
-    /** Root mean squared error. */
+    /**
+     * Root mean squared error.
+     */
     RMSE {
         @Override
         public double applyAsDouble(Collection<Pair<Double, Double>> value) {
@@ -40,6 +48,7 @@ public enum EvaluationFunctions implements CollectToDouble<Pair<Double, Double>>
 
     /**
      * Returns the mean of the squared value of x - y.
+     *
      * @param pairs The list of input points (x, y)
      * @return mean((x-y)^2)
      */
@@ -53,6 +62,7 @@ public enum EvaluationFunctions implements CollectToDouble<Pair<Double, Double>>
 
     /**
      * Returns the mean of the squared value of x - y.
+     *
      * @param pairs The list of input points (x, y)
      * @return mean((x-y)^2)
      */
@@ -63,17 +73,19 @@ public enum EvaluationFunctions implements CollectToDouble<Pair<Double, Double>>
     /**
      * Returns the square root of the mean squared error.
      * Useful as this error is in the same units as the input.
+     *
      * @param pairs The list of input points (x, y)
      * @return sqrt(mean((x-y)^2))
      */
     public static double rootMeanSquaredError(
-        Collection<Pair<Double, Double>> pairs
+            Collection<Pair<Double, Double>> pairs
     ) {
         return Math.sqrt(meanSquaredError(pairs));
     }
 
     /**
      * Returns the mean of the absolute value of x - y.
+     *
      * @param pairs The list of input points (x, y)
      * @return mean(|x-y|)
      */
@@ -85,6 +97,7 @@ public enum EvaluationFunctions implements CollectToDouble<Pair<Double, Double>>
 
     /**
      * Returns the sum of the absolute value of x - y.
+     *
      * @param pairs The list of input points (x, y)
      * @return sum(|x-y|)
      */

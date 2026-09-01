@@ -7,6 +7,7 @@ import gp.core.individual.Individual;
 
 /**
  * Interface for evaluating a population of individuals.
+ *
  * @param <R> The return type
  * @param <T> The terminal type
  * @param <I> The individual type
@@ -20,6 +21,7 @@ public interface Assessor<
 > {
     /**
      * Evaluates all individuals in a population.
+     *
      * @param population The population to evaluate
      * @return A new population of evaluated individuals
      */

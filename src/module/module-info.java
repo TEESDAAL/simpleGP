@@ -17,17 +17,17 @@ module ai.weewoo.simpleGP {
     exports gp.impl.assessor;
     exports gp.impl.breeder;
     exports gp.impl.fitness;
-    exports gp.impl.genetic_operators;
-    exports gp.impl.genetic_operators.multitree;
+    exports gp.impl.genetic_operator;
+    exports gp.impl.genetic_operator.multitree;
     exports gp.impl.individual;
     exports gp.impl.individual.multitree;
-    exports gp.impl.initializers;
-    exports gp.impl.selectors;
-    exports gp.impl.selectors.random;
+    exports gp.impl.initializer;
+    exports gp.impl.selector;
+    exports gp.impl.selector.random;
     exports gp.impl.statistic;
 
-    exports utils;
-    exports utils.operators;
-    exports utils.random;
-    exports utils.stream_utils;
+    exports util;
+    exports util.operator;
+    exports util.random;
+    exports util.stream_util;
 }

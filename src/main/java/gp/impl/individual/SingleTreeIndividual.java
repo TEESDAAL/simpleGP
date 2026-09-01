@@ -3,7 +3,7 @@ package gp.impl.individual;
 import gp.core.individual.Individual;
 import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.Node;
-import utils.operators.Operator;
+import util.operator.Operator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,16 +11,17 @@ import java.util.List;
 
 /**
  * A record representing an individual as a single tree structure.
- * @param <T> The terminal type
+ *
+ * @param <T>   The terminal type
  * @param <Out> The output type
- * @param tree The immutable tree representing this individual
+ * @param tree  The immutable tree representing this individual
  */
 record SingleTreeIndividualImpl<T, Out>(
-    ImmutableNode<T, Out, ?, ?> tree
+        ImmutableNode<T, Out, ?, ?> tree
 ) implements SingleTreeIndividual<T, Out> {
     @Override
     public String toString() {
-        return "SingleTreeIndividual[" + tree.getExpression()+"]";
+        return "SingleTreeIndividual[" + tree.getExpression() + "]";
     }
 
 
@@ -33,14 +34,16 @@ record SingleTreeIndividualImpl<T, Out>(
 
 /**
  * An interface representing an individual as a single tree structure.
- * @param <T> The terminal type
+ *
+ * @param <T>   The terminal type
  * @param <Out> The output type
  */
 public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
     /**
      * Creates a single tree individual from a tree node.
-     * @param <Out> The output type
-     * @param <T> The terminal type
+     *
+     * @param <Out>      The output type
+     * @param <T>        The terminal type
      * @param individual The tree node
      * @return A new single tree individual
      */
@@ -52,6 +55,7 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
 
     /**
      * Get the Node this individual wraps.
+     *
      * @return The inner node.
      */
     ImmutableNode<T, Out, ?, ?> tree();
@@ -64,19 +68,20 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
     /**
      * Creates an operator that works on single tree individuals by wrapping
      * a node operator.
-     * @param <T> The terminal type
-     * @param <Out> The output type
+     *
+     * @param <T>          The terminal type
+     * @param <Out>        The output type
      * @param nodeOperator The operator that works on nodes
      * @return An operator that works on single tree individuals
      */
     static <T, Out> Operator<
-        SingleTreeIndividual<T, Out>,
-        List<SingleTreeIndividual<T, Out>>
-    > operator(
-        Operator<
-            Node<T, Out, ?, ?, ?>,
-            List<ImmutableNode<T, Out, ?, ?>>
-        > nodeOperator
+            SingleTreeIndividual<T, Out>,
+            List<SingleTreeIndividual<T, Out>>
+            > operator(
+            Operator<
+                    Node<T, Out, ?, ?, ?>,
+                    List<ImmutableNode<T, Out, ?, ?>>
+                    > nodeOperator
     ) {
         return new Operator<>() {
             @Override
@@ -84,14 +89,14 @@ public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
                     final List<SingleTreeIndividual<T, Out>> parents
             ) {
                 final List<Node<T, Out, ?, ?, ?>> trees
-                    = new ArrayList<>(parents.size());
+                        = new ArrayList<>(parents.size());
                 for (final SingleTreeIndividual<T, Out> parent : parents) {
                     trees.add(parent.tree());
                 }
                 return nodeOperator.produce(trees)
-                    .stream()
-                    .map(SingleTreeIndividual::of)
-                    .toList();
+                        .stream()
+                        .map(SingleTreeIndividual::of)
+                        .toList();
             }
 
             @Override

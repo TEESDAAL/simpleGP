@@ -1,8 +1,8 @@
 package example.function_approximation.parameters;
 
 import gp.impl.individual.typed_tree.NamedNodeFunction;
-import utils.typed_functions.TypedBiFunction;
-import utils.typed_functions.TypedFunction;
+import util.typed_function.TypedBiFunction;
+import util.typed_function.TypedFunction;
 
 import java.util.Arrays;
 import java.util.List;

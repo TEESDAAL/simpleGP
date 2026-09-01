@@ -4,13 +4,13 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public non-sealed interface Terminal<
-    Terminals, R,
-    Self extends Terminal<Terminals, R, Self>
+        Terminals, R,
+        Self extends Terminal<Terminals, R, Self>
 > extends Node<
-    Terminals, R,
-    Self,
-    ImmutableTerminal<Terminals, R>,
-    MutableTerminal<Terminals, R>
+        Terminals, R,
+        Self,
+        ImmutableTerminal<Terminals, R>,
+        MutableTerminal<Terminals, R>
 > {
     Function<Terminals, R> extractor();
 
@@ -20,20 +20,11 @@ public non-sealed interface Terminal<
     }
 
     @Override
-    default ImmutableTerminal<Terminals, R> immutableCopy() {
-        return new ImmutableTerminal<>(
-            this.name(),
-            this.extractor(),
-            this.returnType()
-        );
-    }
-
-    @Override
     default MutableTerminal<Terminals, R> mutableCopy() {
         return new MutableTerminal<>(
-            this.name(),
-            this.extractor(),
-            this.returnType()
+                this.name(),
+                this.extractor(),
+                this.returnType()
         );
     }
 

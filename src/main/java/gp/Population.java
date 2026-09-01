@@ -12,7 +12,8 @@ import java.util.stream.Stream;
 
 /**
  * A record representing a population of individuals.
- * @param <I> The type of individuals in the population
+ *
+ * @param <I>         The type of individuals in the population
  * @param individuals The list of individuals
  */
 public record Population<I>(List<I> individuals) implements Serializable {
@@ -23,10 +24,10 @@ public record Population<I>(List<I> individuals) implements Serializable {
         individuals = List.copyOf(individuals);
     }
 
-
     /**
      * Creates a new population from a list of individuals.
-     * @param <I> The type of individuals
+     *
+     * @param <I>         The type of individuals
      * @param individuals The list of individuals
      * @return A new population containing the provided individuals
      */
@@ -36,7 +37,8 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Creates a new population from the provided individuals.
-     * @param <I> The type of individuals
+     *
+     * @param <I>         The type of individuals
      * @param individuals The list of individuals
      * @return A new population containing the provided individuals
      */
@@ -47,6 +49,7 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Converts the population to a stream of individuals.
+     *
      * @return A stream of individuals in the population
      */
     public Stream<I> stream() {
@@ -55,8 +58,9 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * A collector that collects a stream of individuals into a population.
-     * @return A collector that collects a stream of individuals into a population
+     *
      * @param <I> The individual type.
+     * @return A collector that collects a stream of individuals into a population
      */
     public static <I> Collector<I, ?, Population<I>> toPopulation() {
         return Collectors.collectingAndThen(
@@ -67,6 +71,7 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Combines this population with another population.
+     *
      * @param other The other population to combine with
      * @return A new population containing individuals from both populations
      */
@@ -78,6 +83,7 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Gets the first individual in the population.
+     *
      * @return The first individual
      */
     public I getFirst() {
@@ -86,6 +92,7 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Gets the individual at the specified index.
+     *
      * @param index The index of the individual to retrieve
      * @return The individual at the specified index
      */
@@ -97,6 +104,7 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Gets the index of the specified individual in the population.
+     *
      * @param individual The individual to find
      * @return The index of the individual if present
      */
@@ -110,11 +118,12 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Gets a subset of the population from the specified indices.
-     *      Provides a view of the population between the specified indices,
-     *      this means that changes to the subpopulation will affect the
-     *      original population and vice versa.
+     * Provides a view of the population between the specified indices,
+     * this means that changes to the subpopulation will affect the
+     * original population and vice versa.
+     *
      * @param fromIndex The starting index (inclusive)
-     * @param toIndex The ending index (exclusive)
+     * @param toIndex   The ending index (exclusive)
      * @return A new population containing the individuals in the specified range
      */
     public Population<I> subPopulation(int fromIndex, int toIndex) {
@@ -123,6 +132,7 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Gets the size of the population.
+     *
      * @return The number of individuals in the population
      */
     public int size() {
@@ -138,6 +148,7 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Performs the given action for each individual in the population.
+     *
      * @param consumer The action to perform.
      */
     public void forEach(Consumer<I> consumer) {
@@ -146,9 +157,10 @@ public record Population<I>(List<I> individuals) implements Serializable {
 
     /**
      * Create a new population by applying the mapper to this.
+     *
      * @param mapper The mapper applied to each individual in this population
+     * @param <R>    The type of new individuals in this population.
      * @return The new Population<R>
-     * @param <R> The type of new individuals in this population.
      */
     public <R> Population<R> map(Function<? super I, ? extends R> mapper) {
         return this.stream().map(mapper).collect(Population.toPopulation());

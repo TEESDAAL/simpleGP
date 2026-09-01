@@ -6,6 +6,7 @@ package gp.core.initializer;
 public class IndividualCreationException extends RuntimeException {
     /**
      * Creates an exception with a message.
+     *
      * @param message The error message
      */
     public IndividualCreationException(final String message) {
@@ -14,8 +15,9 @@ public class IndividualCreationException extends RuntimeException {
 
     /**
      * Creates an exception with a message and cause.
+     *
      * @param message The error message
-     * @param cause The underlying cause
+     * @param cause   The underlying cause
      */
     public IndividualCreationException(
             final String message, final Throwable cause) {
@@ -24,6 +26,7 @@ public class IndividualCreationException extends RuntimeException {
 
     /**
      * Creates an exception with a cause.
+     *
      * @param cause The underlying cause
      */
     public IndividualCreationException(final Throwable cause) {
