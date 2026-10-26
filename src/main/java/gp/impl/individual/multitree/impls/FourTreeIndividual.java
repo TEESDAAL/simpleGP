@@ -26,21 +26,47 @@ public interface FourTreeIndividual<
 > extends MultiTree<
     T1, R1,
     MultiTree<T2, R2, MultiTree<T3, R3, MultiTree<T4, R4, End, ?>, ?>, ?>,
-    FourTreeIndividual<T1, R1, T2, R2, T3, R3, T4, R4, Self>
+    Self
 > {
-    default SingleTreeIndividual<T1, R1> first() {
-        return Get.first(this);
+    @Override
+    default Self constructor(MultiTree<T1, R1, MultiTree<T2, R2, MultiTree<T3, R3, MultiTree<T4, R4, End, ?>, ?>, ?>, ?> multiTree) {
+        final SingleTreeIndividual<T1, R1> first = Get.first(multiTree);
+        final SingleTreeIndividual<T2, R2> second = Get.second(multiTree);
+        final SingleTreeIndividual<T3, R3> third = Get.third(multiTree);
+        final SingleTreeIndividual<T4, R4> fourth = Get.fourth(multiTree);
+        return constructor(first, second, third, fourth);
     }
 
-    default SingleTreeIndividual<T2, R2> second() {
-        return Get.second(this);
-    }
+    Self constructor(SingleTreeIndividual<T1,R1> first, SingleTreeIndividual<T2,R2> second, SingleTreeIndividual<T3,R3> third, SingleTreeIndividual<T4,R4> fourth);
 
-    default SingleTreeIndividual<T3, R3> third() {
-        return Get.third(this);
-    }
+    SingleTreeIndividual<T1, R1> first();
 
-    default SingleTreeIndividual<T4, R4> fourth() {
-        return Get.fourth(this);
+    SingleTreeIndividual<T2, R2> second();
+
+    SingleTreeIndividual<T3, R3> third();
+
+    SingleTreeIndividual<T4, R4> fourth();
+
+    @Override
+    default MultiTree<T1, R1, MultiTree<T2, R2, MultiTree<T3, R3, MultiTree<T4, R4, End, ?>, ?>, ?>, ?> multiTree() {
+        return MultiTree.of(fourth()).addFirst(third()).addFirst(second()).addFirst(first());
+    }
+}
+
+record FourTreeExample(
+        SingleTreeIndividual<Double, Double> first,
+        SingleTreeIndividual<Double, Double> second,
+        SingleTreeIndividual<Double, Double> third,
+        SingleTreeIndividual<Double, Double> fourth
+) implements FourTreeIndividual<Double, Double, Double, Double, Double, Double, Double, Double, FourTreeExample> {
+
+    @Override
+    public FourTreeExample constructor(
+            SingleTreeIndividual<Double, Double> first,
+            SingleTreeIndividual<Double, Double> second,
+            SingleTreeIndividual<Double, Double> third,
+            SingleTreeIndividual<Double, Double> fourth
+    ) {
+        return new FourTreeExample(first, second, third, fourth);
     }
 }

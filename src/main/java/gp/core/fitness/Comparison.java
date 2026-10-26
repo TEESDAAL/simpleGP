@@ -76,11 +76,16 @@ public enum Comparison {
      * @param item2 The second item
      * @return The comparison result
      */
-    public static <T extends java.lang.Comparable<T>> Comparison of(
+    public static <T extends Comparable<T>> Comparison of(
             T item1,
             T item2
     ) {
         final int result = item1.compareTo(item2);
+        return switch (null) {
+            case Void _ when result > 0 -> BETTER;
+            case Void _ when result < 0 -> WORSE;
+            default -> EQUAL;
+        };
         if (result > 0) {
             return BETTER;
         }
@@ -88,6 +93,16 @@ public enum Comparison {
             return WORSE;
         }
         return EQUAL;
+    }
+    void whichInt(int v) {
+        switch (v) {
+            case 0 ->
+                    System.out.println("Zero");
+            case int x when x > 0f && x <= 10f ->
+                    System.out.println(x + " is between 1 and 10");
+            case int x ->
+                    System.out.println(x + " is larger than 10");
+        }
     }
 
 

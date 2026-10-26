@@ -1,6 +1,6 @@
 package gp.impl.genetic_operator;
 
-import gp.core.initializer.PrimitiveSet;
+import gp.core.primitive_set.PrimitiveSet;
 import gp.core.initializer.TypedTerminal;
 import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.ImmutableNonTerminal;
@@ -115,6 +115,7 @@ public record SubtreeMutation<T, Out>(
                 depthLimit - depthOfMutationPoint,
                 t.returnType()
         ).orElseThrow().mutableCopy();
+
         try {
             mutationPoint.replaceChild(
                     random.nextInt(0, mutationPoint.combiner().arity()),

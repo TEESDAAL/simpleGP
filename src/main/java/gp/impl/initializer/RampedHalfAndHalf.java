@@ -3,7 +3,7 @@ package gp.impl.initializer;
 import gp.Population;
 import gp.core.initializer.IndividualInitialiser;
 import gp.core.initializer.Initialiser;
-import gp.core.initializer.PrimitiveSet;
+import gp.core.primitive_set.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
 import util.IndividualSet;
 import util.random.RandomSource;

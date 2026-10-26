@@ -1,5 +1,7 @@
 package gp.core.individual;
 
+import util.Parallelizeable;
+
 import java.util.List;
 
 /**
@@ -8,7 +10,7 @@ import java.util.List;
  * @param <T> The terminal type
  * @param <R> The return type
  */
-public interface Individual<T, R> {
+public interface Individual<T, R> extends Parallelizeable {
     /**
      * Evaluates this individual on the given terminals.
      *
@@ -28,6 +30,14 @@ public interface Individual<T, R> {
      * to the `i`th element in terminals
      */
     default List<R> evaluateAll(List<T> terminals) {
-        return terminals.stream().map(this::evaluate).toList();
+        return this.parallelize(terminals.stream(), this::evaluate).toList();
+    }
+
+    /**
+     * @return if evaluateAll should be parallelized. False by default.
+     */
+    @Override
+    default boolean shouldParallelize() {
+        return false;
     }
 }

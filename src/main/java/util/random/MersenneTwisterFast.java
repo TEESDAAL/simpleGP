@@ -158,7 +158,7 @@ import java.io.Serializable;
  * this list of conditions and the following disclaimer.
  * <li> Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * and/or other materials provided with the operatorDistribution.
  * <li> Neither the name of the copyright owners, their employers, nor the
  * names of its contributors may be used to endorse or promote products
  * derived from this software without specific prior written permission.
@@ -388,8 +388,8 @@ public class MersenneTwisterFast implements Serializable, RandomSource {
     }
 
     /**
-     * This generates a coin flip with a probability <tt>probability</tt>
-     * of returning true, else returning false.  <tt>probability</tt> must
+     * This generates a coin flip with a probability `probability`
+     * of returning true, else returning false. `probability` must
      * be between 0.0 and 1.0, inclusive.   Not as precise a random real
      * event as nextBoolean(double), but twice as fast. To explicitly
      * use this, remember you may need to cast to float first.
@@ -436,8 +436,8 @@ public class MersenneTwisterFast implements Serializable, RandomSource {
 
 
     /**
-     * This generates a coin flip with a probability <tt>probability</tt>
-     * of returning true, else returning false.  <tt>probability</tt> must
+     * This generates a coin flip with a probability {@code probability}
+     * of returning true, else returning false.  {@code probability} must
      * be between 0.0 and 1.0, inclusive.
      */
     public boolean nextBoolean(double probability) {

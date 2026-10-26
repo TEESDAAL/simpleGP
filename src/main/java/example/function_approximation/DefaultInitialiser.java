@@ -2,7 +2,7 @@ package example.function_approximation;
 
 import gp.Population;
 import gp.core.initializer.Initialiser;
-import gp.core.initializer.PrimitiveSet;
+import gp.core.primitive_set.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
 import gp.impl.initializer.Initializers;
 import util.random.RandomSource;

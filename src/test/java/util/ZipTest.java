@@ -43,7 +43,7 @@ public class ZipTest {
     }
 
     @Test
-    public void testParrallelZip() {
+    public void testParallelZip() {
         assertEquals(
                 List.of(
                         5,

@@ -11,8 +11,8 @@ import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.individual.AssessedIndividual;
 import gp.core.individual.Individual;
 import gp.core.initializer.Initialiser;
-import gp.core.initializer.PrimitiveSet;
-import gp.core.initializer.PrimitiveSetBuilder;
+import gp.core.primitive_set.PrimitiveSet;
+import gp.core.primitive_set.PrimitiveSetBuilder;
 import gp.core.statistic.SideEffect;
 import gp.core.statistic.Statistic;
 import util.Pair;
@@ -82,7 +82,7 @@ public record FunctionApproximator<
                 "Best Individual: "
                         + finalGen.stream()
                         .min(Comparator.comparing(AssessedIndividual::fitness))
-                        .map(ind -> ind.individual().tree().getExpression())
+                        .map(ind -> ind.individual().tree().toLispExpression())
                         .orElseThrow()
                         .replace("%", "d")
                         .replace("+", "p")

@@ -1,8 +1,8 @@
 package performance;
 
 import example.function_approximation.DefaultInitialiser;
-import gp.core.initializer.PrimitiveSet;
-import gp.core.initializer.PrimitiveSetBuilder;
+import gp.core.primitive_set.PrimitiveSet;
+import gp.core.primitive_set.PrimitiveSetBuilder;
 import org.junit.jupiter.api.Test;
 import util.Pair;
 import util.Repeat;

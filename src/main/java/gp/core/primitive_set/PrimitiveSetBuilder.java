@@ -1,6 +1,8 @@
-package gp.core.initializer;
+package gp.core.primitive_set;
 
 
+import gp.core.initializer.EphemeralConstant;
+import gp.core.initializer.TypedTerminal;
 import gp.impl.individual.typed_tree.NamedNodeFunction;
 import util.QuadFunction;
 import util.TriFunction;

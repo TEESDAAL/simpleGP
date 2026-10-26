@@ -124,7 +124,8 @@ public interface Parallelizeable {
     default <T, U, R extends RandomSource> Stream<U> parallelize(
             Stream<T> stream,
             Supplier<R> randomSource,
-            BiFunction<R, ? super T, ? extends U> mapper) {
+            BiFunction<R, ? super T, ? extends U> mapper
+    ) {
         final Stream<Pair<R, T>> randomStream = StreamZipper.zip(
                 Stream.generate(randomSource),
                 stream.sequential()

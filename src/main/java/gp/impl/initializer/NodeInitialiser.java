@@ -1,7 +1,7 @@
 package gp.impl.initializer;
 
 import gp.core.initializer.IndividualCreationException;
-import gp.core.initializer.PrimitiveSet;
+import gp.core.primitive_set.PrimitiveSet;
 import gp.core.initializer.TreeConstructor;
 import gp.impl.individual.typed_tree.ImmutableNode;
 import util.Preconditions;

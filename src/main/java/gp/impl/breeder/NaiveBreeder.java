@@ -16,10 +16,10 @@ import java.util.List;
 
 
 /**
- * A breeder that samples operators from a distribution and applies
+ * A breeder that samples operators from a operatorDistribution and applies
  * them to individuals selected from the population.
  *
- * @param distribution       A distribution over operators to sample from.
+ * @param operatorDistribution       A operatorDistribution over operators to sample from.
  * @param newPopulationSize  The desired size of the next generation.
  * @param selectionMechanism The method to select individuals from the
  *                           population for breeding.
@@ -32,7 +32,7 @@ import java.util.List;
 public record NaiveBreeder<
         T, R, I extends Individual<T, R>, F extends Fitness<F>
 >(
-        Sampler<Operator<I, List<I>>> distribution,
+        Sampler<Operator<I, List<I>>> operatorDistribution,
         int newPopulationSize,
         SimpleSelectionMechanism<AssessedIndividual<T, R, I, F>> selectionMechanism,
         Elitism<T, R, I, F> elitism
@@ -68,7 +68,7 @@ public record NaiveBreeder<
         addElites(nextGeneration, population);
 
         while (nextGeneration.size() < this.newPopulationSize) {
-            final Operator<I, List<I>> operator = this.distribution.sample();
+            final Operator<I, List<I>> operator = this.operatorDistribution.sample();
             nextGeneration.addAll(operator.sampleFrom(
                     sampler,
                     AssessedIndividual::individual

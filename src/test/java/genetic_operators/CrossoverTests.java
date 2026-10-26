@@ -33,8 +33,8 @@ public class CrossoverTests {
         final var children = new Crossover<Double, Double>(new LeftChildRandom(), 20, 1)
             .produce(parent1, parent2);
 
-        assertNotEquals(parent1.getExpression(), children.getFirst().getExpression());
-        assertNotEquals(parent2.getExpression(), children.getLast().getExpression());
+        assertNotEquals(parent1.toLispExpression(), children.getFirst().toLispExpression());
+        assertNotEquals(parent2.toLispExpression(), children.getLast().toLispExpression());
         assertEquals(12.0, children.getFirst().evaluate(0.0));
         assertEquals(1.0, children.getLast().evaluate(0.0));
     }
@@ -64,9 +64,9 @@ public class CrossoverTests {
             .produce(parent1, parent2);
 
         assertEquals("add(one, add(twenty, thirty))",
-            children.getFirst().getExpression());
+            children.getFirst().toLispExpression());
         assertEquals("min(ten, min(two, three))",
-            children.getLast().getExpression());
+            children.getLast().toLispExpression());
         assertEquals(51.0, children.getFirst().evaluate(0.0));
         assertEquals(2.0, children.getLast().evaluate(0.0));
     }

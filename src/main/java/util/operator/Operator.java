@@ -233,19 +233,13 @@ enum CacherCache {;
     static <I, O> BinaryOperator<I, O> biCached(
             final BinaryOperator<I, O> operator
     ) {
+        final Map<Integer, O> cache = new ConcurrentHashMap<>();
         return (BinaryOperator<I, O>) BI_CACHE.computeIfAbsent(
                 operator,
-                _ -> new BinaryOperator<I, O>() {
-                    private final Map<Integer, O> cache = new ConcurrentHashMap<>();
-
-                    @Override
-                    public O produce(I parent1, I parent2) {
-                        return cache.computeIfAbsent(
-                                Objects.hash(parent1, parent2),
-                                _ -> operator.produce(parent1, parent2)
-                        );
-                    }
-                }
+                _ -> Operator.<I, O>bin((parent1, parent2) -> cache.computeIfAbsent(
+                        Objects.hash(parent1, parent2),
+                        _ -> operator.produce(parent1, parent2)
+                ))
         );
     }
 }

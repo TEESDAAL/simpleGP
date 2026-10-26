@@ -1,39 +1,33 @@
 package gp.impl.genetic_operator;
 
 import gp.impl.individual.typed_tree.ImmutableNode;
-import gp.impl.individual.typed_tree.MutableNode;
-import gp.impl.individual.typed_tree.MutableNonTerminal;
 import gp.impl.individual.typed_tree.Node;
-import gp.impl.selector.random.RandomSampler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import util.Preconditions;
 import util.operator.BinaryOperator;
 import util.random.RandomSource;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.Optional;
+
 
 /**
- * A crossover operator that takes in 2 trees and performs random subtree crossover.
+ * A crossover operator that takes in two trees and performs random subtree crossover.
  * Includes crossover of the root of the tree too.
- *
- * @param random   The source of randomness, used to randomly select the root node.
- * @param maxDepth The maximum allowed depth after crossover.
- * @param maxTries The maximum number of times to re-try crossover if the produced
- *                 trees are larger than the max-depth. If reached the original trees
- *                 are passed through.
- * @param <T>      The type of the root node
- * @param <Out>    The return type of in input and output trees
  */
-public record Crossover<T, Out>(
-        RandomSource random,
-        int maxDepth,
-        int maxTries
-) implements BinaryOperator<
+// Sealed interface with private impl
+public final class Crossover<T, Out> implements BinaryOperator<
         Node<T, Out, ?, ?, ?>,
         List<ImmutableNode<T, Out, ?, ?>>
 > {
-    public Crossover {
+    final int maxDepth;
+    final int maxTries;
+    final RandomSource random;
+    private static final Logger logger = LoggerFactory.getLogger(Crossover.class);
+
+    public Crossover(int maxTries, int maxDepth, RandomSource random) {
         Preconditions.assertTrue(
                 maxDepth >= 1,
                 "The max Depth has to include at least 1 node."
@@ -43,6 +37,9 @@ public record Crossover<T, Out>(
                 "We must be able to try to produce an individual at least 1 time."
         );
         Preconditions.allNonNull(Map.of("random", random));
+        this.maxDepth = maxDepth;
+        this.maxTries = maxTries;
+        this.random = random;
     }
 
     @Override
@@ -50,133 +47,47 @@ public record Crossover<T, Out>(
             Node<T, Out, ?, ?, ?> parent1,
             Node<T, Out, ?, ?, ?> parent2
     ) {
-        for (int i = 0; i < maxDepth; i++) {
-            final List<ImmutableNode<T, Out, ?, ?>> children = helper(
+        for (int i = 0; i < maxTries; i++) {
+            final Optional<List<ImmutableNode<T, Out, ?, ?>>> children = CrossoverUtils.performCrossOver(
                     parent1.mutableCopy(),
-                    parent2.mutableCopy()
+                    parent2.mutableCopy(),
+                    random,
+                    n -> n.depth() <= maxDepth
             );
-            assert children.size() == 2;
-            if (children.getFirst().depth() <= maxDepth
-                    && children.getLast().depth() <= maxDepth
-            ) {
-                return children;
+            if (children.isPresent()) {
+                return children.get();
             }
         }
 
+        logMaxAttemptsReached(parent1, parent2, maxTries);
+
         return List.of(
                 parent1.immutableCopy(),
                 parent2.immutableCopy()
         );
     }
 
-    private List<ImmutableNode<T, Out, ?, ?>> helper(
-            MutableNode<T, Out, ?, ?> parent1,
-            MutableNode<T, Out, ?, ?> parent2
+
+    private static void logMaxAttemptsReached(
+            Node<?, ?, ?, ?, ?> parent1,
+            Node<?, ?, ?, ?, ?> parent2,
+            int maxTries
     ) {
-        final NodeWithParentOrRoot<T> mutationPoint1 = getMutationPoint(parent1);
-
-        final NodeWithParentOrRoot<T> mutationPoint2 = getMutationPointOfType(
-                parent2,
-                mutationPoint1.node().returnType()
-        );
-
-        if (mutationPoint1.isRoot()) {
-            return handleCrossOverAtRoot(
-                    parent1, mutationPoint1, parent2
-            );
-        }
-
-        if (mutationPoint2.isRoot()) {
-            return handleCrossOverAtRoot(
-                    parent2, mutationPoint2, parent1
-            );
-        }
-
-        return regularCrossOver(
-                parent1, parent2,
-                mutationPoint1.notRootOrThrow(),
-                mutationPoint2.notRootOrThrow()
-        );
-    }
-
-    private List<ImmutableNode<T, Out, ?, ?>> regularCrossOver(
-            MutableNode<T, Out, ?, ?> parent1,
-            MutableNode<T, Out, ?, ?> parent2,
-            NodeWithParent<T> mutationPoint1,
-            NodeWithParent<T> mutationPoint2
-    ) {
-        swapChildren(
-                mutationPoint1.parent(), mutationPoint1.indexInParent(),
-                mutationPoint2.parent(), mutationPoint2.indexInParent()
-        );
-        return List.of(
-                parent1.immutableCopy(),
-                parent2.immutableCopy()
-        );
-    }
-
-    private static <T> void swapChildren(
-            MutableNonTerminal<T, ?, ?, ?> firstParent,
-            int child1Index,
-            MutableNonTerminal<T, ?, ?, ?> secondParent,
-            int child2Index
-    ) {
-        final MutableNode<T, ?, ?, ?> firstChild = firstParent.getChild(child1Index);
-        final MutableNode<T, ?, ?, ?> secondChild = secondParent.getChild(child2Index);
-        firstParent.replaceChild(child1Index, _ -> secondChild);
-        secondParent.replaceChild(child2Index, _ -> firstChild);
-    }
-
-    private List<ImmutableNode<T, Out, ?, ?>> handleCrossOverAtRoot(
-            MutableNode<T, Out, ?, ?> rootParent,
-            NodeWithParentOrRoot<T> nonRootParentMutationPoint,
-            MutableNode<T, Out, ?, ?> nonRootParent
-    ) {
-        // If both mutation points are the root swapping the trees does nothing :)
-        if (nonRootParentMutationPoint.isRoot()) {
-            return List.of(
-                    rootParent.immutableCopy(),
-                    nonRootParent.immutableCopy()
-            );
-        }
-
-        nonRootParentMutationPoint.parent().orElseThrow().replaceChild(
-                nonRootParentMutationPoint.indexInParent().orElseThrow(),
-                _ -> rootParent
-
-        );
-
-        //noinspection unchecked
-        return List.of(
-                nonRootParent.immutableCopy(),
-                (ImmutableNode<T, Out, ?, ?>) nonRootParentMutationPoint.node()
-                        .immutableCopy()
+        logger.atError().log("""
+                        Max attempts reached when trying to crossover:
+                        PARENT 1: {}
+                        PARENT 2: {}
+                        Tried {} times""",
+                parent1, parent2, maxTries
         );
     }
 
 
-    private NodeWithParentOrRoot<T> getMutationPoint(
-            MutableNode<T, Out, ?, ?> parent
-    ) {
-        return RandomSampler
-                .sampleOrThrow(NodeWithParentOrRoot.collect(parent), random);
+    @Override
+    public String toString() {
+        return "Crossover["
+                + "random=" + random + ", "
+                + "maxDepth=" + maxDepth + ", "
+                + "maxTries=" + maxTries + "]";
     }
-
-
-    private <R> NodeWithParentOrRoot<T> getMutationPointOfType(
-            MutableNode<T, Out, ?, ?> parent,
-            Class<R> returnType
-    ) throws NoSuchElementException {
-        assert returnType != null : "Return type cannot be null";
-        final List<NodeWithParentOrRoot<T>> candidates = NodeWithParentOrRoot
-                .collect(parent)
-                .stream()
-                .filter(n -> returnType.isAssignableFrom(n.node().returnType()))
-                .toList();
-
-        return RandomSampler
-                .sampleOrThrow(candidates, random);
-    }
-
 }
-

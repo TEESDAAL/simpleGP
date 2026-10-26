@@ -8,10 +8,10 @@ import java.util.List;
 
 /**
  * A sampler that selects elements according to a probability
- * distribution.
+ * operatorDistribution.
  *
  * @param <T>          The type of element to sample
- * @param distribution The probability distribution of elements
+ * @param distribution The probability operatorDistribution of elements
  * @param rand         The random number generator
  */
 public record WeightedRandomSampler<T>(
@@ -34,10 +34,10 @@ public record WeightedRandomSampler<T>(
     }
 
     /**
-     * Creates a weighted random sampler from a distribution and seed.
+     * Creates a weighted random sampler from a operatorDistribution and seed.
      *
      * @param <T>          The element type
-     * @param distribution The probability distribution
+     * @param distribution The probability operatorDistribution
      * @param seed         The random seed
      * @return A new sampler
      */
@@ -50,10 +50,10 @@ public record WeightedRandomSampler<T>(
 
 
     /**
-     * Creates a weighted random sampler from a distribution and seed.
+     * Creates a weighted random sampler from a operatorDistribution and seed.
      *
      * @param <T>          The element type
-     * @param distribution The probability distribution
+     * @param distribution The probability operatorDistribution
      * @param random       The source of randomness
      * @return A new sampler
      */
@@ -65,11 +65,11 @@ public record WeightedRandomSampler<T>(
     }
 
     /**
-     * Creates a weighted random sampler from a distribution and seed.
+     * Creates a weighted random sampler from a operatorDistribution and seed.
      *
      * @param <T>            The element type
-     * @param defaultElement The default fall-back element of the distribution
-     * @param remaining      The probability distribution of the remaining elements.
+     * @param defaultElement The default fall-back element of the operatorDistribution
+     * @param remaining      The probability operatorDistribution of the remaining elements.
      * @param random         The source of randomness
      * @return A new sampler
      */
@@ -88,7 +88,7 @@ public record WeightedRandomSampler<T>(
 
 
     /**
-     * Samples an element according to the probability distribution.
+     * Samples an element according to the probability operatorDistribution.
      *
      * @return A randomly selected element based on probabilities
      */
@@ -102,8 +102,8 @@ public record WeightedRandomSampler<T>(
                 return probabilisticElement.element();
             }
         }
-        // For this to happen either the sum has to != 1 or distribution is empty
-        throw new IllegalStateException("Failed to sample probability distribution");
+        // For this to happen either the sum has to != 1 or operatorDistribution is empty
+        throw new IllegalStateException("Failed to sample probability operatorDistribution");
     }
 }
 

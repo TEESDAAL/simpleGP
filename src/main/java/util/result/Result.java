@@ -75,6 +75,13 @@ public sealed interface Result<T, E> permits Err, Ok {
         return new Err<>(Objects.requireNonNull(error));
     }
 
+    static <T, E> Result<T, E> flatten(Result<Result<T, E>, E> nestedResult) {
+        return nestedResult.match(
+                r -> r,
+                Result::err
+        );
+    }
+
     /**
      * Get the value out of the result, throws the error of the result if of the Err variant.
      * Wraps the Error in a runtime exception.
@@ -207,6 +214,7 @@ public sealed interface Result<T, E> permits Err, Ok {
     /**
      * A match style statement for the result type, to allow matching over multiple errors.
      *
+     *
      * @param defaultArm The catchall arm
      * @param matchArms  The MatchArms, can be {@link OkArm} or {@link ErrArm}
      * @param <U>        the return type
@@ -240,6 +248,20 @@ public sealed interface Result<T, E> permits Err, Ok {
             Function<E, U> defaultErr,
             List<MatchArm<T, E, U>> matchArms
     );
+    /**
+     * A match style statement for the result type
+     *
+     * @param defaultOk  The catchall ok match arm
+     * @param defaultErr The catchall err match arm
+     * @param <U>        the return type
+     * @return a U given by the match arms
+     */
+    default <U> U match(
+            Function<T, U> defaultOk,
+            Function<E, U> defaultErr
+    ) {
+        return match(defaultOk, defaultErr, List.of());
+    }
 
     @SafeVarargs
     static <T, E, U> U match(

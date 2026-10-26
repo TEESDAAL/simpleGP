@@ -128,13 +128,12 @@ public sealed interface Node<
 
     Stream<Node<Terminals, ?, ?, ?, ?>> stream();
 
-    default String getExpression() {
+    default String toLispExpression() {
         return this.explore(TreeExplorer.of(
                 Node::name,
                 (parent, children) -> parent.name()
                         + children.collect(Collectors.joining(", ", "(", ")"))
         ));
-
     }
 }
 

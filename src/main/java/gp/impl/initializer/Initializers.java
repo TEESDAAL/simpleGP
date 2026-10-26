@@ -1,7 +1,7 @@
 package gp.impl.initializer;
 
 import gp.core.initializer.IndividualInitialiser;
-import gp.core.initializer.PrimitiveSet;
+import gp.core.primitive_set.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
 import util.random.RandomSource;
 

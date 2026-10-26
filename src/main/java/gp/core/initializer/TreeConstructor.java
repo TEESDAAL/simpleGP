@@ -1,6 +1,7 @@
 package gp.core.initializer;
 
 import gp.core.breeder.SimpleSelectionMechanism;
+import gp.core.primitive_set.PrimitiveSet;
 import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.Node;
 import gp.impl.individual.typed_tree.NodeCreator;
@@ -61,7 +62,7 @@ public interface TreeConstructor<T, R> extends IndividualInitialiser<
      */
     default <ReturnType> Optional<
             ImmutableNode<T, ReturnType, ?, ?>
-            > recursivelyConstructIndividual(
+    > recursivelyConstructIndividual(
             final int currentDepth,
             final Class<ReturnType> returnType
     ) {

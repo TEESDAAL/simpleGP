@@ -2,8 +2,8 @@ package gp.initializers;
 
 import gp.Population;
 import gp.core.initializer.IndividualCreationException;
-import gp.core.initializer.PrimitiveSet;
-import gp.core.initializer.PrimitiveSetBuilder;
+import gp.core.primitive_set.PrimitiveSet;
+import gp.core.primitive_set.PrimitiveSetBuilder;
 import gp.impl.individual.SingleTreeIndividual;
 import gp.impl.initializer.Initializers;
 import org.junit.jupiter.api.Test;

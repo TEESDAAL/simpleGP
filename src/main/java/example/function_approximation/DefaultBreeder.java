@@ -4,7 +4,7 @@ import gp.Population;
 import gp.core.breeder.Breeder;
 import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.individual.AssessedIndividual;
-import gp.core.initializer.PrimitiveSet;
+import gp.core.primitive_set.PrimitiveSet;
 import gp.impl.breeder.NaiveBreeder;
 import gp.impl.genetic_operator.Crossover;
 import gp.impl.genetic_operator.Identity;

@@ -1,5 +1,7 @@
-package gp.core.initializer;
+package gp.core.primitive_set;
 
+import gp.core.initializer.EphemeralConstant;
+import gp.core.initializer.TypedTerminal;
 import gp.impl.individual.typed_tree.NamedNodeFunction;
 
 import java.util.Arrays;
@@ -45,7 +47,7 @@ public interface PrimitiveSet<T> {
     /**
      * Return an array of all the terminals that return a value
      * that can be assigned to a given type (are that type or a subtype).
-     * Note: This means all terminals will be return if you pass in `Class<Object>`.
+     * Note: All terminals will be returned if you pass in {@code Class<Object>}.
      *
      * @param returnType The return type we want to filter by.
      * @param <R>        The desired return type.
@@ -56,7 +58,7 @@ public interface PrimitiveSet<T> {
     /**
      * Return an array of all the non-terminals that return a value
      * that can be assigned to a given type (are that type or a subtype).
-     * Note: All non-terminals will be return if you pass in `Class<Object>`.
+     * Note: All non-terminals will be returned if you pass in {@code Class<Object>}.
      *
      * @param returnType The return type we want to filter by.
      * @param <R>        The desired return type.

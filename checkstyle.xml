@@ -20,7 +20,7 @@
     - some best practices
 
   Checkstyle is very configurable. Be sure to read the documentation at
-  https://checkstyle.org (or in your downloaded distribution).
+  https://checkstyle.org (or in your downloaded operatorDistribution).
 
   Most Checks are configurable, be sure to consult the documentation.
 
