@@ -29,7 +29,7 @@ public interface UnaryOperator<I, O> extends Operator<I, O> {
     O produce(I parent);
 
     @Override
-    default Integer arity() {
+    default int arity() {
         return 1;
     }
 

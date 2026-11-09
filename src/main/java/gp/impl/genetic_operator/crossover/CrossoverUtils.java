@@ -1,5 +1,9 @@
-package gp.impl.genetic_operator;
+package gp.impl.genetic_operator.crossover;
 
+import gp.impl.genetic_operator.ChildNode;
+import gp.impl.genetic_operator.MutableTreeNode;
+import gp.impl.genetic_operator.RootNode;
+import gp.impl.genetic_operator.TypeMismatchException;
 import gp.impl.individual.typed_tree.*;
 import gp.impl.selector.random.RandomSampler;
 import org.slf4j.Logger;
@@ -82,7 +86,7 @@ public enum CrossoverUtils {;
         }
 
         return RandomSampler
-                .sample(candidates, random);
+                .sample(random, candidates);
     }
 
     /**
@@ -131,7 +135,7 @@ public enum CrossoverUtils {;
         }
 
         return RandomSampler
-                .sample(candidates, random);
+                .sample(random, candidates);
     }
 
     private static void logFailureToFindChildNodeWithType(
@@ -194,7 +198,7 @@ public enum CrossoverUtils {;
      * @param <T> The terminal type of the nodes
      * @param <Out> The return type of the nodes
      */
-    static <T, Out> Optional<List<ImmutableNode<T, Out, ?, ?>>> performCrossOver(
+    static <T, Out> Optional<util.sequence.Pair<ImmutableNode<T, Out, ?, ?>>> performCrossOver(
             MutableNode<T, Out, ?, ?> parent1,
             MutableNode<T, Out, ?, ?> parent2,
             RandomSource random,

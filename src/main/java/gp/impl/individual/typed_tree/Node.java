@@ -1,8 +1,8 @@
 package gp.impl.individual.typed_tree;
 
-import gp.core.individual.Individual;
 import util.typed_function.TypedBiFunction;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,15 +10,38 @@ import java.util.stream.Stream;
 
 public sealed interface Node<
         Terminals, R,
-        Self extends Node<Terminals, R, Self, Immutable, Mutable>,
-        Immutable extends ImmutableNode<Terminals, R, Immutable, Mutable>,
-        Mutable extends MutableNode<Terminals, R, Mutable, Immutable>
-> extends Individual<Terminals, R>
-        permits MutableNode, ImmutableNode, NonTerminal, Terminal {
+        AC,
+        Self extends Node<Terminals, R, AC, Self, Imm, Mut>,
+        Imm extends ImmutableNode<Terminals, R, Imm, Mut>,
+        Mut extends MutableNode<Terminals, R, Mut, Imm>
+> permits MutableNode, ImmutableNode, NonTerminal, Terminal {
+    static <
+            T, R,
+            TERMINAL extends Terminal<T, R, Immutable, TERMINAL>
+    > ImmutableTerminal<T, R> recover(Node<T, R, Immutable, TERMINAL, ?, ?> node) {
+        ImmutableNode<T, R, ?, ?> imm = (ImmutableNode<T, R, ?, ?>) node;
+        return (ImmutableTerminal<T, R>) imm;
+    }
+
     /**
-     * @return this, a helper method to recover the generic.
+     * Attempt to recover the return type of this node.
+     * Returns Optional.empty if the return type of this node is
+     *  incompatible with the desired return type.
+     * Unfortunately this method loses a lot of type information
+     *  as we can no longer specialise the return type.
+     * @param returnType The return type of the node.
+     * @return The cast node.
+     * @param <U> The new return type.
      */
-    Self self();
+    @SuppressWarnings("unchecked")
+    default <U> Optional<Node<Terminals, U, Mutabilty, ?, ?, ?>> returns(
+            Class<U> returnType
+    ) {
+        if (returnType.isAssignableFrom(this.returnType())) {
+            return (Optional<Node<Terminals, U, Mutabilty, ?, ?, ?>>) Optional.of(this);
+        }
+        return Optional.empty();
+    }
 
     /**
      * Construct a new immutable terminal.
@@ -38,8 +61,21 @@ public sealed interface Node<
         return ImmutableTerminal.of(name, terminal, returnType);
     }
 
+    /**
+     * Construct a new Immutable binary node
+     * @param name The name of the function
+     * @param combiner The combiner of the function
+     * @param left The left node,
+     * @param right The right node,
+     * @return a new immutable binary node
+     * @param <A> THe left input type
+     * @param <B> The right input type
+     * @param <ReturnType> The return type of this node
+     * @param <T> The terminal type of this node.
+     */
     static <A, B, ReturnType, T> ImmutableBinaryNode<A, B, T, ReturnType> nonTerm(
-            String name, TypedBiFunction<A, B, ReturnType> combiner,
+            String name,
+            TypedBiFunction<A, B, ReturnType> combiner,
             ImmutableNode<T, A, ?, ?> left,
             ImmutableNode<T, B, ?, ?> right
     ) {
@@ -74,12 +110,12 @@ public sealed interface Node<
      * @return An immutable Copy of this node.
      * Returns this if this is already immutable.
      */
-    Immutable immutableCopy();
+    Imm immutableCopy();
 
     /**
      * @return A mutable copy of this node. Always makes a new node.
      */
-    Mutable mutableCopy();
+    Mut mutableCopy();
 
 
     /**
@@ -92,15 +128,14 @@ public sealed interface Node<
      * @return The result given by the explorer for this given node.
      */
     @SuppressWarnings("unchecked") // All children must share the same terminals type
-    default <T> T explore(TreeExplorer<Terminals, T> explorer) {
+    default <T> T visit(TreeVisitor<Terminals, T, Mutabilty> explorer) {
         return switch (this) {
             case NonTerminal<?, ?, ?, ?, ?, ?> nonTerm -> explorer.nonTerminal(
-                    (NonTerminal<Terminals, ?, ?, ?, ?, ?>) nonTerm
+                    (NonTerminal<Terminals, ?, Mutabilty, ?, ?, ?>) nonTerm
             );
-            case Terminal<?, ?, ?> term -> explorer.terminal(
-                    (Terminal<Terminals, ?, ?>) term
+            case Terminal<?, ?, ?, ?> term -> explorer.terminal(
+                    (Terminal<Terminals, ?, Mutabilty, ?>) term
             );
-            default -> throw new IllegalStateException("Unexpected value: " + this);
         };
     }
 
@@ -109,7 +144,7 @@ public sealed interface Node<
      * longest path from this node to any leaf node
      */
     default int depth() {
-        return this.explore(TreeExplorer.of(
+        return this.visit(TreeVisitor.of(
                 _ -> 0,
                 (_, children) -> 1 + children.mapToInt(i -> i)
                         .max().orElseThrow()
@@ -120,20 +155,29 @@ public sealed interface Node<
      * @return The total number of nodes in this subtree.
      */
     default int size() {
-        return this.explore(TreeExplorer.of(
+        return this.visit(TreeVisitor.of(
                 _ -> 1,
                 (_, children) -> 1 + children.mapToInt(i -> i).sum()
         ));
     }
 
-    Stream<Node<Terminals, ?, ?, ?, ?>> stream();
 
     default String toLispExpression() {
-        return this.explore(TreeExplorer.of(
+        return this.visit(TreeVisitor.of(
                 Node::name,
                 (parent, children) -> parent.name()
                         + children.collect(Collectors.joining(", ", "(", ")"))
         ));
     }
+
+    /**
+     * @return this, a helper method to recover the generic.
+     */
+    Self self();
+
+    /**
+     * @return A stream of all the nodes in this tree.
+     */
+    Stream<Node<Terminals, ?, AC, ?, ?, ?>> stream();
 }
 

@@ -1,12 +1,11 @@
 package gp.impl.individual;
 
 import gp.core.individual.Individual;
-import gp.core.individual.LineagedIndividual;
 import gp.impl.individual.lineage.Lineage;
-import gp.impl.individual.lineage.Tracked;
 import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.Node;
 import util.operator.Operator;
+import util.sequence.Sequence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +14,17 @@ import java.util.Objects;
 
 /**
  * A record representing an individual as a single tree structure.
- *
  */
 final class SingleTreeIndividualImpl<T, Out> implements SingleTreeIndividual<T, Out> {
     private final ImmutableNode<T, Out, ?, ?> tree;
-    private final Tracked<SingleTreeIndividual<T, Out>> lineage;
+    private final Lineage lineage;
 
     /**
      * @param tree  The immutable tree representing this individual
      */
     SingleTreeIndividualImpl(
             ImmutableNode<T, Out, ?, ?> tree,
-            Tracked<SingleTreeIndividual<T,Out>> lineage
+            Lineage lineage
     ) {
         this.tree = tree;
         this.lineage = lineage;
@@ -35,11 +33,10 @@ final class SingleTreeIndividualImpl<T, Out> implements SingleTreeIndividual<T, 
     <P extends Individual<?, ?>> SingleTreeIndividualImpl(
             ImmutableNode<T, Out, ?, ?> tree,
             List<P> parents,
-            Operator<P, List<SingleTreeIndividual<T, Out>>> operator
+            Operator<P, Sequence<SingleTreeIndividual<T, Out>>> operator
     ) {
         this.tree = tree;
         this.lineage = Lineage.descendant(
-                this,
                 operator,
                 parents
         );
@@ -61,7 +58,7 @@ final class SingleTreeIndividualImpl<T, Out> implements SingleTreeIndividual<T, 
         return tree;
     }
 
-    public Tracked<SingleTreeIndividual<T, Out>> lineage() {
+    public Lineage lineage() {
         return lineage;
     }
 
@@ -69,7 +66,7 @@ final class SingleTreeIndividualImpl<T, Out> implements SingleTreeIndividual<T, 
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (SingleTreeIndividualImpl<?, ?>) obj;
+        final var that = (SingleTreeIndividualImpl<?, ?>) obj;
         return Objects.equals(this.tree, that.tree) &&
                 Objects.equals(this.lineage, that.lineage);
     }
@@ -77,11 +74,6 @@ final class SingleTreeIndividualImpl<T, Out> implements SingleTreeIndividual<T, 
     @Override
     public int hashCode() {
         return Objects.hash(tree, lineage);
-    }
-
-    @Override
-    public Lineage linage() {
-        return this.lineage;
     }
 }
 
@@ -92,9 +84,7 @@ final class SingleTreeIndividualImpl<T, Out> implements SingleTreeIndividual<T, 
  * @param <T>   The terminal type
  * @param <Out> The output type
  */
-public interface SingleTreeIndividual<T, Out> extends LineagedIndividual<
-        T, Out, SingleTreeIndividual<T, Out>, Lineage<SingleTreeIndividual<?, ?>>
-> {
+public interface SingleTreeIndividual<T, Out> extends Individual<T, Out> {
     /**
      * Creates a single tree individual from a tree node.
      *
@@ -105,7 +95,7 @@ public interface SingleTreeIndividual<T, Out> extends LineagedIndividual<
      */
     static <Out, T> SingleTreeIndividual<T, Out> of(
             ImmutableNode<T, Out, ?, ?> individual,
-            Tracked<SingleTreeIndividual<T, Out>> lineage
+            Lineage lineage
     ) {
         return new SingleTreeIndividualImpl<>(individual, lineage);
     }
@@ -113,9 +103,13 @@ public interface SingleTreeIndividual<T, Out> extends LineagedIndividual<
     static <T, Out, P extends Individual<?,?>> SingleTreeIndividual<T, Out> of(
             ImmutableNode<T, Out, ?, ?> individual,
             List<P> parents,
-            Operator<P, List<SingleTreeIndividual<T, Out>>> operator
+            Operator<P, Sequence<SingleTreeIndividual<T, Out>>> operator
     ) {
-        return new SingleTreeIndividualImpl<>(individual, parents, operator);
+        return new SingleTreeIndividualImpl<>(
+                individual,
+                parents,
+                operator
+        );
     }
 
     /**
@@ -141,16 +135,16 @@ public interface SingleTreeIndividual<T, Out> extends LineagedIndividual<
      */
     static <T, Out> Operator<
             SingleTreeIndividual<T, Out>,
-            List<SingleTreeIndividual<T, Out>>
+            Sequence<SingleTreeIndividual<T, Out>>
     > operator(
             Operator<
                     Node<T, Out, ?, ?, ?>,
-                    List<ImmutableNode<T, Out, ?, ?>>
+                    Sequence<ImmutableNode<T, Out, ?, ?>>
             > nodeOperator
     ) {
         return new Operator<>() {
             @Override
-            public List<SingleTreeIndividual<T, Out>> produce(
+            public Sequence<SingleTreeIndividual<T, Out>> produce(
                     final List<SingleTreeIndividual<T, Out>> parents
             ) {
                 final List<Node<T, Out, ?, ?, ?>> trees = new ArrayList<>(
@@ -162,16 +156,13 @@ public interface SingleTreeIndividual<T, Out> extends LineagedIndividual<
                 }
 
                 return nodeOperator.produce(trees)
-                        .stream()
-                        .map(n -> SingleTreeIndividual.<
-                                T, Out,
-                                SingleTreeIndividual<T, Out>
-                        >of(n, parents, this))
-                        .toList();
+                        .map(n -> SingleTreeIndividual.of(
+                                n, parents, this
+                        ));
             }
 
             @Override
-            public Integer arity() {
+            public int arity() {
                 return nodeOperator.arity();
             }
         };

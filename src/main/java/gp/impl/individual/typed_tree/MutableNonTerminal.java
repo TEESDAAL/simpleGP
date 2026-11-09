@@ -8,8 +8,8 @@ public non-sealed interface MutableNonTerminal<
         Immutable extends ImmutableNonTerminal<Terminals, R, Immutable, Self>
 > extends NonTerminal<
         Terminals, R,
-        Self,
         MutableNode<Terminals, ?, ?, ?>,
+        Self,
         Immutable,
         Self
 >, MutableNode<

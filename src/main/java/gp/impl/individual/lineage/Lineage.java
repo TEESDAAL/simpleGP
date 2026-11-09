@@ -2,34 +2,34 @@ package gp.impl.individual.lineage;
 
 
 import gp.core.individual.Individual;
-import gp.core.individual.LineagedIndividual;
 import gp.core.initializer.Initialiser;
 import util.operator.Operator;
+import util.sequence.Sequence;
 
 import java.util.List;
 import java.util.Optional;
 
 public sealed interface Lineage permits Tracked, Untracked {
-    static Untracked untracked() {
-        return Untracked.instance;
+    /**
+     * The untracked lineage singleton.
+     */
+    Untracked untracked = Untracked.instance;
+
+    static <
+            Init extends Initialiser<?>
+    > Progenitor<Init> progenitor(Init source) {
+        return new ProgenitorImpl<>(source);
     }
 
     static <
-            Ind extends Individual<?,?>,
-            Init extends Initialiser<Ind>
-    > Progenitor<Ind, Init> progenitor(Ind individual, Init source) {
-        return new ProgenitorImpl<>(individual, source);
+            I,
+            P extends Individual<?,?>,
+            Op extends Operator<P, Sequence<I>>
+    > Descendant<I, P, Op> descendant(Op operator, List<P> parents) {
+        return new DescendantImpl<>(operator, parents);
     }
-
-    static <
-            Ind extends LineagedIndividual<?,?,?,?>,
-            P extends LineagedIndividual<?,?>,
-            Op extends Operator<P, Ind>
-    > Descendant<Ind, Op, P> descendant(Ind individual, Op operator, List<P> parents) {
-        return new DescendantImpl<>(individual, operator, parents);
-    }
-    Optional<Progenitor<?, ?>> asProgenitor();
+    Optional<Progenitor<?>> asProgenitor();
     Optional<Descendant<?, ?, ?>> asDescendant();
+
+    boolean isTracked();
 }
-
-

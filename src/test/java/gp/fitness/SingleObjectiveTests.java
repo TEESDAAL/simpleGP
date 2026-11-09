@@ -6,7 +6,7 @@ import gp.core.fitness.Goal;
 import gp.core.fitness.SingleObjectiveFitness;
 import gp.core.individual.AssessedIndividual;
 import gp.impl.individual.SingleTreeIndividual;
-import gp.impl.initializer.Initializers;
+import gp.impl.initializer.Initialisers;
 import gp.impl.selector.Elitism;
 import org.junit.jupiter.api.Test;
 import util.random.RandomSource;
@@ -73,7 +73,7 @@ public class SingleObjectiveTests {
             3,
             SingleObjectiveFitness.directComparison()
         );
-        final Population<SingleTreeIndividual<Double, String>> inds = Initializers.grow(
+        final Population<SingleTreeIndividual<Double, String>> inds = Initialisers.grow(
             RandomSource.of(12), primitiveSet,
             6, 100, 8, String.class
         ).initialize();

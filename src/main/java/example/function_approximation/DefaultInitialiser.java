@@ -4,7 +4,7 @@ import gp.Population;
 import gp.core.initializer.Initialiser;
 import gp.core.primitive_set.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
-import gp.impl.initializer.Initializers;
+import gp.impl.initializer.Initialisers;
 import util.random.RandomSource;
 
 public class DefaultInitialiser<T, R> implements Initialiser<SingleTreeIndividual<T, R>> {
@@ -14,7 +14,7 @@ public class DefaultInitialiser<T, R> implements Initialiser<SingleTreeIndividua
     protected final PrimitiveSet<T> primitiveSet;
 
     public DefaultInitialiser(RandomSource random, PrimitiveSet<T> primitiveSet, Class<R> returnType) {
-        this.initialiser = Initializers.rampedHalfAndHalf(
+        this.initialiser = Initialisers.rampedHalfAndHalf(
             maxDepth, 
             random,
             primitiveSet,

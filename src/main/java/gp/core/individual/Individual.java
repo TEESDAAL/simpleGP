@@ -1,6 +1,6 @@
 package gp.core.individual;
 
-import util.Parallelizeable;
+import gp.impl.individual.lineage.Lineage;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * @param <T> The terminal type
  * @param <R> The return type
  */
-public interface Individual<T, R> extends Parallelizeable {
+public interface Individual<T, R> {
     /**
      * Evaluates this individual on the given terminals.
      *
@@ -18,6 +18,13 @@ public interface Individual<T, R> extends Parallelizeable {
      * @return The output value
      */
     R evaluate(T terminals);
+
+    /**
+     * @return The linage of this individual
+     */
+    default Lineage lineage() {
+        return Lineage.untracked;
+    }
 
     /**
      * Evaluate this individual over all the given terminals
@@ -30,14 +37,22 @@ public interface Individual<T, R> extends Parallelizeable {
      * to the `i`th element in terminals
      */
     default List<R> evaluateAll(List<T> terminals) {
-        return this.parallelize(terminals.stream(), this::evaluate).toList();
+        return terminals.stream().map(this::evaluate).toList();
+    }
+}
+
+
+record LineagedIndividual<T, R>(
+        Individual<T,R> individual,
+        Lineage lineage
+) implements Individual<T, R> {
+    @Override
+    public R evaluate(T terminals) {
+        return individual.evaluate(terminals);
     }
 
-    /**
-     * @return if evaluateAll should be parallelized. False by default.
-     */
     @Override
-    default boolean shouldParallelize() {
-        return false;
+    public List<R> evaluateAll(List<T> terminals){
+        return individual.evaluateAll(terminals);
     }
 }

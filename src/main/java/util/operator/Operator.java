@@ -27,21 +27,11 @@ public interface Operator<I, O> {
     O produce(List<I> parents);
 
     /**
-     * Produces output from a list of parents.
-     *
-     * @param parents The list of parents to operate on
-     * @return The produced output
-     */
-    default O produce(I[] parents) {
-        return produce(Arrays.asList(parents));
-    }
-
-    /**
      * Returns the number of parents this operator requires.
      *
      * @return The expected size of the parents list.
      */
-    Integer arity();
+    int arity();
 
 
     /**

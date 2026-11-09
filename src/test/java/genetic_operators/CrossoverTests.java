@@ -1,13 +1,11 @@
 package genetic_operators;
 
-import gp.impl.genetic_operator.Crossover;
+import gp.impl.genetic_operator.crossover.Crossover;
+import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.Node;
 import org.junit.jupiter.api.Test;
 import util.random.RandomSource;
 import util.typed_function.TypedBiFunction;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class CrossoverTests {
     private final TypedBiFunction<Double, Double, Double> min = TypedBiFunction.of(
@@ -19,12 +17,12 @@ public class CrossoverTests {
 
     @Test
     public void testCrossOver() {
-        final Node<Double, Double, ?, ?, ?> parent1 = Node.nonTerm(
+        final ImmutableNode<Double, Double, ?, ?> parent1 = Node.nonTerm(
             "add", add,
             Node.term("one", _ -> 1.0, Double.class),
             Node.term("two", _ -> 2.0, Double.class)
         );
-        final Node<Double, Double, ?, ?, ?> parent2 = Node.nonTerm(
+        final ImmutableNode<Double, Double, ?, ?> parent2 = Node.nonTerm(
             "min", min,
             Node.term("ten", _ -> 10.0, Double.class),
             Node.term("twenty", _ -> 20.0, Double.class)
@@ -41,7 +39,7 @@ public class CrossoverTests {
 
     @Test
     public void testCrossOverSubtrees() {
-        final Node<Double, Double, ?, ?, ?> parent1 = Node.nonTerm(
+        final ImmutableNode<Double, Double, ?, ?> parent1 = Node.nonTerm(
             "add", add,
             Node.term("one", _ -> 1.0, Double.class),
             Node.nonTerm(
@@ -50,7 +48,7 @@ public class CrossoverTests {
                 Node.term("three", _ -> 3.0, Double.class)
             )
         );
-        final Node<Double, Double, ?, ?, ?> parent2 = Node.nonTerm(
+        final ImmutableNode<Double, Double, ?, ?> parent2 = Node.nonTerm(
             "min", min,
             Node.term("ten", _ -> 10.0, Double.class),
             Node.nonTerm(

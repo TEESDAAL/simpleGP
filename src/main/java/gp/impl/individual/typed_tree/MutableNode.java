@@ -2,12 +2,12 @@ package gp.impl.individual.typed_tree;
 
 import util.Updater;
 
-public non-sealed interface MutableNode<
+public sealed interface MutableNode<
         Terminals, R,
         Self extends MutableNode<Terminals, R, Self, Immutable>,
         Immutable extends ImmutableNode<Terminals, R, Immutable, Self>
-> extends Node<Terminals, R, Self, Immutable, Self> {
-
+> extends Node<Terminals, R, Mutab, Self, Immutable, Self>
+permits MutableTerminal, MutableNonTerminal {
     static <Terminals, T> MutableNode<Terminals, T, ?, ?> returnTypeCompatible(
             MutableNode<Terminals, ?, ?, ?> node,
             Class<T> type

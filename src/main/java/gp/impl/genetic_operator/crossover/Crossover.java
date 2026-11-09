@@ -1,31 +1,35 @@
-package gp.impl.genetic_operator;
+package gp.impl.genetic_operator.crossover;
 
+import gp.core.individual.Individual;
+import gp.impl.genetic_operator.BinaryGeneticOperator;
 import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Preconditions;
-import util.operator.BinaryOperator;
 import util.random.RandomSource;
+import util.sequence.Pair;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
-/**
- * A crossover operator that takes in two trees and performs random subtree crossover.
- * Includes crossover of the root of the tree too.
- */
-// Sealed interface with private impl
-public final class Crossover<T, Out> implements BinaryOperator<
-        Node<T, Out, ?, ?, ?>,
-        List<ImmutableNode<T, Out, ?, ?>>
+public abstract class Crossover<
+        T, Out,
+        P extends Individual<T, Out>,
+        I extends Individual<T, Out>,
+        Self extends Crossover<T, Out, P, I, Self>
+> extends BinaryGeneticOperator<
+        T, Out,
+        P,
+        Node<T, Out, ?, ?, ?, ?>,
+        ImmutableNode<T, Out, ?, ?>,
+        I,
+        Self
 > {
+    private static final Logger logger = LoggerFactory.getLogger(Crossover.class);
     final int maxDepth;
     final int maxTries;
     final RandomSource random;
-    private static final Logger logger = LoggerFactory.getLogger(Crossover.class);
 
     public Crossover(int maxTries, int maxDepth, RandomSource random) {
         Preconditions.assertTrue(
@@ -42,13 +46,21 @@ public final class Crossover<T, Out> implements BinaryOperator<
         this.random = random;
     }
 
+
+    /// JOE: Ask what Joe thinks about this...
     @Override
-    public List<ImmutableNode<T, Out, ?, ?>> produce(
-            Node<T, Out, ?, ?, ?> parent1,
-            Node<T, Out, ?, ?, ?> parent2
+    protected final Self self() {
+        //noinspection unchecked
+        return (Self) this;
+    }
+
+    @Override
+    public Pair<ImmutableNode<T, Out, ?, ?>> produceUntracked(
+            Node<T, Out, ?, ?, ?, ?> parent1,
+            Node<T, Out, ?, ?, ?, ?> parent2
     ) {
         for (int i = 0; i < maxTries; i++) {
-            final Optional<List<ImmutableNode<T, Out, ?, ?>>> children = CrossoverUtils.performCrossOver(
+            final Optional<Pair<ImmutableNode<T, Out, ?, ?>>> children = CrossoverUtils.performCrossOver(
                     parent1.mutableCopy(),
                     parent2.mutableCopy(),
                     random,
@@ -61,16 +73,22 @@ public final class Crossover<T, Out> implements BinaryOperator<
 
         logMaxAttemptsReached(parent1, parent2, maxTries);
 
-        return List.of(
+        return onFailure(parent1, parent2);
+    }
+
+    protected Pair<ImmutableNode<T, Out, ?, ?>> onFailure(
+            Node<T, Out, ?, ?, ?, ?> parent1,
+            Node<T, Out, ?, ?, ?, ?> parent2
+    ) {
+        Pair.of(
                 parent1.immutableCopy(),
                 parent2.immutableCopy()
         );
     }
 
-
     private static void logMaxAttemptsReached(
-            Node<?, ?, ?, ?, ?> parent1,
-            Node<?, ?, ?, ?, ?> parent2,
+            Node<?, ?, ?, ?, ?, ?> parent1,
+            Node<?, ?, ?, ?, ?, ?> parent2,
             int maxTries
     ) {
         logger.atError().log("""
@@ -86,8 +104,8 @@ public final class Crossover<T, Out> implements BinaryOperator<
     @Override
     public String toString() {
         return "Crossover["
-                + "random=" + random + ", "
                 + "maxDepth=" + maxDepth + ", "
                 + "maxTries=" + maxTries + "]";
     }
 }
+

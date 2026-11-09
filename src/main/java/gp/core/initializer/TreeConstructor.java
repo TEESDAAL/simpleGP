@@ -33,7 +33,7 @@ public interface TreeConstructor<T, R> extends IndividualInitialiser<
      * By default, picks a terminal uniformly.
      */
     default <A> SimpleSelectionMechanism<TypedTerminal<T, A>> terminalSelector() {
-        return terminals -> RandomSampler.ofNonEmpty(terminals, this.random());
+        return terminals -> RandomSampler.ofNonEmpty(this.random(), terminals);
     }
 
     /**

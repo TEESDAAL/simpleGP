@@ -6,12 +6,17 @@ public final class Untracked implements Lineage {
     private Untracked() {}
     static Untracked instance = new Untracked();
     @Override
-    public Optional<Progenitor<?, ?>> asProgenitor() {
+    public Optional<Progenitor<?>> asProgenitor() {
         return Optional.empty();
     }
 
     @Override
-    public Optional<Descendant<?, ?, ?>> asDescendant() {
+    public Optional<Descendant<?, ?>> asDescendant() {
         return Optional.empty();
+    }
+
+    @Override
+    public boolean isTracked() {
+        return false;
     }
 }

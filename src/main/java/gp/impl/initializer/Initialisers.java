@@ -3,10 +3,13 @@ package gp.impl.initializer;
 import gp.core.initializer.IndividualInitialiser;
 import gp.core.primitive_set.PrimitiveSet;
 import gp.impl.individual.SingleTreeIndividual;
+import gp.impl.individual.lineage.Lineage;
 import util.random.RandomSource;
 
-public enum Initializers {;
-
+/**
+ * A utility class which holds common initialisers.
+ */
+public enum Initialisers {;
     /**
      * Creates an initializer with grow method (probabilistic termination).
      * @param <T> The terminal type
@@ -27,11 +30,12 @@ public enum Initializers {;
             int maxDepth,
             Class<R> returnType
     ) {
-        return NodeInitialiser.grow(
-            random, primitiveSet,
-            populationSize, maxTries, maxDepth,
-            returnType
-        ).wrap(SingleTreeIndividual::of);
+        final var grow = NodeInitialiser.grow(
+                random, primitiveSet,
+                populationSize, maxTries, maxDepth,
+                returnType
+        );
+        return grow.wrap(i -> SingleTreeIndividual.of(i, Lineage.progenitor(grow)));
     }
 
     /**
@@ -54,11 +58,12 @@ public enum Initializers {;
             int maxDepth,
             Class<R> returnType
     ) {
-        return NodeInitialiser.full(
-            random, primitiveSet,
-            populationSize, maxTries, maxDepth,
-            returnType
-        ).wrap(SingleTreeIndividual::of);
+        final var full = NodeInitialiser.full(
+                random, primitiveSet,
+                populationSize, maxTries, maxDepth,
+                returnType
+        );
+        return full.wrap(i -> SingleTreeIndividual.of(i, Lineage.progenitor(full)));
     }
 
     /**

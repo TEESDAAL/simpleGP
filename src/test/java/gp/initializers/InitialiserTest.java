@@ -5,7 +5,7 @@ import gp.core.initializer.IndividualCreationException;
 import gp.core.primitive_set.PrimitiveSet;
 import gp.core.primitive_set.PrimitiveSetBuilder;
 import gp.impl.individual.SingleTreeIndividual;
-import gp.impl.initializer.Initializers;
+import gp.impl.initializer.Initialisers;
 import org.junit.jupiter.api.Test;
 import util.random.RandomSource;
 
@@ -30,7 +30,7 @@ public class InitialiserTest {
     public void testPopulationSizeCorrect() {
         final long startTime = System.currentTimeMillis();
         for (int i = 0; i < ITERATIONS; i++) {
-            assertEquals(i, Initializers.full(
+            assertEquals(i, Initialisers.full(
                     random,
                     primitiveSet,
                     i,
@@ -46,7 +46,7 @@ public class InitialiserTest {
     public void testIllegalMaxDepth() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> Initializers.grow(
+                () -> Initialisers.grow(
                         random,
                         primitiveSet,
                         100,
@@ -58,7 +58,7 @@ public class InitialiserTest {
         );
         assertThrows(
                 IndividualCreationException.class,
-                () -> Initializers.grow(
+                () -> Initialisers.grow(
                         random,
                         primitiveSet,
                         100,
@@ -73,7 +73,7 @@ public class InitialiserTest {
     @Test
     public void testMaxDepth() {
         IntStream.range(2, 10).forEach(maxDepth -> {
-            final Population<SingleTreeIndividual<Double, String>> population = Initializers.full(
+            final Population<SingleTreeIndividual<Double, String>> population = Initialisers.full(
                     random,
                     primitiveSet,
                     100,

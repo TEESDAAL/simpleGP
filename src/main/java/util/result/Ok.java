@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * @param <T>   The type of the value this holds.
  * @author Alan Teesdale (300652164)
  */
-record Ok<T, E>(T value) implements Result<T, E> {
+public record Ok<T, E>(T value) implements Result<T, E> {
     @Override
     public T get() throws RuntimeException {
         return value;

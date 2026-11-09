@@ -1,29 +1,24 @@
 package gp.impl.individual.lineage;
 
-import gp.core.individual.Individual;
 import gp.core.initializer.Initialiser;
 
 import java.util.Optional;
 public non-sealed interface Progenitor<
-        Ind extends Individual<?, ?>,
-        Init extends Initialiser<Ind>
-> extends Tracked<Ind> {
-    Ind current();
+        Init extends Initialiser<?>
+> extends Tracked {
     Init source();
 
     @Override
-    default Optional<Progenitor<?, ?>> asProgenitor() {
+    default Optional<Progenitor<?>> asProgenitor() {
         return Optional.of(this);
     }
     @Override
-    default Optional<Descendant<?, ?, ?>> asDescendant() {
+    default Optional<Descendant<?, ?>> asDescendant() {
         return Optional.empty();
     }
 }
 record ProgenitorImpl<
-        Ind extends Individual<?, ?>,
-        Init extends Initialiser<Ind>
+        Init extends Initialiser<?>
 >(
-        Ind current,
         Init source
-) implements Progenitor<Ind, Init> {}
+) implements Progenitor<Init> {}

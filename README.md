@@ -6,94 +6,31 @@ Currently the library is bogged down by an overuse of generics to achieve type g
 
 It aims to be simple to use, enabling easy configuration and extension. It also aims to allow for "easy" parallelization.
 
-## Usage
-An example usage is defined in [FunctionApproximator](src/main/java/example/function_approximation/FunctionApproximator.java).
+## Design Ethos:
+Library design is tricky so it is worth establishing a good ethos to center the design.
+### Extensibility
+This library is designed for genetic programming research. Research often involves either:
+- Extending an existing approach, or
+- Adding a new step.
 
-The basic workflow is defined using the fluent pattern in the [GPPipeLine](src/main/java/gp/GPPipeLine.java) class
-```java
-public Population<EvaluatedIndividual<...>> train(
-        final int numGenerations
-) {
-    return GPPipeLine
-            .start(initialiser::initialize)
-            .repeat(TerminationCriterion.nIters(numGenerations),
-                    (i, pop) -> pop
-                            .then(SideEffect.of((ignored) -> System.out.println(
-                                    "Evaluating population for gen " + i)
-                            )).then(trainEvaluator::evaluate)
-                            .then(postEvaluationStatistics)
-                            .then(breeder::breed)
-            ).then(testEvaluator::evaluate)
-            .then(postEvaluationStatistics)
-            .finish();
-}
-```
-This aims to create a clear and concise workflow, that is easy to interpret at first glance.
+This means that both the GP process itself must be flexible to the insertion or removal of new steps, and that it must be easy to extend existing approaches.
 
-## Configuration and Running Experiments
-This library aims to use the "code as configuation" paradigm.
-
-This is accomplished by defining a base abstract class or interface needed to setup a GP run.
-
-```java
-public record FunctionApproximator(...) {
-    ...
-
-    /**
-     * Load a Function Approximator from a given params object.
-     * @param params The parameters to load from
-     * @return A valid function approximator
-     */
-    public static FunctionApproximator fromParams(
-            final FunctionApproximationParams<Double> params
-    ) {
-        return new FunctionApproximator(
-                params.initialiser(),
-                params.trainEvaluator(),
-                params.breeder(),
-                params.testEvaluator(),
-                params.scoreLogger()
-        );
-    }
-    ...
-}
-```
-
-And then components in that run can be defined by overriding methods in that class or interface.
-
-```java
-/**
- * The base-parameters for a Function Approximation GP run.
- * @param <T> The Terminal type for the model.
- */
-public interface FunctionApproximationParams<T> {
-
-    Initializer<SingleTreeIndividual<T, Double>> initialiser();
+In traditional Object-Oriented approaches, this extensibility is typically achieved with inheritance. This library believes that extensibility is best achieved by composition. While it is not allergic to inheritance, deep inheritance can lead to complex hidden behaviour which causes bugs. 
+### Safety & Predictability
+Programs should never continue if they enter into an invalid state. This differs 
 
 
-    Breeder<EvaluatedIndividual<
-            T, Double, SingleTreeIndividual<T, Double>,
-            SingleObjectiveFitness
-    >, SingleTreeIndividual<T, Double>> breeder();
+This manifests as a _Fail Fast_ philosophy by default, this means that ends up in an invalid state should be terminated. 
+This is quite different to the standard approach in other GP libraries so it requires some justification.
+The standard approach runs should _never_ fail. This a _Defensive_ design strategy. While this might sound very tempting, the idea of losing a run, especially a long one, can be quite upsetting.
+However, consider the much more dangerous case where a run ends up in an invalid state and collapses. This could lead to a whole experiment providing worse results than it should have creating invalid results and comparisons across different methods.
+
+However, SimpleGP respects that it may be undesirable to have programs blow up if you are unlucky, therefore it should be easy toggle into and out of "Defensive" mode if you need to.
 
 
-    SingleObjectiveEvaluator<T> trainEvaluator();
-
-    SingleObjectiveEvaluator<T> testEvaluator();
-
-    Statistic<EvaluatedIndividual<
-            T, Double, 
-            SingleTreeIndividual<T, Double>,
-            SingleObjectiveFitness
-    >> scoreLogger();
-}
-```
-
-## Extension
-This library prefers to achieve code reuse and extension using composition over inheritance. 
-This aims to avoid the complexities that deeply inherited code can cause.
-
-This can be seen in [SingleObjectiveFitness.java](src/main/java/gp/core/fitness/SingleObjectiveFitness.java) and [MultiObjectiveFitness.java](src/main/java/gp/core/fitness/MultiObjectiveFitness.java)
-
-Where they both implement the [Fitness](src/main/java/gp/core/fitness/Fitness.java) interface, but do not inherit from each other. Instead [MultiObjectiveFitness.java](src/main/java/gp/core/fitness/MultiObjectiveFitness.java) is defined as a collection of [SingleObjectiveFitness.java](src/main/java/gp/core/fitness/SingleObjectiveFitness.java) objects.
-
+#### Errors
+Overall errors naturally come up in, especially in stochastic systems, so it is important that we know how to handle it.
+ - Throw, while this result
+ - Optional, this passes the error onto the user, theoretically safe but if the correct behaviour is to throw we lose the error message and context that created that error message.
+ - Result, similar to optional, but can encode some of the error information
+ - Or with a "outcome matcher".

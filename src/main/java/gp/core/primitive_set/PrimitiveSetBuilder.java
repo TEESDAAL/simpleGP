@@ -233,7 +233,7 @@ public interface PrimitiveSetBuilder<T, Self extends PrimitiveSetBuilder<T, Self
      *                                  already in the primitive set.
      */
     default Self addAllNonTerminals(
-            Collection<NamedNodeFunction<?, ?>> nonTerminals
+            Collection<? extends NamedNodeFunction<?, ?>> nonTerminals
     ) {
         nonTerminals.forEach(this::addNonTerminal);
         return self();

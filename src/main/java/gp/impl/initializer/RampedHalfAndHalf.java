@@ -64,7 +64,7 @@ public class RampedHalfAndHalf<Terminal, R> implements Initialiser<
         }
         this.populationSize = populationSize;
         this.maxDepth = maxDepth;
-        this.full = depth -> Initializers.full(
+        this.full = depth -> Initialisers.full(
                 random,
                 primitiveSet,
                 populationSize,
@@ -72,7 +72,7 @@ public class RampedHalfAndHalf<Terminal, R> implements Initialiser<
                 depth,
                 returnType
         );
-        this.grow = depth -> Initializers.grow(
+        this.grow = depth -> Initialisers.grow(
                 random,
                 primitiveSet,
                 populationSize,

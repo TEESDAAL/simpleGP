@@ -1,7 +1,8 @@
 package gp.impl.individual.lineage;
 
-import gp.core.individual.LineagedIndividual;
-
-public sealed interface Tracked<Ind extends LineagedIndividual<?, ?, ?, ?>> extends Lineage permits Descendant, Progenitor  {
-    Ind current();
+public sealed interface Tracked extends Lineage permits Descendant, Progenitor  {
+    @Override
+    default boolean isTracked() {
+        return true;
+    }
 }

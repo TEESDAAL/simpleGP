@@ -8,17 +8,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A random sampler that selects uniform random elements from a
  * collection.
  *
  * @param <T>    The type of element to sample
- * @param data   The collection to sample from
  * @param random The random number generator
+ * @param data   The collection to sample from
  */
 public record RandomSampler<T>(
-        List<T> data, RandomSource random
+        RandomSource random,
+        List<T> data
 ) implements Sampler<T> {
     /**
      * Compact constructor ensuring the data is not empty.
@@ -31,36 +34,59 @@ public record RandomSampler<T>(
      * Creates an optional random sampler.
      *
      * @param <T>    The element type
-     * @param data   The data to sample from
      * @param random The random number generator
+     * @param data   The data to sample from
      * @return An optional containing a sampler if data is not empty
      */
     public static <T> Optional<RandomSampler<T>> of(
-            final List<T> data, final RandomSource random
+            RandomSource random,
+            List<T> data
     ) {
         if (data.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new RandomSampler<>(data, random));
+        return Optional.of(new RandomSampler<>(random, data));
+    }
+
+
+    /**
+     * Creates an optional random sampler.
+     *
+     * @param <T>    The element type
+     * @param data   The data to sample from
+     * @param random The random number generator
+     * @return An optional containing a sampler if data is not empty
+     */
+    public static <T, R> R ofOr(
+            RandomSource random,
+            List<T> data,
+            Function<RandomSampler<T>, R> onSuccess,
+            Supplier<R> onFailure
+    ) {
+        if (data.isEmpty()) {
+            return onFailure.get();
+        }
+        return onSuccess.apply(new RandomSampler<>(random, data));
     }
 
     /**
      * Create a random sampler from a non-empty collection.
      *
-     * @param data   The collection to sample from.
-     * @param random The source of randomness.
      * @param <T>    The type of the elements in the collection.
+     * @param random The source of randomness.
+     * @param data   The collection to sample from.
      * @return A random sampler.
      * @throws IllegalArgumentException If the collection is empty.
      */
     public static <T> RandomSampler<T> ofNonEmpty(
-            final List<T> data, final RandomSource random
+            RandomSource random,
+            List<T> data
     ) {
         Preconditions.assertFalse(
                 data.isEmpty(),
                 "Cannot create a sampler from an empty collection"
         );
-        return new RandomSampler<>(data, random);
+        return new RandomSampler<>(random, data);
     }
 
     /**
@@ -136,7 +162,7 @@ public record RandomSampler<T>(
      * empty
      */
     public static Optional<Integer> sampleIndex(
-            final List<?> data, final RandomSource random
+            List<?> data, RandomSource random
     ) {
         if (data.isEmpty()) {
             return Optional.empty();
@@ -155,7 +181,7 @@ public record RandomSampler<T>(
      * @throws IllegalArgumentException if the list is non-empty.
      */
     public static int sampleIndexOrThrow(
-            final List<?> data, final RandomSource random
+            List<?> data, RandomSource random
     ) throws IllegalArgumentException {
         if (data.isEmpty()) {
             throw new IllegalArgumentException("Cannot sample from empty list.");
@@ -168,20 +194,21 @@ public record RandomSampler<T>(
      * Samples an optional element from the collection.
      *
      * @param <T>    The element type
-     * @param data   The collection to sample from
      * @param random The random number generator
+     * @param data   The collection to sample from
      * @return An optional containing a random element if data is not
      * empty
      * @see #sampleOrThrow If you know the collection is non-empty
      */
     public static <T> Optional<T> sample(
-            final List<T> data, final RandomSource random
+            RandomSource random,
+            List<T> data
     ) {
         if (data.isEmpty()) {
             return Optional.empty();
         }
 
-        final int randomIndex = random.nextInt(0, data.size());
+        int randomIndex = random.nextInt(0, data.size());
         return Optional.of(data.get(randomIndex));
     }
 
@@ -197,7 +224,8 @@ public record RandomSampler<T>(
      * @see #sampleOrThrow If you don't know if the collection is empty
      */
     public static <T> T sampleOrThrow(
-            final List<T> data, final RandomSource random
+            List<T> data,
+            RandomSource random
     ) throws NoSuchElementException {
         if (data.isEmpty()) {
             throw new NoSuchElementException(
@@ -205,7 +233,7 @@ public record RandomSampler<T>(
             );
         }
 
-        final int randomIndex = random.nextInt(0, data.size());
+        int randomIndex = random.nextInt(0, data.size());
         return data.get(randomIndex);
     }
 
@@ -221,7 +249,8 @@ public record RandomSampler<T>(
      * @see #sampleOrThrow If you don't know if the collection is empty
      */
     public static <T> T potentiallyNonDeterministicSampleOrThrow(
-            final Collection<T> data, final RandomSource random
+            Collection<T> data,
+            RandomSource random
     ) throws IllegalArgumentException {
         if (data.isEmpty()) {
             throw new IllegalArgumentException(
@@ -229,12 +258,12 @@ public record RandomSampler<T>(
             );
         }
 
-        final int randomIndex = random.nextInt(0, data.size());
+        int randomIndex = random.nextInt(0, data.size());
         if (data instanceof List<T> list) {
             return list.get(randomIndex);
         }
         int i = 0;
-        for (final T element : data) {
+        for (T element : data) {
             if (i == randomIndex) {
                 return element;
             }

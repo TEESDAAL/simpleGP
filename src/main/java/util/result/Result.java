@@ -53,6 +53,11 @@ public sealed interface Result<T, E> permits Err, Ok {
         }
     }
 
+    static <T> Result<T, NoSuchElementException> fromOpt(Optional<T> opt) {
+        return opt.map(Result::<T, NoSuchElementException>ok)
+                .orElseGet(() -> Result.err(new NoSuchElementException()));
+    }
+
     /**
      * Create an Ok result holding the value.
      *
@@ -75,11 +80,13 @@ public sealed interface Result<T, E> permits Err, Ok {
         return new Err<>(Objects.requireNonNull(error));
     }
 
+    @SuppressWarnings("unchecked")
     static <T, E> Result<T, E> flatten(Result<Result<T, E>, E> nestedResult) {
-        return nestedResult.match(
-                r -> r,
-                Result::err
-        );
+        return switch (nestedResult) {
+            case Ok(Result<T, E> r) -> r;
+            case Err<Result<T, E>, E> error -> (Result<T, E>) error;
+        };
+
     }
 
     /**

@@ -4,9 +4,9 @@ import util.Updater;
 
 import java.util.function.Function;
 
-public class MutableTerminal<Terminals, R>
-        implements Terminal<
+public final class MutableTerminal<Terminals, R> implements Terminal<
         Terminals, R,
+        MutableNode<Terminals, ?, ?, ?>,
         MutableTerminal<Terminals, R>
 >, MutableNode<
         Terminals, R,

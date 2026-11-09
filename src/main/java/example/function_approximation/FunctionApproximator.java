@@ -18,7 +18,6 @@ import gp.core.statistic.Statistic;
 import util.Pair;
 import util.random.SourceOfRandom;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -52,7 +51,7 @@ public record FunctionApproximator<
         final PrimitiveSet<Pair<Double, Double>> primitiveSet = PrimitiveSetBuilder.<Pair<Double, Double>>empty()
                 .addUncachedTerminal("x", Pair::first, Double.class)
                 .addUncachedTerminal("y", Pair::second, Double.class)
-                .addAllNonTerminals(Collections.unmodifiableList(DoubleNonTerminals.all()))
+                .addAllNonTerminals(DoubleNonTerminals.all())
                 .build();
 
         final var params = ParameterBuilder.<Pair<Double, Double>, Double>of()

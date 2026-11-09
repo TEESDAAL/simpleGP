@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * @param <T>   The type of result.
  * @author Alan Teesdale (300652164)
  */
-record Err<T, E>(E error) implements Result<T, E> {
+public record Err<T, E>(E error) implements Result<T, E> {
     @Override
     public T get() throws RuntimeException {
         throw new RuntimeException("Result is error variant with value: " + error);

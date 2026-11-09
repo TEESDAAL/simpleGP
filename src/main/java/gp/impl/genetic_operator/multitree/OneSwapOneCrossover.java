@@ -1,6 +1,5 @@
 package gp.impl.genetic_operator.multitree;
 
-import gp.impl.genetic_operator.Crossover;
 import gp.impl.individual.multitree.MultiTreeIndividual;
 import gp.impl.individual.SingleTreeIndividual;
 import gp.impl.individual.typed_tree.ImmutableNode;

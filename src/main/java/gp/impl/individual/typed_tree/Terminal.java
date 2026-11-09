@@ -3,15 +3,17 @@ package gp.impl.individual.typed_tree;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public non-sealed interface Terminal<
+public sealed interface Terminal<
         Terminals, R,
-        Self extends Terminal<Terminals, R, Self>
+        Mutability,
+        Self extends Terminal<Terminals, R, Mutability, Self>
 > extends Node<
         Terminals, R,
+        Mutability,
         Self,
         ImmutableTerminal<Terminals, R>,
         MutableTerminal<Terminals, R>
-> {
+> permits ImmutableTerminal, MutableTerminal {
     Function<Terminals, R> extractor();
 
     @Override
@@ -29,7 +31,7 @@ public non-sealed interface Terminal<
     }
 
     @Override
-    default Stream<Node<Terminals, ?, ?, ?, ?>> stream() {
+    default Stream<Node<Terminals, ?, Mutability, ?, ?, ?>> stream() {
         return Stream.of(this);
     }
 }

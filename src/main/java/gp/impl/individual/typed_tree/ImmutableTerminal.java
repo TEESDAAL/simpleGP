@@ -8,6 +8,7 @@ public record ImmutableTerminal<Terminals, R>(
         Class<R> returnType
 ) implements Terminal<
         Terminals, R,
+        ImmutableNode<Terminals, ?, ?, ?>,
         ImmutableTerminal<Terminals, R>
 >, ImmutableNode<
         Terminals,

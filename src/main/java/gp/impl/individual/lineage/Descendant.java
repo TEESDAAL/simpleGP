@@ -4,20 +4,21 @@ package gp.impl.individual.lineage;
 import gp.core.individual.Individual;
 import gp.core.individual.LineagedIndividual;
 import util.operator.Operator;
+import util.sequence.Sequence;
 
 import java.util.List;
 import java.util.Optional;
 
 public non-sealed interface Descendant<
-        Ind extends LineagedIndividual<?, ?, ?, ?>,
-        O extends Operator<P, List<Ind>>,
-        P extends Individual<?, ?>
-> extends Tracked<Ind> {
-    O operator();
+        I,
+        P extends Individual<?, ?>,
+        Op extends Operator<P, Sequence<I>>
+> extends Tracked {
+    Op operator();
     List<P> parents();
 
     @Override
-    default Optional<Progenitor<?, ?>> asProgenitor() {
+    default Optional<Progenitor<?>> asProgenitor() {
         return Optional.empty();
     }
     @Override
@@ -27,7 +28,7 @@ public non-sealed interface Descendant<
 }
 
 record DescendantImpl<
-        Ind extends Individual<?, ?>,
-        O extends Operator<?,?>,
-        P extends Individual<?, ?>
->(Ind current, O operator, List<P> parents) implements Descendant<Ind, O, P> {}
+        I,
+        P extends Individual<?, ?>,
+        Op extends Operator<P, Sequence<I>>
+>(Op operator, List<P> parents) implements Descendant<I, P, Op> {}
