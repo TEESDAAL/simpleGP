@@ -1,6 +1,7 @@
 package util.typed_function;
 
-import gp.impl.individual.typed_tree.ImmutableNode;
+import gp.impl.individual.testTree.ImmutableNode;
+import gp.impl.individual.testTree.ImmutableTrinaryNode;
 import gp.impl.individual.typed_tree.NodeCreator;
 import gp.impl.individual.typed_tree.NodeFunction;
 import gp.impl.individual.typed_tree.TrinaryNode;
@@ -45,10 +46,12 @@ public interface TypedTriFunction<A, B, C, R>
 
     Class<C> rightType();
 
+    Class<R> returnType();
+
     @Override
-    default <Terminals> Optional<ImmutableNode<Terminals, R, ?, ?>> toNode(
+    default <Terminals> Optional<ImmutableTrinaryNode<Terminals, A, B, C, R>> toNode(
             String name,
-            NodeCreator<Terminals> childSupplier
+            util.typed_function.NodeCreator<Terminals> childSupplier
     ) {
         return OptionUtils.and(
                 childSupplier.get(leftType()),
@@ -83,6 +86,7 @@ public interface TypedTriFunction<A, B, C, R>
                 returnType()
         );
     }
+
 }
 
 record TypedTriFunctionImpl<A, B, C, R>(

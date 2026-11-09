@@ -1,15 +1,14 @@
 package gp.impl.individual.testTree;
 
-sealed interface Mutability permits Immutable, Mutable {}
-enum Immutable implements Mutability {;}
-enum Mutable implements Mutability {;}
+import gp.impl.individual.testTree.visitor.TreeVisitor;
+import gp.impl.individual.testTree.visitor.TypeVisitor;
 
-sealed interface NodeType permits Terminal, NonTerminal {}
-enum Terminal implements NodeType {}
-enum NonTerminal implements NodeType {}
+import java.util.stream.Stream;
 
 public sealed interface Node<
-        Terminals, R, M extends Mutability, T extends NodeType
+        Terminals, R,
+        M extends Mutability,
+        N extends NodeType
 > permits MutableNode, ImmutableNode, TerminalNode, NonTerminalNode {
     static <T, R> MutableNonTerminal<T, R> recoverMutableNonTerminal(
             Node<T, R, Mutable, NonTerminal> node
@@ -35,50 +34,51 @@ public sealed interface Node<
         return (ImmutableTerminal<T, R>) node;
     }
 
-//    static <T, R, M extends Mutability, N extends NodeType,
-//            X extends Node<T, R, M, N>>
-//    X recover(Node<T, R, M, N> node) {
-//        return (X) node;
-//    }
+    static <T, R> ImmutableNode<T, R, ?> recoverImmutable(Node<T, R, Immutable, ?> node) {
+        return (ImmutableNode<T, R, ?>) node;
+    }
+
+    static <T, R> MutableNode<T, R, ?> recoverMutable(Node<T, R, Mutable, ?> node) {
+        return (MutableNode<T, R, ?>) node;
+    }
+
+    static <T, R> TerminalNode<T, R, ?> recoverTerminal(Node<T, R, ?, Terminal> node) {
+        return (TerminalNode<T, R, ?>) node;
+    }
+
+    static <T, R> NonTerminalNode<T, R, ?> recoverNonTerminal(Node<T, R, ?, NonTerminal> node) {
+        return (NonTerminalNode<T, R, ?>) node;
+    }
 
     R evaluate(Terminals terminals);
 
-    ImmutableNode<Terminals, R, T> immutableCopy();
-    MutableNode<Terminals, R, T> mutableCopy();
+    String name();
 
+    Class<R> returnType();
+
+    ImmutableNode<Terminals, R, N> immutableCopy();
+    MutableNode<Terminals, R, N> mutableCopy();
+
+    <U> U visit(TreeVisitor<Terminals, R, U, M> visitor);
+
+    Stream<Node<Terminals, ?, M, ?>> stream();
+
+    int depth();
+
+    int size();
+
+    default String toLispExpression() {
+        this.visit(new TreeVisitor<>() {
+            @Override
+            public String terminal(TerminalNode<Terminals, R, M> term) {
+                return term.name();
+            }
+
+            @Override
+            public String nonTerminal(NonTerminalNode<Terminals, R, M> nonTerm) {
+                return nonTerm.name() + nonTerm.children().stream();
+            }
+        });
+    }
 }
 
-sealed interface MutableNode<Terminals, R, T extends NodeType> extends Node<
-        Terminals, R, Mutable, T
-> permits MutableTerminal, MutableNonTerminal {}
-
-sealed interface ImmutableNode<Terminals, R, T extends NodeType> extends Node<
-        Terminals, R, Immutable, T
-> permits ImmutableTerminal, ImmutableNonTerminal {}
-
-
-sealed interface TerminalNode<T, R, M extends Mutability> extends Node<
-        T, R, M, Terminal
-> permits MutableTerminal, ImmutableTerminal {}
-
-
-sealed interface NonTerminalNode<T, R, M extends Mutability> extends Node<
-        T, R, M, NonTerminal
-> permits MutableNonTerminal, ImmutableNonTerminal {}
-
-non-sealed interface MutableTerminal<T, R> extends MutableNode<
-        T, R, Terminal
->, TerminalNode<T, R, Mutable> {}
-
-non-sealed interface ImmutableTerminal<T, R> extends ImmutableNode<
-        T, R, Terminal
->, TerminalNode<T, R, Immutable> {}
-
-
-non-sealed interface MutableNonTerminal<T, R> extends MutableNode<
-        T, R, NonTerminal
-        >, NonTerminalNode<T, R, Mutable> {}
-
-non-sealed interface ImmutableNonTerminal<T, R> extends ImmutableNode<
-        T, R, NonTerminal
->, NonTerminalNode<T, R, Immutable> {}

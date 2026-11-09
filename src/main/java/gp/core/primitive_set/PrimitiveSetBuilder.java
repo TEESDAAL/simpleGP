@@ -3,7 +3,7 @@ package gp.core.primitive_set;
 
 import gp.core.initializer.EphemeralConstant;
 import gp.core.initializer.TypedTerminal;
-import gp.impl.individual.typed_tree.NamedNodeFunction;
+import gp.impl.individual.testTree.TrinaryNode;
 import util.QuadFunction;
 import util.TriFunction;
 
@@ -59,7 +59,7 @@ public interface PrimitiveSetBuilder<T, Self extends PrimitiveSetBuilder<T, Self
      * @return this
      * @throws IllegalArgumentException if nonTerminal is already in the primitive set.
      */
-    Self addNonTerminal(NamedNodeFunction<?, ?> nonTerminal);
+    Self addNonTerminal(TrinaryNode.NamedNodeFunction<?, ?> nonTerminal);
 
     /**
      * Adds the ephemeral constant to the terminal set. Must be unique.
@@ -192,7 +192,7 @@ public interface PrimitiveSetBuilder<T, Self extends PrimitiveSetBuilder<T, Self
             Class<A> inputType,
             Class<R> returnType
     ) {
-        return this.addNonTerminal(NamedNodeFunction.of(
+        return this.addNonTerminal(TrinaryNode.NamedNodeFunction.of(
                 name, nonTerminal, inputType, returnType
         ));
     }
@@ -204,7 +204,7 @@ public interface PrimitiveSetBuilder<T, Self extends PrimitiveSetBuilder<T, Self
             Class<B> rightType,
             Class<R> returnType
     ) {
-        this.addNonTerminal(NamedNodeFunction.of(
+        this.addNonTerminal(TrinaryNode.NamedNodeFunction.of(
                 name, nonTerminal, leftType, rightType, returnType
         ));
         return self();
@@ -218,7 +218,7 @@ public interface PrimitiveSetBuilder<T, Self extends PrimitiveSetBuilder<T, Self
             Class<C> rightType,
             Class<R> returnType
     ) {
-        this.addNonTerminal(NamedNodeFunction.of(
+        this.addNonTerminal(TrinaryNode.NamedNodeFunction.of(
                 name, nonTerminal, leftType, middleType, rightType, returnType
         ));
         return self();
@@ -233,7 +233,7 @@ public interface PrimitiveSetBuilder<T, Self extends PrimitiveSetBuilder<T, Self
      *                                  already in the primitive set.
      */
     default Self addAllNonTerminals(
-            Collection<? extends NamedNodeFunction<?, ?>> nonTerminals
+            Collection<? extends TrinaryNode.NamedNodeFunction<?, ?>> nonTerminals
     ) {
         nonTerminals.forEach(this::addNonTerminal);
         return self();
@@ -248,7 +248,7 @@ public interface PrimitiveSetBuilder<T, Self extends PrimitiveSetBuilder<T, Self
             Class<D> rightType,
             Class<R> returnType
     ) {
-        return this.addNonTerminal(NamedNodeFunction.of(
+        return this.addNonTerminal(TrinaryNode.NamedNodeFunction.of(
                 name,
                 nonTerminal,
                 leftType,
@@ -270,7 +270,7 @@ final class PrimitiveSetBuilderImpl<T> implements PrimitiveSetBuilder<
         PrimitiveSetBuilderImpl<T>
         > {
     private final List<TypedTerminal<T, ?>> terminals = new ArrayList<>();
-    private final List<NamedNodeFunction<?, ?>> nonTerminals = new ArrayList<>();
+    private final List<TrinaryNode.NamedNodeFunction<?, ?>> nonTerminals = new ArrayList<>();
     private final List<EphemeralConstant<?>> ephemeralConstants = new ArrayList<>();
 
     private PrimitiveSetBuilderImpl() {
@@ -332,7 +332,7 @@ final class PrimitiveSetBuilderImpl<T> implements PrimitiveSetBuilder<
      */
     @Override
     public PrimitiveSetBuilderImpl<T> addNonTerminal(
-            NamedNodeFunction<?, ?> nonTerminal
+            TrinaryNode.NamedNodeFunction<?, ?> nonTerminal
     ) {
         if (this.nonTerminals.contains(nonTerminal)) {
             throw new IllegalArgumentException("This non-terminal already exists");

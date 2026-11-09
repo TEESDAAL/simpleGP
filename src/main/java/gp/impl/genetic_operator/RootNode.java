@@ -1,6 +1,5 @@
 package gp.impl.genetic_operator;
 
-import gp.impl.individual.typed_tree.MutableNode;
 import util.result.Result;
 
 public record RootNode<T>(MutableNode<T,?,?,?> node) implements MutableTreeNode<T> {

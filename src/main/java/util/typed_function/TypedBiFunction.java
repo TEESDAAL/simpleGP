@@ -1,7 +1,5 @@
 package util.typed_function;
 
-import gp.impl.individual.typed_tree.BinaryNode;
-import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.NodeCreator;
 import gp.impl.individual.typed_tree.NodeFunction;
 import util.OptionUtils;

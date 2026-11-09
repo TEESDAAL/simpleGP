@@ -2,7 +2,6 @@ package gp.core.initializer;
 
 import gp.core.breeder.SimpleSelectionMechanism;
 import gp.core.primitive_set.PrimitiveSet;
-import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.Node;
 import gp.impl.individual.typed_tree.NodeCreator;
 import gp.impl.selector.random.RandomSampler;

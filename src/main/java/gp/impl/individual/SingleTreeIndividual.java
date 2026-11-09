@@ -2,7 +2,6 @@ package gp.impl.individual;
 
 import gp.core.individual.Individual;
 import gp.impl.individual.lineage.Lineage;
-import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.Node;
 import util.operator.Operator;
 import util.sequence.Sequence;

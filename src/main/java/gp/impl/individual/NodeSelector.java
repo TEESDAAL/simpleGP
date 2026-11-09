@@ -1,9 +1,7 @@
 package gp.impl.individual;
 
-import gp.impl.individual.typed_tree.ImmutableNode;
-import gp.impl.individual.typed_tree.Node;
-import gp.impl.individual.typed_tree.NonTerminal;
-import gp.impl.individual.typed_tree.Terminal;
+import gp.impl.individual.testTree.Mutability;
+import gp.impl.individual.testTree.Node;
 import util.random.RandomSource;
 
 import java.util.Optional;
@@ -17,9 +15,9 @@ public interface NodeSelector {
      * @return A randomly selected node, empty if there are no valid nodes.
      * @param <T> The terminal type of the node.
      */
-    <T> ImmutableNode<T,?,?,?> sampleNodeOrThrow(
+    <T, M extends Mutability> Node<T,?,M,?> sampleNodeOrThrow(
             RandomSource random,
-            ImmutableNode<T,?,?,?> rootNode
+            Node<T,?,M,?> rootNode
     ) throws Exception;
 
     /**

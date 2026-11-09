@@ -1,6 +1,6 @@
 package example.function_approximation.parameters;
 
-import gp.impl.individual.typed_tree.NamedNodeFunction;
+import gp.impl.individual.testTree.TrinaryNode;
 import util.typed_function.TypedBiFunction;
 import util.typed_function.TypedFunction;
 
@@ -21,16 +21,16 @@ public enum DoubleNonTerminals {
     PLUS("+", Double::sum),
     SUB("-", (a, b) -> a - b);
 
-    private final NamedNodeFunction<Double, ?> op;
+    private final TrinaryNode.NamedNodeFunction<Double, ?> op;
 
-    public static List<NamedNodeFunction<Double, ?>> all() {
+    public static List<TrinaryNode.NamedNodeFunction<Double, ?>> all() {
         return Arrays.stream(DoubleNonTerminals.values())
-            .<NamedNodeFunction<Double, ?>>map(t -> t.op)
+            .<TrinaryNode.NamedNodeFunction<Double, ?>>map(t -> t.op)
             .toList();
     }
 
     DoubleNonTerminals(String symbol, BiFunction<Double, Double, Double> f) {
-        this.op = new NamedNodeFunction<>(
+        this.op = new TrinaryNode.NamedNodeFunction<>(
             symbol,
             TypedBiFunction.of(
                 f, Double.class, Double.class, Double.class
@@ -39,7 +39,7 @@ public enum DoubleNonTerminals {
     }
 
     DoubleNonTerminals(String symbol, Function<Double, Double> f) {
-        this.op = new NamedNodeFunction<>(
+        this.op = new TrinaryNode.NamedNodeFunction<>(
             symbol,
             TypedFunction.of(
                 f, Double.class, Double.class

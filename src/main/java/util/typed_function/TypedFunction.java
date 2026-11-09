@@ -1,6 +1,5 @@
 package util.typed_function;
 
-import gp.impl.individual.typed_tree.ImmutableNode;
 import gp.impl.individual.typed_tree.NodeCreator;
 import gp.impl.individual.typed_tree.NodeFunction;
 import gp.impl.individual.typed_tree.UnaryNode;

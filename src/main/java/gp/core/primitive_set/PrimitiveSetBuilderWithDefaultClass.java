@@ -2,7 +2,7 @@ package gp.core.primitive_set;
 
 import gp.core.initializer.EphemeralConstant;
 import gp.core.initializer.TypedTerminal;
-import gp.impl.individual.typed_tree.NamedNodeFunction;
+import gp.impl.individual.testTree.TrinaryNode;
 import util.QuadFunction;
 import util.TriFunction;
 
@@ -105,7 +105,7 @@ public class PrimitiveSetBuilderWithDefaultClass<T, R> implements PrimitiveSetBu
 
     @Override
     public PrimitiveSetBuilderWithDefaultClass<T, R> addNonTerminal(
-            NamedNodeFunction<?, ?> nonTerminal
+            TrinaryNode.NamedNodeFunction<?, ?> nonTerminal
     ) {
         innerBuilder.addNonTerminal(nonTerminal);
         return this;
